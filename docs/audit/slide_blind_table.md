@@ -1,6 +1,6 @@
 # Bảng Đọc Slide Độc Lập (Slide Blind Table) - TinyA5/1
 
-## 1. Thông số thanh ghi (Trích xuất nguyên văn từ Slide)
+## 1. Thông số thanh ghi 
 
 | Thông số | Thanh ghi X | Thanh ghi Y | Thanh ghi Z | Trang Slide |
 | :--- | :--- | :--- | :--- | :--- |
