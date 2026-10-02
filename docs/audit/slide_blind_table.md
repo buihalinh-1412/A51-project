@@ -27,7 +27,7 @@
 - **Dòng khóa kỳ vọng (S):** `100`
 - **Bản mã kỳ vọng (Ciphertext - C):** `011` (Mã hóa cho ký tự "D")
 
-## 3. Kiểm tra tính toàn vẹn độc lập (Self-check)
+## 3. Kiểm tra tính toàn vẹn độc lập 
 - Phân bổ khóa K: `100101` + `01001110` + `100110000` = đúng 23 bit K.
 - Mã hoá: P ⊕ S = `111` ⊕ `100` = `011` (Khớp C).
 - Giải mã: C ⊕ S = `011` ⊕ `100` = `111` (Khớp P).
