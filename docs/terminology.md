@@ -15,3 +15,4 @@
 | **Warm-up** | Slide không đề cập | Giai đoạn khởi động (Warm-up / Mixing) | Quá trình chạy 100 chu kỳ quay thanh ghi theo quy tắc majority và loại bỏ bit đầu ra trước khi sinh keystream thật. | Slide thiếu bước này |
 | **Stream Cipher** | Mã hoá dòng / Mã dòng | Mã dòng (Stream Cipher) | Hệ mã hóa thực hiện mã hóa từng bit hoặc từng đơn vị dữ liệu liên tục bằng phép XOR. | Trang 15, 39, 42 |
 | **Encryption / Decryption** | Mã hoá / Giải mã | Mã hóa (Encryption) / Giải mã (Decryption) | Quá trình chuyển từ bản rõ sang bản mã và ngược lại. | Trang 7, 8, 47, 50 |
+| **Test Vector** | Slide không đề cập | Tập dữ liệu kiểm thử / Test vector | Dãy dữ liệu mẫu gồm khóa, frame và keystream mong đợi dùng để xác minh tính đúng đắn của thuật toán. | Trang 51 [Slide], [S1] |
