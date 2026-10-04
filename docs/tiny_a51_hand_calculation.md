@@ -90,38 +90,53 @@
     - Dịch các bit sang phải, đưa t = 0 vào y₀: Y = `01010011`
   - **Dịch Z:**
     - Các bit tại vị trí tap: z₂ = 0, z₇ = 0, z₈ = 0
-    - Bit phản hồi theo giải thuật chuẩn: t = z₂ ⊕ z₇ ⊕ z₈ = 0 ⊕ 0 ⊕ 0 = 0
-    - Dịch các bit sang phải, đưa t = 0 vào z₀: Z = `001001100`
+    - Bit phản hồi theo quy tắc: t = z₂ ⊕ z₇ ⊕ z₈ = 0 ⊕ 0 ⊕ 0 = 0
+    - Dịch các bit sang phải, đưa t = 0 vào z₀: Z = `001001100` *(Lưu ý: Slide in là `101001100`, xem mục DISCREPANCY bên dưới)*
 - **Bit dòng khóa sinh ra (Keystream bit):**
   - s₂ = x₅ ⊕ y₇ ⊕ z₈ = 1 ⊕ 1 ⊕ 0 = **0**
 
 ---
 
-## 3. Ghi chú điểm lệch Slide (Slide Discrepancy Note)
+## 3. Bảng tổng hợp trạng thái đầy đủ 3 bước (12 cột)
 
-- **Vị trí sai lệch:** Slide Chương 2, Trang 50 (Bước 2 của TinyA5/1).
-- **Mô tả điểm lệch:**
-  - Slide in kết quả sau dịch của thanh ghi Z là `101001100` (bit đưa vào vị trí z₀ = 1).
-  - Tuy nhiên, theo đúng công thức feedback bit của thanh ghi Z tại Slide Trang 48 (t = z₂ ⊕ z₇ ⊕ z₈), các bit tap tại Chu kỳ 2 là z₂ = 0, z₇ = 0, z₈ = 0, nên t = 0 ⊕ 0 ⊕ 0 = 0. Giá trị chuẩn xác về mặt toán học phải là `001001100`.
+| Bước | X (trước) | Y (trước) | Z (trước) | Bít xét (x₁, y₃, z₃) | Hàm chiếm đa số (m) | Thanh ghi được dịch | X (sau) | Y (sau) | Z (sau) | Bít cuối (x₅, y₇, z₈) | Bít sinh ra (sᵢ) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **0** | 100101 | 01001110 | 100110000 | 0, 0, 1 | 0 | X, Y | 110010 | 10100111 | 100110000 | 0, 1, 0 | **1** |
+| **1** | 110010 | 10100111 | 100110000 | 1, 0, 1 | 1 | X, Z | 111001 | 10100111 | 010011000 | 1, 1, 0 | **0** |
+| **2** | 111001 | 10100111 | 010011000 | 1, 0, 0 | 0 | Y, Z | 111001 | 01010011 | 001001100* | 1, 1, 0 | **0** |
 
 
 ---
 
-## 4. Tổng hợp trạng thái và Kết quả Mã hóa / Giải mã
-
-### Bảng theo dõi trạng thái qua 3 chu kỳ dịch
-
-| Chu kỳ | Trạng thái trước dịch (X, Y, Z) | Bit điều khiển nhịp (x₁, y₃, z₃) | Hàm chiếm đa số (m) | Thanh ghi được dịch | Bit phản hồi (t_X, t_Y, t_Z) | Trạng thái sau dịch (X, Y, Z) | Bit cuối (x₅, y₇, z₈) | Bit dòng khóa (sᵢ) |
-| :---: | :--- | :---: | :---: | :---: | :---: | :--- | :---: | :---: |
-| **0** | X: `100101`<br>Y: `01001110`<br>Z: `100110000` | 0, 0, 1 | 0 | X, Y | t_X = 1<br>t_Y = 1<br>Z giữ nguyên | X: `110010`<br>Y: `10100111`<br>Z: `100110000` | 0, 1, 0 | **1** |
-| **1** | X: `110010`<br>Y: `10100111`<br>Z: `100110000` | 1, 0, 1 | 1 | X, Z | t_X = 1<br>Y giữ nguyên<br>t_Z = 0 | X: `111001`<br>Y: `10100111`<br>Z: `010011000` | 1, 1, 0 | **0** |
-| **2** | X: `111001`<br>Y: `10100111`<br>Z: `010011000` | 1, 0, 0 | 0 | Y, Z | X giữ nguyên<br>t_Y = 0<br>t_Z = 0 | X: `111001`<br>Y: `01010011`<br>Z: `001001100` | 1, 1, 0 | **0** |
-
-### Kết quả Mã hóa (Encryption) và Giải mã (Decryption)
+## 4. Dòng khóa, Mã hóa và Giải mã
 
 - **Dòng khóa hoàn chỉnh (Keystream - S):**
-  S = s₀s₁s₂ = `100`
-- **Quá trình Mã hóa (Encryption):**
-  C = P ⊕ S = `111` ⊕ `100` = `011` (Mã hóa thành ký tự "D")
-- **Quá trình Giải mã (Decryption):**
-  P = C ⊕ S = `011` ⊕ `100` = `111` (Khôi phục thành ký tự "H")
+  - Ghép các bit dòng khóa qua 3 bước: S = s₀s₁s₂ = `100`
+  - So sánh với Slide trang 50: S = `100` (**Đã khớp*)
+- **Mã hóa (Encryption):**
+  - C = P ⊕ S = `111` ⊕ `100` = `011` (Mã hóa ký tự "H" thành "D")
+  - So sánh với Slide trang 50: C = `011` (**Đã khớp**)
+- **Giải mã (Decryption):**
+  - P = C ⊕ S = `011` ⊕ `100` = `111` (Khôi phục ký tự "H")
+  - So sánh với bản rõ ban đầu: P = `111` (**Đã khớp**)
+
+---
+
+## 5. Điểm sai lệch Slide (DISCREPANCY)
+
+```text
+DISCREPANCY
+
+Slide:                  Z sau bước 2 = 101001100
+
+Recalculation:          Z sau bước 2 = 001001100
+                        Các bước tính chi tiết:
+                        - Z trước bước 2 = 010011000 (z₀=0, z₁=1, z₂=0, z₃=0, z₄=1, z₅=1, z₆=0, z₇=0, z₈=0)
+                        - Vị trí tap theo công thức Trang 48: z₂, z₇, z₈
+                        - Giá trị trích xuất: z₂ = 0, z₇ = 0, z₈ = 0
+                        - Bit phản hồi: t = z₂ ⊕ z₇ ⊕ z₈ = 0 ⊕ 0 ⊕ 0 = 0
+                        - Dịch phải 1 bit và nạp t vào đầu: z₀ = 0
+                        - Kết quả tính toán chuẩn xác: 001001100
+
+Possible reason:        Có thể do lỗi đánh máy.
+Effect on final output: Không ảnh hưởng quá nhiều.
