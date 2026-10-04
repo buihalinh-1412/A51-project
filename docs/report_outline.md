@@ -2,7 +2,7 @@
 
 Owner: Hoàng Yến Nhi · Nhánh: `docs/nhi-research`
 Mục đích: khung cho phần "Mở đầu" và "Cơ sở lý thuyết / Phân tích thuật toán" của báo cáo cuối kỳ. Số `[n]` trỏ tới `docs/references.md`.
-Bố cục báo cáo theo đề bài: Mở đầu → Cơ sở lý thuyết → Phân tích thuật toán → Cài đặt và kiểm thử → Kết quả demo và đánh giá → Kết luận → Tài liệu tham khảo [8, mục 2]. Tám chương dưới đây là phần lý thuyết và thuật toán của Giai đoạn 1. Các chương cài đặt, demo và an toàn được đề xuất ở cuối file.
+Bố cục báo cáo theo đề bài: Mở đầu → Cơ sở lý thuyết → Phân tích thuật toán → Cài đặt và kiểm thử → Kết quả demo và đánh giá → Kết luận → Tài liệu tham khảo [8, mục 2]. Mười chương dưới đây gồm 8 chương lý thuyết và thuật toán của Giai đoạn 1, cộng Chương 9 (phân tích an toàn) và Chương 10 (so sánh với RC4) đã được trưởng nhóm duyệt thêm. Các chương cài đặt, kiểm thử và demo sẽ bổ sung từ Giai đoạn 2.
 
 ## 1. Introduction
 
@@ -98,6 +98,30 @@ Bố cục báo cáo theo đề bài: Mở đầu → Cơ sở lý thuyết → 
 - Hình/sơ đồ: sơ đồ timeline khởi tạo (64 → 22 → 100 → 228 chu kỳ); bảng so sánh slide và nguồn ngoài; bảng khác biệt TinyA5/1 và A5/1.
 - Nguồn: [1], [2], [4], [6], [Slide].
 
+## 9. Security analysis
+
+- Nội dung chính:
+  1. Không gian khóa: khóa 64 bit; một số triển khai cũ cố định 10 bit bằng 0 nên khóa hiệu dụng chỉ còn 54 bit [6].
+  2. Các tấn công đã biết theo thời gian: Anderson 1994, Golić 1997, Biryukov–Shamir–Wagner 2000 (time-memory tradeoff), Barkan–Biham–Keller 2003 (chỉ cần bản mã), dự án bảng cầu vồng của Nohl 2009 [3][4][6].
+  3. Chi phí tấn công: tiền xử lý 2^48 bước, sau đó phá khóa thời gian thực trên một PC [3].
+  4. Điểm yếu cấu trúc: LFSR tuyến tính [5]; frame number công khai [6].
+  5. Hiện trạng: A5/1 không còn được xem là an toàn; chuẩn ETSI đã thêm A5/3 và cấm A5/2 [1, mục 4.9].
+- File cung cấp dữ liệu: `background.md` mục 5; `references.md` (mục 2: các bài cần đọc thêm).
+- Hình/sơ đồ: bảng các tấn công (năm, tác giả, loại tấn công, dữ liệu cần có, chi phí); có thể minh họa tấn công dùng lại keystream trong demo.
+- Nguồn: [1], [3], [4], [5], [6]; cần đọc thêm bài gốc của Barkan–Biham–Keller 2003, Gendrullis và cộng sự 2008, Golić 1997.
+
+## 10. Comparison with RC4
+
+- Nội dung chính:
+  1. Giới thiệu RC4: mã dòng dùng trong SSL và WEP; đơn vị mã hoá TinyRC4 là 3 bit, dùng 2 mảng S và T [Slide, trang 53].
+  2. So sánh nguyên lý: A5/1 dùng 3 LFSR với clock không đều; RC4 dùng hoán vị mảng S qua 2 giai đoạn khởi tạo và sinh số [Slide, trang 51, 53–62].
+  3. So sánh tốc độ và hướng cài đặt: A5/1 hợp với phần cứng [Slide, trang 51]; RC4 thiết kế theo byte.
+  4. So sánh độ an toàn và phạm vi ứng dụng (GSM so với SSL/WEP).
+  5. Bảng tổng hợp giống và khác nhau.
+- File cung cấp dữ liệu: `background.md` mục 2 và 5; tài liệu RC4 sẽ bổ sung ở giai đoạn sau.
+- Hình/sơ đồ: bảng so sánh A5/1 và RC4 theo 4 tiêu chí (nguyên lý, tốc độ, độ an toàn, ứng dụng).
+- Nguồn: [Slide], [8, mục 1]; cần tìm thêm nguồn ngoài về RC4 ở giai đoạn sau.
+
 ## Yêu cầu đề bài và chương đáp ứng
 
 | Yêu cầu đề bài [8, mục 2] | Chương đáp ứng | Trạng thái |
@@ -106,10 +130,9 @@ Bố cục báo cáo theo đề bài: Mở đầu → Cơ sở lý thuyết → 
 | Mô tả đầy đủ thuật toán: tham số đầu vào, sinh khóa, mã hóa, giải mã | Chương 7, Chương 8 | Đã có |
 | Sơ đồ khối do nhóm tự vẽ (không chụp slide) | Chương 3, 4, 5, 6, 7, 8 | Đã có trong khung; cần phân công người vẽ |
 | Ví dụ tính tay đầy đủ trên phiên bản thu nhỏ, khớp với chương trình | Chương 7 | Đã có |
-| Phân tích độ an toàn: không gian khóa, tấn công đã biết, chi phí, còn khuyến nghị hay không | Chưa có chương riêng | **Đề xuất:** thêm Chương 9 "Security analysis" (không gian khóa 2^64, khóa hiệu dụng 54 bit ở triển khai cũ, các tấn công 1994–2009, A5/1 không còn được khuyến nghị). Dùng [3], [4], [6] và cần đọc thêm các bài ở `references.md` mục 2 |
-| So sánh với ít nhất một hệ mã cùng loại | Chưa có chương riêng | **Đề xuất:** thêm Chương 10 "Comparison with RC4". RC4 là mã dòng cùng nhóm A trong đề bài [8, mục 1]; so sánh nguyên lý (LFSR so với hoán vị mảng S), tốc độ, độ an toàn, phạm vi ứng dụng. Cần tìm nguồn về RC4 ở giai đoạn sau |
-| Cài đặt và kiểm thử; Kết quả demo và đánh giá; Kết luận | Ngoài phạm vi GĐ1 | Đề xuất thêm các chương tương ứng từ GĐ2 trở đi |
+| Phân tích độ an toàn: không gian khóa, tấn công đã biết, chi phí, còn khuyến nghị hay không | Chương 9 | Đã có khung; cần đọc thêm các bài gốc ở `references.md` mục 2 |
+| So sánh với ít nhất một hệ mã cùng loại | Chương 10 | Đã có khung; cần tìm thêm nguồn ngoài về RC4 |
+| Cài đặt và kiểm thử; Kết quả demo và đánh giá; Kết luận | Ngoài phạm vi GĐ1 | Bổ sung từ Giai đoạn 2 |
 | Tài liệu tham khảo; ghi rõ mã nguồn tham khảo ngoài | `references.md` | Đã có. Cần ghi rõ nếu dùng [2] để đối chiếu kết quả |
 | Bảng phân công và tỉ lệ đóng góp | Chương 1 | Lấy từ `task_tracker.xlsx` |
 
-Ghi chú cho người kiểm tra: việc thêm Chương 9 và Chương 10 là đề xuất. Hà Linh quyết định ở D6.

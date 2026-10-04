@@ -61,7 +61,37 @@ Used for: Đối chiếu test vector (key 0x1223456789ABCDEF, frame 0x134) trong
 Author/Organization: Giảng viên môn học
 Year: 2026
 Link: https://docs.google.com/document/d/14vEU_3kHQfJmn0Tc6gY6WPPD9ZLRw0Fb62W0fCRP-mA
-Used for: Bảng "Yêu cầu đề bài và chương đáp ứng" trong report_outline.md (mục 2 của đề bài: phần "Tìm hiểu hệ mã" và phần "Báo cáo").
+Used for: Căn cứ chấm TinyA5/1 trong background.md mục 6; bảng "Yêu cầu đề bài và chương đáp ứng" trong report_outline.md (mục 2 của đề bài: phần "Tìm hiểu hệ mã" và phần "Báo cáo").
+
+[9] Stream cipher — Wikipedia
+Author/Organization: Wikipedia contributors
+Year: truy cập 04/10/2026
+Link: https://en.wikipedia.org/wiki/Stream_cipher
+Used for: Nguồn thứ hai cho định nghĩa keystream và synchronous stream cipher (background.md mục 2.1); ưu điểm và nhược điểm của stream cipher trong bảng so sánh (mục 2.4): nhanh hơn, phần cứng đơn giản hơn, hợp khi không biết trước độ dài dữ liệu, lỗi không lan, không được dùng lại keystream.
+
+[10] Block cipher — Wikipedia
+Author/Organization: Wikipedia contributors
+Year: truy cập 04/10/2026
+Link: https://en.wikipedia.org/wiki/Block_cipher
+Used for: Nguyên lý, ưu điểm và nhược điểm của block cipher trong bảng so sánh (background.md mục 2.4): khối độ dài cố định, cần chế độ hoạt động và padding, dùng làm nền cho các primitive khác.
+
+[11] Handbook of Applied Cryptography, Chapter 7: Block Ciphers
+Author/Organization: Alfred J. Menezes, Paul C. van Oorschot, Scott A. Vanstone (CRC Press)
+Year: 1996
+Link: https://cacr.uwaterloo.ca/hac/about/chap7.pdf
+Used for: Bảng so sánh (background.md mục 2.4): block cipher là "khối xây dựng" cho PRNG, mã dòng, MAC, hàm băm (trang 223); định nghĩa block cipher n bit (Định nghĩa 7.1, trang 224); ECB làm lộ mẫu dữ liệu (trang 228); lỗi 1 bit ở CBC ảnh hưởng 2 khối (trang 230).
+
+[12] Exclusive or — Wikipedia
+Author/Organization: Wikipedia contributors
+Year: truy cập 04/10/2026
+Link: https://en.wikipedia.org/wiki/Exclusive_or
+Used for: Định nghĩa và bảng chân lý XOR; tính tự nghịch đảo của XOR (background.md mục 2.1).
+
+[13] NIST CSRC Glossary — mục "ciphertext" và "block cipher"
+Author/Organization: National Institute of Standards and Technology (NIST)
+Year: truy cập 04/10/2026
+Link: https://csrc.nist.gov/glossary/term/ciphertext ; https://csrc.nist.gov/glossary/term/block_cipher
+Used for: Định nghĩa ciphertext ("Data in its encrypted form", theo NIST SP 800-12 Rev. 1 và các SP khác) trong background.md mục 2.1; định nghĩa block cipher (theo NIST SP 800-38A: ánh xạ chuỗi bit độ dài cố định sang chuỗi bit cùng độ dài, có tham số là khóa) trong mục 2.4.
 
 ## 2. Nguồn nên đọc thêm (chưa đọc trực tiếp, chưa được trích)
 
@@ -81,13 +111,14 @@ Cột Slide đã đối chiếu trực tiếp với slide gốc (bản "Updated"
 | Độ dài R1, R2, R3 | 19, 22, 23 bít ("thanh ghi X, Y, Z") [Slide, trang 51] | 19, 22, 23 bit (`R1MASK` đến `R3MASK`) | 19, 22, 23 bit [mục 2] | 19, 22, 23 bit | **Khớp**, VERIFIED |
 | Feedback taps | X: 13, 16, 17, 18; Y: 20, 21; Z: 7, 20, 21, 22 [Slide, trang 51] | R1: 18, 17, 16, 13; R2: 21, 20; R3: 22, 21, 20, 7 | R1: 13, 16, 17, 18; R2: 20, 21; R3: 7, 20, 21, 22 [mục 2] | R1: 13, 16, 17, 18; R2: 20, 21; R3: 7, 20, 21, 22 | **Khớp**, VERIFIED |
 | Clocking bit | m = maj(x8, y10, z10) [Slide, trang 51] | R1: bit 8; R2: bit 10; R3: bit 10 | R1: 8; R2: 10; R3: 10 [mục 2] | R1: 8; R2: 10; R3: 10 | **Khớp**, VERIFIED |
-| Bit output | "Sau khi quay bít xong thì bít sinh ra: sᵢ = x8 ⊕ y10 ⊕ z10" [Slide, trang 51] | bit 18 ⊕ bit 21 ⊕ bit 22 ("the high bit"), lấy sau khi clock | R1[18] ⊕ R2[21] ⊕ R3[22] [mục 2, công thức (1)] | chưa có (phần đã đọc không nêu) | **Khác**, CONFLICT (xem CONFLICT-001). Ba nguồn ngoài thống nhất bit cao nhất; slide trùng với vị trí clocking bit |
+| Bit output | "Sau khi quay bít xong thì bít sinh ra: sᵢ = x8 ⊕ y10 ⊕ z10" [Slide, trang 51] | bit 18 ⊕ bit 21 ⊕ bit 22 (bit cao nhất của mỗi register), lấy sau khi dịch | R1[18] ⊕ R2[21] ⊕ R3[22] [mục 2, công thức (1)] | chưa có (phần đã đọc không nêu) | **Khác**, CONFLICT (xem CONFLICT-001). Ba nguồn ngoài thống nhất bit cao nhất; slide trùng với vị trí clocking bit |
 | Số chu kỳ nạp key, frame, warm-up | Slide không có | 64 (key) + 22 (frame), không dùng majority; sau đó 100 chu kỳ majority, bỏ output | 64 + 22 = 86 chu kỳ, sau đó 100 chu kỳ warm-up [mục 2] | 64 + 22, sau đó 100 chu kỳ majority, bỏ output | **Khớp giữa các nguồn ngoài**, VERIFIED. Slide thiếu. Độ dài key 64 bit và frame 22 bit được [1] xác nhận [Annex C.1.2] |
 | Test vector | Slide không có | Key `12 23 45 67 89 AB CD EF`, frame `0x134`; A→B `534EAA582FE8151AB6E1855A728C00`; B→A `24FD35A35D5FB6526D32F906DF1AC0` | Không có | chưa có (phần đã đọc không nêu) | **SINGLE-SOURCE**. [7] cho cùng giá trị nhưng lấy mã từ cùng gốc với [2]. Cần kiểm chứng bằng cài đặt ở GĐ3 |
 
 Ghi chú thêm cho người chốt TD-003 (thứ tự bit), chỉ ghi nhận, không tự chốt:
-- [6] ghi quy ước "bit 0 là LSB". [2] đánh số bit 0..18, bit 18 là "high bit".
-- Trong mã của [2], bit key thứ i lấy bằng `(key[i/8] >> (i&7)) & 1`, tức là đọc từng byte từ bit thấp đến bit cao. Bit keystream được ghép vào byte đầu ra từ bit cao xuống (`<< (7-(i&7))`).
+- Cách đánh số bit: [6] đánh số bit 0 là bit thấp nhất (LSB). [2] đánh số các bit của R1 từ 0 đến 18, trong đó bit 18 là bit cao nhất.
+- Thứ tự bit khi nạp khóa theo mã nguồn của [2]: khóa 64 bit được lưu thành 8 byte. Chương trình lấy lần lượt từng byte, và trong mỗi byte lấy **bit thấp nhất (bit 0) trước**, bit cao nhất (bit 7) sau. Ví dụ byte đầu của test vector là `0x12` = `00010010`, nên 8 bit khóa đầu tiên được nạp theo thứ tự `0, 1, 0, 0, 1, 0, 0, 0`.
+- Thứ tự bit khi xuất keystream theo [2] thì ngược lại: bit keystream đầu tiên được đặt vào **bit cao nhất (bit 7)** của byte đầu ra, bit thứ hai vào bit 6, và cứ thế tiếp tục.
 - [5] định nghĩa LFSR dịch về phía stage 0 và lấy output ở stage 0 [trang 195]. Hướng này ngược với cách slide và [2] mô tả A5/1 (bit mới vào vị trí 0). Đây là khác biệt **quy ước trình bày**, không phải mâu thuẫn thông số.
 
 ## 4. Ghi nhận chỗ lệch
