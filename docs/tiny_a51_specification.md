@@ -109,7 +109,6 @@ Bộ sinh số gồm 3 thanh ghi X, Y, Z:
 * **Sau khi quay bít xong thì bít sinh ra:** $s_i = x_8 \oplus y_{10} \oplus z_{10}$ *(Lưu ý: Nguồn GSM chuẩn là $x_{18} \oplus y_{21} \oplus z_{22}$)*
 * A5/1 được thực hiện dễ dàng bằng các thiết bị phần hardware, tốc độ nhanh.
 ---
-# TinyA5/1 Specification
 
 ## 1. Input (Đầu vào)
 Hệ mã TinyA5/1 sử dụng hai dữ liệu đầu vào chính:
