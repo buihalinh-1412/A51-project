@@ -3,12 +3,20 @@
 > **Owner:** Lại Hoàng Thế Vũ  
 > **Branch:** `docs/vu-a51`  
 > **Giai đoạn:** Phase 1 - Specification and Verification  
-> **Nguồn nội bộ chính:** Slide Chương 2 - Mã hoá khoá đối xứng, trang 45-52  
-> **Trạng thái:** Đang xây dựng
+> **File:** `docs/a51_specification.md`  
+> **Trạng thái:** Bản đặc tả Phase 1, đã đối chiếu slide và nguồn kỹ thuật bên ngoài
+>
+> **Quy ước nguồn trong tài liệu:**
+>
+> - `[S1]` = Slide môn học, Chương 2 - Mã hoá khoá đối xứng, trang 45-52.
+> - `[S2]` = Marc Briceno, Ian Goldberg, David Wagner, A5/1 Pedagogical Implementation (`A5.1.c`).
+> - `[S3]` = Alex Biryukov, Adi Shamir, David Wagner, *Real Time Cryptanalysis of A5/1 on a PC*.
+> - `[S4]` = Thomas Gendrullis, Michael Novotný, Andreas Rupp, *A Real-World Attack Breaking A5/1*.
+> - `[S5]` = 3GPP TS 43.020 / ETSI TS 143 020, phần đặc tả giao diện Algorithm A5.
 
 ---
 
-## 1. Tổng quan
+## 1. Overview
 
 ### 1.1. A5/1 là gì?
 
@@ -19,13 +27,13 @@ Theo slide môn học:
 - Đơn vị mã hoá của A5/1 là **1 bit**.
 - Bộ sinh số mỗi lần sinh ra một bit `0` hoặc `1`.
 - Bit sinh ra được sử dụng trong phép XOR với dữ liệu.
-- Trong bài học, A5/1 đầy đủ được mô tả bằng cách tổng quát hóa từ TinyA5/1.
+- Trong phạm vi bài học, A5/1 đầy đủ được mô tả bằng cách tổng quát hóa từ TinyA5/1.
 
 **Nguồn:** [S1, trang 45]
 
 ### 1.2. Cấu trúc tổng quát
 
-A5/1 sử dụng ba thanh ghi:
+A5/1 sử dụng ba thanh ghi dịch phản hồi:
 
 ```text
 X
@@ -33,75 +41,134 @@ Y
 Z
 ```
 
-Độ dài của các thanh ghi trong A5/1 đầy đủ:
+Trong quy ước thường dùng của nguồn ngoài, ba thanh ghi này được gọi tương ứng là:
 
 ```text
-X = 19 bit
-Y = 22 bit
-Z = 23 bit
+R1
+R2
+R3
 ```
 
-**Nguồn:** [S1, trang 51]
-
-### 1.3. Nguyên tắc hoạt động
-
-Ở mỗi bước sinh số:
+Độ dài của ba thanh ghi:
 
 ```text
-Đọc các bit dùng cho majority
-        ↓
-Tính hàm majority
-        ↓
-Xác định thanh ghi được quay
-        ↓
-Tính feedback và quay thanh ghi
-        ↓
-Tính bit sinh ra
-        ↓
-Dùng bit sinh ra làm keystream
+X / R1 = 19 bit
+Y / R2 = 22 bit
+Z / R3 = 23 bit
 ```
 
-Theo slide, bit sinh ra được tính:
+Do đó:
 
 ```text
-sᵢ = x₈ XOR y₁₀ XOR z₁₀
+19 + 22 + 23 = 64 bit
 ```
 
-**Nguồn:** [S1, trang 51]
+**Nguồn:** [S1, trang 51]; [S2]; [S3]
+
+### 1.3. Quy trình hoạt động tổng quát
+
+Quy trình A5/1 đầy đủ:
+
+```text
+Khởi tạo các register
+        ↓
+Nạp key
+        ↓
+Nạp frame
+        ↓
+Warm-up
+        ↓
+Sinh keystream
+        ↓
+XOR với plaintext
+        ↓
+Ciphertext
+```
+
+Theo S2, sau khi thiết lập trạng thái, A5/1 sinh tổng cộng 228 bit keystream:
+
+```text
+114 bit → hướng A → B
+114 bit → hướng B → A
+```
+
+[S2]
+
+3GPP/ETSI xác định ở mức giao diện A5 rằng khóa `Kc` có 64 bit và `COUNT` có 22 bit; với GMSK, mỗi burst có 114 payload bits. [S5]
 
 ---
 
-## 2. Các thanh ghi
+## 2. Registers
 
-### 2.1. Bảng tổng hợp
+## 2.1. Bảng tổng hợp
 
-| Thông số | X | Y | Z | Nguồn | Nhãn |
+| Thông số | X / R1 | Y / R2 | Z / R3 | Nguồn | Nhãn |
 |---|---:|---:|---:|---|---|
-| Độ dài | 19 bit | 22 bit | 23 bit | [S1, trang 51] | VERIFIED |
-| Chỉ số | `x₀ ... x₁₈` | `y₀ ... y₂₁` | `z₀ ... z₂₂` | [S1, trang 51] | VERIFIED |
-| Bit majority | `x₈` | `y₁₀` | `z₁₀` | [S1, trang 51] | VERIFIED |
-| Feedback taps | `x₁₃, x₁₆, x₁₇, x₁₈` | `y₂₀, y₂₁` | `z₇, z₂₀, z₂₁, z₂₂` | [S1, trang 51] | VERIFIED |
-| Hướng quay | `xⱼ = xⱼ₋₁` | `yⱼ = yⱼ₋₁` | `zⱼ = zⱼ₋₁` | [S1, trang 51] | VERIFIED |
-| Bit mới | `x₀ = t` | `y₀ = t` | `z₀ = t` | [S1, trang 51] | VERIFIED |
+| Độ dài | 19 bit | 22 bit | 23 bit | [S1, trang 51]; [S2]; [S3] | VERIFIED |
+| Chỉ số bit | 0 ... 18 | 0 ... 21 | 0 ... 22 | [S1, trang 51]; [S2]; [S4] | VERIFIED |
+| Clocking bit | 8 | 10 | 10 | [S1, trang 51]; [S2]; [S4] | VERIFIED |
+| Feedback taps | 13, 16, 17, 18 | 20, 21 | 7, 20, 21, 22 | [S1, trang 51]; [S2]; [S4] | VERIFIED |
+| Hướng dịch | `xj = x(j-1)` | `yj = y(j-1)` | `zj = z(j-1)` | [S1, trang 51]; [S2] | VERIFIED |
+| Bit mới | `x0 = t` | `y0 = t` | `z0 = t` | [S1, trang 51]; [S2] | VERIFIED |
+| Bit output | `x8`, `y10`, `z10` theo slide | bit 18, 21, 22 theo nguồn ngoài | [S1, trang 51]; [S2]; [S4] | CONFLICT |
 
-### 2.2. Thanh ghi X
+### 2.2. Quy ước đánh số bit
 
-Thanh ghi X gồm 19 bit:
+Trong slide, A5/1 đầy đủ được ký hiệu:
 
 ```text
-x₀, x₁, x₂, ..., x₁₈
+X: x0 ... x18
+Y: y0 ... y21
+Z: z0 ... z22
+```
+
+Nguồn S2 biểu diễn các register dưới dạng các số nguyên với:
+
+```text
+R1: 19 bit, đánh số 0 ... 18
+R2: 22 bit, đánh số 0 ... 21
+R3: 23 bit, đánh số 0 ... 22
+```
+
+S4 cũng sử dụng cùng quy ước chỉ số.
+
+**Nguồn:** [S1, trang 51]; [S2]; [S4]
+
+**Nhãn:** `VERIFIED`
+
+### 2.3. Thanh ghi X / R1
+
+Độ dài:
+
+```text
+19 bit
+```
+
+Clocking bit:
+
+```text
+x8
+```
+
+Feedback taps:
+
+```text
+x13
+x16
+x17
+x18
 ```
 
 Feedback:
 
 ```text
-t = x₁₃ XOR x₁₆ XOR x₁₇ XOR x₁₈
+t = x13 XOR x16 XOR x17 XOR x18
 ```
 
-Sau khi tính `t`, thực hiện:
+Sau khi tính `t`:
 
 ```text
-xⱼ = xⱼ₋₁
+xj = x(j-1)
 ```
 
 với:
@@ -113,29 +180,50 @@ j = 18, 17, ..., 1
 Sau đó:
 
 ```text
-x₀ = t
+x0 = t
 ```
 
-**Nguồn:** [S1, trang 51]
-
-### 2.3. Thanh ghi Y
-
-Thanh ghi Y gồm 22 bit:
+Trong implementation S2, các feedback taps tương ứng là:
 
 ```text
-y₀, y₁, y₂, ..., y₂₁
+18, 17, 16, 13
+```
+
+và register được dịch trái, sau đó feedback được đưa vào bit 0.
+
+**Nguồn:** [S1, trang 51]; [S2]; [S4]
+
+### 2.4. Thanh ghi Y / R2
+
+Độ dài:
+
+```text
+22 bit
+```
+
+Clocking bit:
+
+```text
+y10
+```
+
+Feedback taps:
+
+```text
+y20
+y21
 ```
 
 Feedback:
 
 ```text
-t = y₂₀ XOR y₂₁
+t = y20 XOR y21
 ```
 
-Sau khi tính `t`, thực hiện:
+Sau khi tính `t`:
 
 ```text
-yⱼ = yⱼ₋₁
+yj = y(j-1)
 ```
 
 với:
@@ -147,29 +235,44 @@ j = 21, 20, ..., 1
 Sau đó:
 
 ```text
-y₀ = t
+y0 = t
 ```
 
-**Nguồn:** [S1, trang 51]
+**Nguồn:** [S1, trang 51]; [S2]; [S4]
 
-### 2.4. Thanh ghi Z
+### 2.5. Thanh ghi Z / R3
 
-Thanh ghi Z gồm 23 bit:
+Độ dài:
 
 ```text
-z₀, z₁, z₂, ..., z₂₂
+23 bit
+```
+
+Clocking bit:
+
+```text
+z10
+```
+
+Feedback taps:
+
+```text
+z7
+z20
+z21
+z22
 ```
 
 Feedback:
 
 ```text
-t = z₇ XOR z₂₀ XOR z₂₁ XOR z₂₂
+t = z7 XOR z20 XOR z21 XOR z22
 ```
 
-Sau khi tính `t`, thực hiện:
+Sau khi tính `t`:
 
 ```text
-zⱼ = zⱼ₋₁
+zj = z(j-1)
 ```
 
 với:
@@ -181,12 +284,12 @@ j = 22, 21, ..., 1
 Sau đó:
 
 ```text
-z₀ = t
+z0 = t
 ```
 
-**Nguồn:** [S1, trang 51]
+**Nguồn:** [S1, trang 51]; [S2]; [S4]
 
-### 2.5. Kiểm tra tổng độ dài
+### 2.6. Kiểm tra tổng độ dài
 
 ```text
 X = 19 bit
@@ -196,7 +299,7 @@ Z = 23 bit
 Tổng = 64 bit
 ```
 
-Do đó:
+Kết quả:
 
 ```text
 19 + 22 + 23 = 64 bit
@@ -206,29 +309,29 @@ Do đó:
 
 ## 3. Majority clocking
 
-### 3.1. Các bit dùng cho hàm majority
+### 3.1. Các bit dùng cho majority
 
-Theo slide, hàm majority được tính trên ba bit:
+Ba clocking bit:
 
 ```text
-x₈
-y₁₀
-z₁₀
+x8
+y10
+z10
 ```
 
 Công thức:
 
 ```text
-m = maj(x₈, y₁₀, z₁₀)
+m = maj(x8, y10, z10)
 ```
 
-**Nguồn:** [S1, trang 51]
+**Nguồn:** [S1, trang 51]; [S2]; [S4]
 
 ### 3.2. Hàm majority
 
-Hàm majority trả về giá trị xuất hiện ít nhất hai lần trong ba bit.
+Majority trả về giá trị xuất hiện ít nhất hai lần trong ba bit.
 
-| x₈ | y₁₀ | z₁₀ | m |
+| x8 | y10 | z10 | m |
 |---:|---:|---:|---:|
 | 0 | 0 | 0 | 0 |
 | 0 | 0 | 1 | 0 |
@@ -239,181 +342,427 @@ Hàm majority trả về giá trị xuất hiện ít nhất hai lần trong ba 
 | 1 | 1 | 0 | 1 |
 | 1 | 1 | 1 | 1 |
 
-### 3.3. Quy tắc quay
+### 3.3. Quy tắc clock
 
 Sau khi tính:
 
 ```text
-m = maj(x₈, y₁₀, z₁₀)
+m = maj(x8, y10, z10)
 ```
 
 thực hiện:
 
 ```text
-Nếu x₈ = m → quay X
+Nếu x8 = m → clock X / R1
 
-Nếu y₁₀ = m → quay Y
+Nếu y10 = m → clock Y / R2
 
-Nếu z₁₀ = m → quay Z
+Nếu z10 = m → clock Z / R3
 ```
 
-Như vậy, không phải lúc nào cả ba thanh ghi cũng được quay.
+S2 mô tả chính xác:
 
-**Nguồn:** [S1, trang 47 và 51]
+> Thanh ghi `Ri` được clock khi bit giữa của `Ri` trùng với giá trị majority của ba bit giữa.
 
----
+S4 mô tả cùng nguyên tắc và cho biết trong mỗi chu kỳ ít nhất hai trong ba register được clock.
 
-## 4. Nạp key
+**Nguồn:** [S2]; [S4]
 
-### 4.1. Thông tin từ slide
-
-Slide cung cấp đầy đủ quy trình phân bổ key cho **TinyA5/1**, nhưng không trình bày chi tiết toàn bộ quy trình nạp key của **A5/1 đầy đủ**.
-
-Vì vậy các thông tin sau chưa được lấy từ slide:
-
-| Nội dung | Trạng thái |
-|---|---|
-| Độ dài key A5/1 đầy đủ | `UNVERIFIED` |
-| Trạng thái ban đầu của X, Y, Z | `UNVERIFIED` |
-| Số chu kỳ nạp key | `UNVERIFIED` |
-| Thứ tự bit của key | `UNVERIFIED` |
-| Cách đưa từng bit key vào các thanh ghi | `UNVERIFIED` |
-| Cách quay các thanh ghi trong giai đoạn nạp key | `UNVERIFIED` |
-
-### 4.2. Quy trình cần bổ sung
-
-Bản đặc tả hoàn chỉnh phải trả lời:
-
-1. Key có bao nhiêu bit?
-2. Key được biểu diễn dưới dạng nào?
-3. Bit nào được đưa vào trước?
-4. Mỗi chu kỳ bit key được xử lý như thế nào?
-5. X, Y và Z có quay đồng thời hay theo majority?
-6. Có bao nhiêu chu kỳ nạp key?
-7. Trạng thái của X, Y và Z trước khi nạp key là gì?
-
-**Trạng thái hiện tại:** `UNVERIFIED`
+**Nhãn:** `VERIFIED`
 
 ---
 
-## 5. Nạp frame
+## 4. Key loading
 
-### 5.1. Thông tin từ slide
+### 4.1. Độ dài key
 
-Slide được cung cấp không trình bày chi tiết quá trình nạp frame của A5/1 đầy đủ.
-
-Các nội dung cần xác minh:
-
-| Nội dung | Trạng thái |
-|---|---|
-| Độ dài frame | `UNVERIFIED` |
-| Frame lấy từ đâu | `UNVERIFIED` |
-| Thứ tự bit | `UNVERIFIED` |
-| Số chu kỳ nạp frame | `UNVERIFIED` |
-| Cách quay X, Y, Z khi nạp frame | `UNVERIFIED` |
-
-### 5.2. Quy trình cần bổ sung
-
-Bản đặc tả hoàn chỉnh phải mô tả:
+Khóa phiên A5/1 có độ dài:
 
 ```text
-Trạng thái trước khi nạp frame
-        ↓
-Đọc bit frame
-        ↓
-Cập nhật X, Y, Z
-        ↓
-Lặp đủ số chu kỳ
-        ↓
-Trạng thái sau khi nạp frame
+64 bit
 ```
 
-**Trạng thái hiện tại:** `UNVERIFIED`
+S2 nhận key dưới dạng 8 byte:
+
+```text
+byte key[8]
+```
+
+S5 cũng quy định:
+
+```text
+length of Kc = 64 bits
+```
+
+**Nguồn:** [S2]; [S5]
+
+**Nhãn:** `VERIFIED`
+
+### 4.2. Trạng thái ban đầu
+
+Trước khi nạp key:
+
+```text
+R1 = 0
+R2 = 0
+R3 = 0
+```
+
+S2 thực hiện trực tiếp việc đưa cả ba register về 0 trước khi setup.
+
+**Nguồn:** [S2]
+
+**Nhãn:** `SINGLE-SOURCE`
+
+### 4.3. Số chu kỳ
+
+Nạp key thực hiện trong:
+
+```text
+64 chu kỳ
+```
+
+Trong mỗi chu kỳ:
+
+- cả ba register đều được clock;
+- majority clocking bị vô hiệu hóa;
+- một bit key được XOR vào cả ba register.
+
+**Nguồn:** [S2]; [S3]
+
+**Nhãn:** `VERIFIED`
+
+### 4.4. Thứ tự bit của key
+
+S2 ghi rõ:
+
+```text
+LSB của byte đầu tiên được xử lý trước.
+```
+
+Bit thứ `i` được lấy bằng:
+
+```text
+key_bit = (key[i/8] >> (i&7)) & 1
+```
+
+với:
+
+```text
+i = 0 ... 63
+```
+
+Do đó key được xử lý theo:
+
+```text
+LSB → MSB
+```
+
+trong từng byte theo cách biểu diễn của implementation.
+
+**Nguồn:** [S2]
+
+### 4.5. Quy trình nạp key
+
+```text
+Khởi tạo:
+
+R1 = 0
+R2 = 0
+R3 = 0
+
+Lặp i = 0 ... 63:
+
+    Clock R1
+    Clock R2
+    Clock R3
+
+    Đọc key_bit
+
+    R1 = R1 XOR key_bit
+    R2 = R2 XOR key_bit
+    R3 = R3 XOR key_bit
+```
+
+Trong key loading, cơ chế clocking theo majority được tạm thời tắt và cả ba register luôn được clock.
+
+**Nguồn:** [S2]
+
+### 4.6. Bảng kiểm chứng key loading
+
+| Thông số | Kết luận | Nguồn | Nhãn |
+|---|---|---|---|
+| Độ dài key | 64 bit | [S2]; [S5] | VERIFIED |
+| Trạng thái ban đầu | R1 = R2 = R3 = 0 | [S2] | SINGLE-SOURCE |
+| Số chu kỳ | 64 | [S2]; [S3] | VERIFIED |
+| Thứ tự bit | LSB-first | [S2]; [S3] | VERIFIED |
+| Clocking | Clock cả 3 register | [S2]; [S3] | VERIFIED |
+| Majority clocking | Không dùng | [S2]; [S3] | VERIFIED |
+| XOR key bit | Vào cả 3 register | [S2] | SINGLE-SOURCE |
+
+---
+
+## 5. Frame loading
+
+### 5.1. Độ dài frame
+
+Frame number của A5/1 có độ dài:
+
+```text
+22 bit
+```
+
+S2 nhận tham số `word frame` và nạp 22 bit.
+
+S5 xác định `COUNT` của Algorithm A5 có:
+
+```text
+22 bits
+```
+
+**Nguồn:** [S2]; [S5]
+
+**Nhãn:** `VERIFIED`
+
+### 5.2. Số chu kỳ
+
+Nạp frame thực hiện trong:
+
+```text
+22 chu kỳ
+```
+
+Trong giai đoạn này:
+
+- cả ba register đều được clock;
+- majority clocking vẫn bị vô hiệu hóa.
+
+**Nguồn:** [S2]; [S3]
+
+**Nhãn:** `VERIFIED`
+
+### 5.3. Thứ tự bit
+
+S2 xử lý frame bằng:
+
+```text
+framebit = (frame >> i) & 1
+```
+
+với:
+
+```text
+i = 0 ... 21
+```
+
+Do đó implementation sử dụng:
+
+```text
+LSB → MSB
+```
+
+**Nguồn:** [S2]
+
+**Nhãn:** `SINGLE-SOURCE`
+
+### 5.4. Quy trình nạp frame
+
+```text
+Lặp i = 0 ... 21:
+
+    Clock R1
+    Clock R2
+    Clock R3
+
+    Đọc frame_bit
+
+    R1 = R1 XOR frame_bit
+    R2 = R2 XOR frame_bit
+    R3 = R3 XOR frame_bit
+```
+
+**Nguồn:** [S2]; [S3]
+
+### 5.5. Bảng kiểm chứng frame loading
+
+| Thông số | Kết luận | Nguồn | Nhãn |
+|---|---|---|---|
+| Độ dài frame | 22 bit | [S2]; [S5] | VERIFIED |
+| Số chu kỳ | 22 | [S2]; [S3] | VERIFIED |
+| Thứ tự bit | LSB-first | [S2] | SINGLE-SOURCE |
+| Clocking | Clock cả 3 register | [S2]; [S3] | VERIFIED |
+| Majority clocking | Không dùng | [S2]; [S3] | VERIFIED |
+| XOR frame bit | Vào cả 3 register | [S2] | SINGLE-SOURCE |
 
 ---
 
 ## 6. Warm-up
 
-Warm-up là giai đoạn chạy bộ sinh sau khi hoàn thành quá trình khởi tạo và trước khi lấy keystream sử dụng để mã hóa.
+Sau khi hoàn thành key loading và frame loading, A5/1 thực hiện:
 
-Slide được cung cấp **không nêu đầy đủ quy trình warm-up của A5/1 đầy đủ**.
+```text
+100 chu kỳ warm-up
+```
 
-Các nội dung cần xác minh từ nguồn ngoài:
+S2 mô tả 100 lần clock để trộn key material và frame number vào trạng thái của các register.
 
-| Nội dung | Trạng thái |
-|---|---|
-| Số chu kỳ warm-up | `UNVERIFIED` |
-| Có sử dụng majority clocking hay không | `UNVERIFIED` |
-| Output trong warm-up có bị bỏ hay không | `UNVERIFIED` |
-| Trạng thái sau warm-up | `UNVERIFIED` |
+Trong giai đoạn này:
 
-> Không tự điền thông số warm-up khi chưa có nguồn.
+- majority-based clock control được bật lại;
+- output generation bị vô hiệu hóa;
+- sau 100 chu kỳ hệ thống chuyển sang trạng thái sẵn sàng sinh keystream.
+
+**Nguồn:** [S2]; [S3]
+
+### 6.1. Quy trình
+
+```text
+Sau frame loading
+        ↓
+Bật majority clocking
+        ↓
+Clock 100 lần
+        ↓
+Bỏ output
+        ↓
+Kết thúc warm-up
+        ↓
+Sinh keystream
+```
+
+### 6.2. Bảng kiểm chứng
+
+| Thông số | Kết luận | Nguồn | Nhãn |
+|---|---|---|---|
+| Số chu kỳ | 100 | [S2]; [S3] | VERIFIED |
+| Majority clocking | Bật | [S2]; [S3] | VERIFIED |
+| Output | Không sử dụng | [S2]; [S3] | VERIFIED |
 
 ---
 
-## 7. Sinh keystream
+## 7. Keystream generation
 
-### 7.1. Quy trình
+### 7.1. Quy trình clock
 
-Theo slide, mỗi bước sinh số thực hiện:
+Sau warm-up, mỗi chu kỳ sinh keystream thực hiện:
 
 ```text
-Bước 1: Đọc x₈, y₁₀, z₁₀
+1. Đọc x8, y10, z10.
 
-Bước 2: Tính
-m = maj(x₈, y₁₀, z₁₀)
+2. Tính:
+   m = maj(x8, y10, z10)
 
-Bước 3:
-Nếu x₈ = m → quay X
+3. Nếu x8 = m:
+   clock X.
 
-Bước 4:
-Nếu y₁₀ = m → quay Y
+4. Nếu y10 = m:
+   clock Y.
 
-Bước 5:
-Nếu z₁₀ = m → quay Z
+5. Nếu z10 = m:
+   clock Z.
 
-Bước 6:
-Tính bit sinh ra
-sᵢ = x₈ XOR y₁₀ XOR z₁₀
+6. Sinh output bit.
+
+7. XOR output của ba register.
+```
+
+**Nguồn:** [S1, trang 51]; [S2]; [S4]
+
+### 7.2. Output theo slide
+
+Slide môn học ghi:
+
+```text
+s_i = x8 XOR y10 XOR z10
+```
+
+Do đó, theo slide:
+
+```text
+Output X = x8
+Output Y = y10
+Output Z = z10
 ```
 
 **Nguồn:** [S1, trang 51]
 
-### 7.2. Công thức bit sinh ra
+### 7.3. Output theo nguồn ngoài
+
+S2 định nghĩa output taps:
 
 ```text
-sᵢ = x₈ XOR y₁₀ XOR z₁₀
+R1OUT = bit 18
+R2OUT = bit 21
+R3OUT = bit 22
 ```
 
-Trong đó:
-
-- `x₈`: bit 8 của X;
-- `y₁₀`: bit 10 của Y;
-- `z₁₀`: bit 10 của Z.
-
-**Nguồn:** [S1, trang 51]
-
-### 7.3. Điểm cần chú ý
-
-Vị trí các bit được sử dụng trong công thức trên là thông tin trực tiếp từ slide.
-
-Do đó, trong bản đặc tả hiện tại:
+và hàm sinh output:
 
 ```text
-Output X = x₈
-Output Y = y₁₀
-Output Z = z₁₀
+keystream_bit =
+    R1[18] XOR R2[21] XOR R3[22]
 ```
 
-được hiểu theo công thức sinh bit của slide.
+S4 cũng mô tả output sau clocking bằng XOR của các bit quan trọng nhất của R1, R2 và R3 và hình thiết kế ghi output taps tương ứng với:
 
-Nếu nguồn ngoài sử dụng vị trí output khác, phải ghi nhận thành `CONFLICT` thay vì tự xóa một nguồn.
+```text
+R1[18]
+R2[21]
+R3[22]
+```
+
+**Nguồn:** [S2]; [S4]
+
+### 7.4. TD-001 - CONFLICT
+
+Hai nhóm nguồn đang có sự khác nhau:
+
+**Lecture/Slide:**
+
+```text
+s_i = x8 XOR y10 XOR z10
+```
+
+**External implementation / research:**
+
+```text
+s_i = R1[18] XOR R2[21] XOR R3[22]
+```
+
+Đây không phải là khác biệt có thể tự động xóa bỏ.
+
+Có thể nguyên nhân là:
+
+- khác quy ước ký hiệu bit;
+- khác cách biểu diễn thanh ghi;
+- khác cách đánh số bit;
+- hoặc slide môn học đang dùng quy ước output riêng.
+
+**Impact:**
+
+Ảnh hưởng trực tiếp đến:
+
+```text
+keystream
+    ↓
+ciphertext
+    ↓
+test vector
+```
+
+**Status:**
+
+```text
+CONFLICT - OPEN
+```
+
+Không chốt một phía cho đến khi nhóm quyết định TD-001.
 
 ---
 
-## 8. Mã hóa
+## 8. Encryption
 
-A5/1 là mã dòng và bit keystream được sử dụng trong phép XOR với bản rõ.
+A5/1 là mã dòng. Keystream được XOR với plaintext.
 
 Công thức:
 
@@ -431,14 +780,13 @@ C = Ciphertext
 
 **Nguồn:** [S1, trang 42 và 47]
 
-### 8.1. Ví dụ
-
-Ví dụ trong phần TinyA5/1 của slide:
+### 8.1. Ví dụ từ slide
 
 ```text
 P = 111
 S = 100
 
+C = P XOR S
 C = 111 XOR 100
 C = 011
 ```
@@ -447,15 +795,15 @@ C = 011
 
 ---
 
-## 9. Giải mã
+## 9. Decryption
 
-Giải mã sử dụng lại keystream:
+Giải mã sử dụng cùng keystream:
 
 ```text
 P = C XOR S
 ```
 
-### 9.1. Ví dụ
+Ví dụ:
 
 ```text
 C = 011
@@ -467,7 +815,7 @@ P = 111
 
 **Nguồn:** [S1, trang 50]
 
-Do tính chất của phép XOR:
+Do XOR là phép tự nghịch đảo:
 
 ```text
 (P XOR S) XOR S = P
@@ -477,145 +825,238 @@ Do tính chất của phép XOR:
 
 ## 10. Bit ordering
 
-### 10.1. Chỉ số bit
+### 10.1. Đánh số bit
 
-Slide TinyA5/1 minh họa các bit theo chỉ số bắt đầu từ `0`.
+Quy ước được sử dụng:
 
-Ví dụ:
+```text
+R1:
+0 ... 18
+
+R2:
+0 ... 21
+
+R3:
+0 ... 22
+```
+
+Slide sử dụng ký hiệu tương ứng:
+
+```text
+x0 ... x18
+y0 ... y21
+z0 ... z22
+```
+
+**Nguồn:** [S1, trang 51]; [S2]; [S4]
+
+### 10.2. Hướng dịch
+
+Trong slide:
 
 ```text
 X:
-0 1 2 3 4 5
 
+xj = x(j-1)
+j = 18,17,...,1
+
+x0 = t
+```
+
+```text
 Y:
-0 1 2 3 4 5 6 7
 
+yj = y(j-1)
+j = 21,20,...,1
+
+y0 = t
+```
+
+```text
 Z:
-0 1 2 3 4 5 6 7 8
-```
 
-Slide A5/1 đầy đủ sử dụng:
+zj = z(j-1)
+j = 22,21,...,1
 
-```text
-X:
-x₀ ... x₁₈
-
-Y:
-y₀ ... y₂₁
-
-Z:
-z₀ ... z₂₂
-```
-
-**Nguồn:** [S1, trang 48 và 51]
-
-### 10.2. Quy tắc dịch
-
-Đối với X:
-
-```text
-xⱼ = xⱼ₋₁
-```
-
-với:
-
-```text
-j = 18, 17, ..., 1
-```
-
-sau đó:
-
-```text
-x₀ = t
-```
-
-Đối với Y:
-
-```text
-yⱼ = yⱼ₋₁
-```
-
-với:
-
-```text
-j = 21, 20, ..., 1
-```
-
-sau đó:
-
-```text
-y₀ = t
-```
-
-Đối với Z:
-
-```text
-zⱼ = zⱼ₋₁
-```
-
-với:
-
-```text
-j = 22, 21, ..., 1
-```
-
-sau đó:
-
-```text
-z₀ = t
+z0 = t
 ```
 
 **Nguồn:** [S1, trang 51]
 
-### 10.3. Ý nghĩa
+### 10.3. Biểu diễn trong implementation
 
-Có thể hiểu đơn giản:
+S2 dùng:
 
 ```text
-        feedback t
-             ↓
-X:  [0] [1] [2] ... [18]
-      ↑
-   bit mới
+reg = (reg << 1) & mask
+reg |= parity(t)
 ```
 
-Sau một lần quay, các bit cũ dịch sang vị trí có chỉ số lớn hơn và `t` được đưa vào vị trí `0`.
+Điều này tương ứng với:
+
+```text
+dịch sang trái
++
+đưa feedback vào bit 0
+```
+
+**Nguồn:** [S2]
+
+### 10.4. Thứ tự key
+
+Trong S2:
+
+```text
+LSB của byte đầu tiên trước
+```
+
+Do đó:
+
+```text
+Key loading = LSB-first
+```
+
+**Nguồn:** [S2]
+
+### 10.5. Thứ tự frame
+
+S2 xử lý:
+
+```text
+framebit = (frame >> i) & 1
+```
+
+với:
+
+```text
+i = 0 ... 21
+```
+
+Do đó:
+
+```text
+Frame loading = LSB-first
+```
+
+**Nguồn:** [S2]
+
+### 10.6. Đóng gói keystream thành byte
+
+S2 tạo:
+
+```text
+114 bit A → B
+```
+
+và:
+
+```text
+114 bit B → A
+```
+
+Khi đưa vào buffer byte, source sử dụng:
+
+```text
+getbit() << (7-(i&7))
+```
+
+tức là các bit được đóng gói **MSB-first trong từng byte output**.
+
+**Nguồn:** [S2]
+
+Do đó phải phân biệt:
+
+```text
+Key input:
+LSB-first
+
+Frame input:
+LSB-first
+
+Keystream byte packing:
+MSB-first
+```
 
 ---
 
-## 11. Sources
+## 11. Pseudocode
 
-### S1 - Slide môn học
+### 11.1. Core algorithm theo quy trình đã xác minh
 
-**Tên:** Chương 2 - MÃ HOÁ KHOÁ ĐỐI XỨNG (MÃ HOÁ KHOÁ BÍ MẬT)
+```text
+INITIALIZE
 
-**Đơn vị:** Đại học Kinh tế Quốc dân - Khoa Công nghệ Thông tin
+R1 = 0
+R2 = 0
+R3 = 0
 
-**Giảng viên:** ThS. Nguyễn Quốc Thái
 
-**Phần sử dụng:**
+KEY LOADING
 
-- Mã dòng
-- A5/1
-- TinyA5/1
-- Majority
-- Feedback
-- Quay register
-- Ví dụ TinyA5/1
+for i = 0 .. 63:
 
-**Các trang sử dụng:** 45-52
+    clock R1
+    clock R2
+    clock R3
 
-### S2 - Tài liệu phân công Phase 1
+    key_bit = key[i]
 
-**Tên:** Tài liệu đặc tả và xác minh A5/1 / TinyA5/1
+    R1 = R1 XOR key_bit
+    R2 = R2 XOR key_bit
+    R3 = R3 XOR key_bit
 
-**Phần sử dụng:**
 
-- Phân công nhiệm vụ V-01 đến V-07
-- Cấu trúc `a51_specification.md`
-- Các vấn đề TD-001 đến TD-005
-- Các thông số cần xác minh
-- Quy tắc nguồn và trạng thái `VERIFIED`, `SINGLE-SOURCE`, `CONFLICT`, `UNVERIFIED`
+FRAME LOADING
+
+for i = 0 .. 21:
+
+    clock R1
+    clock R2
+    clock R3
+
+    frame_bit = frame[i]
+
+    R1 = R1 XOR frame_bit
+    R2 = R2 XOR frame_bit
+    R3 = R3 XOR frame_bit
+
+
+WARM-UP
+
+for i = 0 .. 99:
+
+    read clocking bits
+    calculate majority
+    clock registers whose clocking bit equals majority
+    discard output
+
+
+KEYSTREAM GENERATION
+
+repeat:
+
+    read R1 clocking bit
+    read R2 clocking bit
+    read R3 clocking bit
+
+    m = majority(R1_clock, R2_clock, R3_clock)
+
+    if R1_clock == m:
+        clock R1
+
+    if R2_clock == m:
+        clock R2
+
+    if R3_clock == m:
+        clock R3
+
+    obtain output bit
+    XOR the three output bits
+
+    store keystream bit
+```
+
+> **Lưu ý:** dòng `obtain output bit` chưa được khóa do TD-001.
 
 ---
 
@@ -628,17 +1069,17 @@ Sau một lần quay, các bit cũ dịch sang vị trí có chỉ số lớn h�
 | Độ dài X | 6 bit | 19 bit |
 | Độ dài Y | 8 bit | 22 bit |
 | Độ dài Z | 9 bit | 23 bit |
-| Độ dài key | 23 bit | Chưa được nêu đầy đủ trong slide |
-| Majority | `maj(x₂, y₃, z₃)` | `maj(x₈, y₁₀, z₁₀)` |
-| Feedback X | Theo slide TinyA5/1 | `x₁₃ XOR x₁₆ XOR x₁₇ XOR x₁₈` |
-| Feedback Y | Theo slide TinyA5/1 | `y₂₀ XOR y₂₁` |
-| Feedback Z | Theo slide TinyA5/1 | `z₇ XOR z₂₀ XOR z₂₁ XOR z₂₂` |
-| Bit sinh ra | Theo slide TinyA5/1 | `x₈ XOR y₁₀ XOR z₁₀` |
-| Mục đích | Mô hình thu nhỏ để học và tính tay | Mô hình A5/1 đầy đủ |
+| Độ dài key | 23 bit | 64 bit |
+| Majority | Tiny theo slide | `x8, y10, z10` |
+| Feedback X | `x3, x4, x5` theo Tiny | `x13, x16, x17, x18` |
+| Feedback Y | `y4, y7` theo Tiny | `y20, y21` |
+| Feedback Z | `z5, z7, z8` theo Tiny | `z7, z20, z21, z22` |
+| Clocking | Majority | Majority |
+| Mục đích | Mô hình thu nhỏ để tính tay | Mã dòng A5/1 đầy đủ |
 
-**Nguồn:** [S1, trang 45-52]
+**Nguồn:** [S1, trang 46-52]
 
-### 12.1. Ví dụ TinyA5/1 trong slide
+### 12.1. Ví dụ TinyA5/1
 
 Bản rõ:
 
@@ -660,17 +1101,7 @@ Y = 01001110
 Z = 100110000
 ```
 
-Kiểm tra:
-
-```text
-6 + 8 + 9 = 23 bit
-```
-
-**Nguồn:** [S1, trang 49]
-
-### 12.2. Kết quả ví dụ
-
-Sau ba bước sinh:
+Theo slide:
 
 ```text
 S = 100
@@ -679,7 +1110,6 @@ S = 100
 Mã hóa:
 
 ```text
-C = P XOR S
 C = 111 XOR 100
 C = 011
 ```
@@ -687,114 +1117,361 @@ C = 011
 Giải mã:
 
 ```text
-P = C XOR S
 P = 011 XOR 100
 P = 111
 ```
 
-**Nguồn:** [S1, trang 50]
+**Nguồn:** [S1, trang 49-50]
 
 ---
 
-## 13. Open issues
+## 13. Sources
+
+### S1 - Slide môn học
+
+**Tên:**
+
+`Chương 2 - MÃ HOÁ KHOÁ ĐỐI XỨNG (MÃ HOÁ KHOÁ BÍ MẬT)`
+
+**Đơn vị:**
+
+Đại học Kinh tế Quốc dân - Khoa Công nghệ Thông tin
+
+**Giảng viên:**
+
+ThS. Nguyễn Quốc Thái
+
+**Phần sử dụng:**
+
+- Mã dòng.
+- A5/1.
+- TinyA5/1.
+- Majority.
+- Feedback.
+- Quay thanh ghi.
+- Ví dụ tính tay.
+
+**Trang sử dụng:**
+
+```text
+Trang 45:
+Giới thiệu A5/1
+
+Trang 46:
+Cấu trúc TinyA5/1
+
+Trang 47:
+Majority và quy trình sinh số
+
+Trang 48:
+Quay X, Y, Z
+
+Trang 49-50:
+Ví dụ TinyA5/1
+
+Trang 51-52:
+A5/1 tổng quát
+```
+
+**Trạng thái:**
+
+`PRIMARY INTERNAL SOURCE`
+
+---
+
+### S2 - A5/1 Pedagogical Implementation
+
+**Tác giả:**
+
+Marc Briceno, Ian Goldberg, David Wagner
+
+**Tên file:**
+
+`A5.1.c`
+
+**URL:**
+
+https://github.com/NSAPlayset/TWILIGHTVEGETABLE/blob/master/A5.1/C/A5.1.c
+
+**Dùng để xác minh:**
+
+- độ dài register;
+- clocking bits;
+- feedback taps;
+- output taps;
+- trạng thái ban đầu;
+- key loading;
+- frame loading;
+- warm-up;
+- sinh 228 bit;
+- thứ tự đóng gói output;
+- test vector.
+
+**Trạng thái:**
+
+`EXTERNAL TECHNICAL SOURCE`
+
+---
+
+### S3 - Real Time Cryptanalysis of A5/1 on a PC
+
+**Tác giả:**
+
+Alex Biryukov, Adi Shamir, David Wagner
+
+**Năm:**
+
+2000 / xuất bản trong FSE 2000 proceedings năm 2001
+
+**Tên tài liệu:**
+
+`Real Time Cryptanalysis of A5/1 on a PC`
+
+**Thông tin xuất bản:**
+
+Fast Software Encryption, FSE 2000, Lecture Notes in Computer Science, volume 1978, pages 1-18.
+
+**URL:**
+
+https://link.springer.com/book/10.1007/3-540-44706-7
+
+**Dùng để tham khảo:**
+
+- cấu trúc A5/1;
+- độ dài register;
+- majority clocking;
+- key setup;
+- frame setup;
+- warm-up;
+- keystream.
+
+**Trạng thái:**
+
+`EXTERNAL ACADEMIC SOURCE`
+
+---
+
+### S4 - A Real-World Attack Breaking A5/1
+
+**Tác giả:**
+
+Thomas Gendrullis, Michael Novotný, Andreas Rupp
+
+**Tên tài liệu:**
+
+`A Real-World Attack Breaking A5/1`
+
+**Nơi xuất bản:**
+
+CHES 2008
+
+**URL:**
+
+https://www.iacr.org/archive/ches2008/51540262/51540262.pdf
+
+**Dùng để đối chiếu:**
+
+- R1[8], R2[10], R3[10];
+- majority clocking;
+- feedback taps;
+- output từ các bit cao nhất;
+- 228 output bits;
+- 114 bit cho uplink và 114 bit cho downlink.
+
+**Trạng thái:**
+
+`EXTERNAL TECHNICAL SOURCE`
+
+---
+
+### S5 - 3GPP TS 43.020 / ETSI TS 143 020
+
+**Tên:**
+
+`Digital cellular telecommunications system (Phase 2+); Security-related network functions`
+
+**Phần sử dụng:**
+
+- Kc = 64 bit;
+- COUNT = 22 bit;
+- BLOCK1 / BLOCK2;
+- 114 payload bits cho GMSK.
+
+**URL:**
+
+https://www.etsi.org/deliver/etsi_ts/143000_143099/143020/07.01.00_60/ts_143020v070100p.pdf
+
+**Lưu ý:**
+
+Tài liệu này cung cấp các tham số giao diện của Algorithm A5; đặc tả nội bộ chi tiết của A5 được GSM Association quản lý, không được công khai đầy đủ trong tài liệu này.
+
+**Trạng thái:**
+
+`EXTERNAL STANDARD SOURCE`
+
+---
+
+## 14. Technical Decisions / Open Issues
 
 ### TD-001 - Bit output của A5/1
 
-**Issue:**
+#### Lecture / Slide
 
-Cần xác minh quy ước bit output của A5/1 giữa slide và nguồn ngoài.
-
-**Lecture/Slide:**
+Slide ghi:
 
 ```text
-sᵢ = x₈ XOR y₁₀ XOR z₁₀
+s_i = x8 XOR y10 XOR z10
 ```
 
-**Nguồn:** [S1, trang 51]
+**Nguồn:**
 
-**Impact:**
+[S1, trang 51]
 
-Ảnh hưởng trực tiếp đến keystream.
+#### External sources
 
-**Status:**
+S2 ghi:
 
-`OPEN`
+```text
+R1 output = bit 18
+R2 output = bit 21
+R3 output = bit 22
+```
 
----
+S4 cũng mô tả output được tạo từ các bit cao nhất của ba register.
 
-### TD-002 - Điểm lệch trong ví dụ TinyA5/1
+**Nguồn:**
 
-**Issue:**
+[S2]; [S4]
 
-Tài liệu nhóm ghi nhận có điểm cần đối chiếu giữa trạng thái Z trong ví dụ tính tay của slide và phép tính lại theo quy tắc.
+#### Possible reason
 
-**Impact:**
+Có thể có sự khác biệt về:
 
-Cần xác định có ảnh hưởng đến keystream và ciphertext hay không.
+- quy ước ký hiệu bit;
+- cách biểu diễn register;
+- cách ánh xạ vị trí bit;
+- hoặc mô hình giảng dạy của slide và implementation/reference.
 
-**Status:**
+#### Impact
 
-`OPEN`
+Ảnh hưởng trực tiếp đến:
+
+```text
+keystream
+ciphertext
+test vector
+```
+
+#### Status
+
+`CONFLICT - OPEN`
 
 ---
 
 ### TD-003 - Chỉ số và thứ tự bit
 
-**Issue:**
-
-Slide sử dụng chỉ số bắt đầu từ `0`, nhưng cần khóa cách ánh xạ ký hiệu slide sang quy ước code của nhóm.
-
-**Lecture/Slide:**
+#### Lecture / Slide
 
 ```text
-X: x₀ ... x₁₈
-Y: y₀ ... y₂₁
-Z: z₀ ... z₂₂
+X: x0 ... x18
+Y: y0 ... y21
+Z: z0 ... z22
 ```
 
-**Nguồn:** [S1, trang 51]
+#### External sources
 
-**Impact:**
+S2 và S4 cũng sử dụng bit numbering bắt đầu từ 0.
 
-Ảnh hưởng đến clocking bit, feedback tap, output và cách cài đặt.
+#### Kết luận tạm thời
 
-**Status:**
+Cơ sở đánh số `0` được hỗ trợ bởi nhiều nguồn.
 
-`OPEN`
+Tuy nhiên, bảng ánh xạ cuối cùng giữa:
+
+```text
+ký hiệu slide
+        ↕
+ký hiệu code
+```
+
+phải được khóa trong `coding_convention.md`.
+
+#### Status
+
+`VERIFIED / NEED LOCKING`
 
 ---
 
-### TD-004 - Key, frame và warm-up
+### TD-004 - Key loading, frame loading và warm-up
 
-**Issue:**
+Đã xác minh:
 
-Slide hiện tại không mô tả đầy đủ quy trình:
+```text
+Key loading   = 64 chu kỳ
+Frame loading = 22 chu kỳ
+Warm-up       = 100 chu kỳ
+```
 
-- Nạp key.
-- Nạp frame.
-- Warm-up.
-- Số chu kỳ của từng giai đoạn.
-- Register nào được quay trong từng giai đoạn.
-- Output có bị bỏ trong warm-up hay không.
+Key loading:
+
+```text
+- clock cả ba register
+- không dùng majority
+- xử lý 64 bit key
+- XOR từng key bit vào cả ba register
+```
+
+Frame loading:
+
+```text
+- clock cả ba register
+- không dùng majority
+- xử lý 22 bit frame
+- XOR từng frame bit vào cả ba register
+```
+
+Warm-up:
+
+```text
+- bật majority clocking
+- 100 chu kỳ
+- không sử dụng output
+```
+
+**Nguồn:** [S2]; [S3]
 
 **Status:**
 
-`OPEN`
+`VERIFIED`
 
 ---
 
 ### TD-005 - Dữ liệu dài hơn một đoạn keystream
 
-**Issue:**
+Một frame A5/1 tạo:
 
-Slide không mô tả cách xử lý dữ liệu dài hơn một đoạn keystream.
+```text
+114 bit A → B
+114 bit B → A
+```
 
-**Cần xác minh:**
+Tổng:
 
-- Một lần sinh keystream tạo bao nhiêu bit.
-- Khi dữ liệu dài hơn thì xử lý tiếp như thế nào.
-- Có cần một frame mới hay không.
-- Quy tắc chia dữ liệu thành các đoạn.
+```text
+228 bit
+```
+
+Các nguồn đã xác minh quy mô keystream của một frame.
+
+Tuy nhiên, các nguồn hiện tại không cung cấp một giao thức tổng quát cho việc nhận một **file tùy ý dài hơn một frame** ở cấp độ ứng dụng của đồ án.
+
+Vì vậy:
+
+```text
+Không tự giả định cách chia file.
+```
+
+Quy tắc xử lý file dài cần được nhóm quyết định khi bước sang phần triển khai.
 
 **Status:**
 
@@ -802,26 +1479,230 @@ Slide không mô tả cách xử lý dữ liệu dài hơn một đoạn keystre
 
 ---
 
-## Kết luận
+## 15. Test vector tham khảo
 
-Từ slide môn học có thể xác định chắc chắn các thông số cốt lõi của A5/1 đầy đủ:
+Nguồn S2 cung cấp test vector đã được chính implementation tự kiểm tra.
+
+### Key
 
 ```text
-X = 19 bit
-Y = 22 bit
-Z = 23 bit
-
-m = maj(x₈, y₁₀, z₁₀)
-
-Feedback X:
-t = x₁₃ XOR x₁₆ XOR x₁₇ XOR x₁₈
-
-Feedback Y:
-t = y₂₀ XOR y₂₁
-
-Feedback Z:
-t = z₇ XOR z₂₀ XOR z₂₁ XOR z₂₂
-
-Bit sinh ra:
-sᵢ = x₈ XOR y₁₀ XOR z₁₀
+0x1223456789ABCDEF
 ```
+
+### Frame
+
+```text
+0x134
+```
+
+### Keystream A → B
+
+```text
+0x534EAA582FE8151AB6E1855A728C00
+```
+
+### Keystream B → A
+
+```text
+0x24FD35A35D5FB6526D32F906DF1AC0
+```
+
+Nguồn S2 đặt các giá trị trên vào `goodAtoB` và `goodBtoA`, sau đó chạy `keysetup()` và `run()` để so sánh output thực tế với test vector. [S2]
+
+**Trạng thái:**
+
+`SINGLE-SOURCE`
+
+> Test vector này chỉ được đánh dấu `FINAL` trong project sau khi quy ước output bit tại TD-001 đã được nhóm chốt và điều kiện bit ordering trong spec khớp với test vector.
+
+---
+
+## 16. Kiểm tra nhất quán
+
+### 16.1. Cấu trúc register
+
+```text
+R1 = 19 bit
+R2 = 22 bit
+R3 = 23 bit
+
+Tổng = 64 bit
+```
+
+### 16.2. Clocking
+
+```text
+R1 clocking bit = 8
+R2 clocking bit = 10
+R3 clocking bit = 10
+```
+
+### 16.3. Feedback
+
+```text
+R1:
+13, 16, 17, 18
+
+R2:
+20, 21
+
+R3:
+7, 20, 21, 22
+```
+
+### 16.4. Initialization
+
+```text
+Key:
+64 bit
+
+Frame:
+22 bit
+
+Warm-up:
+100 chu kỳ
+```
+
+### 16.5. Output
+
+```text
+Slide:
+x8 XOR y10 XOR z10
+
+External:
+R1[18] XOR R2[21] XOR R3[22]
+
+→ TD-001 = CONFLICT
+```
+
+### 16.6. Frame keystream
+
+```text
+A → B:
+114 bit
+
+B → A:
+114 bit
+
+Tổng:
+228 bit
+```
+
+---
+
+## 17. Trạng thái hoàn thành Phase 1
+
+### Đã xác minh
+
+- [x] A5/1 là mã dòng trong GSM.
+- [x] Đơn vị mã hóa là 1 bit.
+- [x] Ba register có độ dài 19/22/23 bit.
+- [x] Tổng trạng thái là 64 bit.
+- [x] Clocking bits là 8/10/10.
+- [x] Feedback taps của ba register.
+- [x] Majority clocking.
+- [x] Key có 64 bit.
+- [x] Key loading có 64 chu kỳ.
+- [x] Frame có 22 bit.
+- [x] Frame loading có 22 chu kỳ.
+- [x] Warm-up có 100 chu kỳ.
+- [x] Output bị bỏ trong warm-up.
+- [x] Một frame tạo 228 bit keystream theo nguồn ngoài.
+- [x] 114 bit cho hướng A → B.
+- [x] 114 bit cho hướng B → A.
+- [x] Có test vector tham khảo từ S2.
+
+### Còn phải chốt
+
+- [ ] TD-001: output bit giữa slide và nguồn ngoài.
+- [ ] TD-003: bảng ánh xạ cuối cùng giữa ký hiệu slide và code.
+- [ ] TD-005: cách xử lý dữ liệu dài hơn một frame.
+- [ ] Test vector cuối cùng sau khi TD-001 được chốt.
+
+---
+
+## 18. Kết luận
+
+Bản đặc tả Phase 1 hiện mô tả đầy đủ các thành phần chính của A5/1:
+
+```text
+R1 / X
+19 bit
+
+R2 / Y
+22 bit
+
+R3 / Z
+23 bit
+
+        ↓
+
+Majority clocking
+R1[8], R2[10], R3[10]
+
+        ↓
+
+Feedback
+R1: 13,16,17,18
+R2: 20,21
+R3: 7,20,21,22
+
+        ↓
+
+Key loading
+64 chu kỳ
+
+        ↓
+
+Frame loading
+22 chu kỳ
+
+        ↓
+
+Warm-up
+100 chu kỳ
+
+        ↓
+
+Keystream
+228 bit / frame
+```
+
+Điểm kỹ thuật duy nhất hiện đang có xung đột trực tiếp giữa slide và nguồn ngoài là **bit output**:
+
+```text
+Slide:
+x8 XOR y10 XOR z10
+
+External references:
+R1[18] XOR R2[21] XOR R3[22]
+```
+
+Vấn đề này được giữ nguyên dưới dạng `TD-001 - CONFLICT` để nhóm quyết định ở D6, theo đúng quy tắc Phase 1.
+
+---
+
+## 19. Tham chiếu nhanh các thông số
+
+| Thành phần | Giá trị hiện tại | Trạng thái |
+|---|---|---|
+| R1 / X | 19 bit | VERIFIED |
+| R2 / Y | 22 bit | VERIFIED |
+| R3 / Z | 23 bit | VERIFIED |
+| Tổng state | 64 bit | VERIFIED |
+| R1 clocking | bit 8 | VERIFIED |
+| R2 clocking | bit 10 | VERIFIED |
+| R3 clocking | bit 10 | VERIFIED |
+| R1 feedback | 13,16,17,18 | VERIFIED |
+| R2 feedback | 20,21 | VERIFIED |
+| R3 feedback | 7,20,21,22 | VERIFIED |
+| Key | 64 bit | VERIFIED |
+| Key loading | 64 chu kỳ | VERIFIED |
+| Frame | 22 bit | VERIFIED |
+| Frame loading | 22 chu kỳ | VERIFIED |
+| Warm-up | 100 chu kỳ | VERIFIED |
+| Output / keystream | Slide và nguồn ngoài khác nhau | CONFLICT |
+| Keystream / frame | 228 bit | VERIFIED |
+| A → B | 114 bit | VERIFIED |
+| B → A | 114 bit | VERIFIED |
+| File dài | Chưa có quy tắc ở Phase 1 | OPEN |
