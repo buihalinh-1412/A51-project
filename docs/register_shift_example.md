@@ -1,39 +1,53 @@
-# Ví dụ Minh họa Dịch Thanh ghi TinyA5/1 (Register Shift Examples)
+# Ví dụ minh họa dịch register TinyA5/1 (Register Shift Examples)
 
-Tài liệu này minh họa chi tiết quá trình tính bit phản hồi (feedback bit) và dịch bit cho cả 3 thanh ghi X, Y, Z dựa trên các bước tính toán trong Slide bài giảng Chương 2.
+Tài liệu này minh họa cách tính feedback bit và dịch bit cho 3 register X, Y, Z, lấy số liệu từ slide Chương 2. Công thức feedback và hướng dịch theo slide trang 48: xⱼ = xⱼ₋₁ (j từ chỉ số cao nhất xuống 1), sau đó x₀ = t; bit ở chỉ số cao nhất bị đẩy ra và bỏ đi.
 
----
+## 1. Register X (Bước 0, slide trang 48–49)
 
-### 1. Register: X (Ví dụ Bước 0 từ Slide trang 48, 50)
+- **Before:** X = `100101` (x₀=1, x₁=0, x₂=0, x₃=1, x₄=0, x₅=1)
+- **Feedback:** t = x₂ ⊕ x₄ ⊕ x₅ = 0 ⊕ 0 ⊕ 1 = `1`
+- **Shift:** mỗi bit chuyển từ vị trí i sang vị trí i+1 (xⱼ = xⱼ₋₁ với j = 5…1); bit x₅ = `1` bị đẩy ra.
+- **New bit:** t = `1` vào vị trí x₀.
+- **After:** X = `110010`
+- **Slide:** slide ghi `110010` [Slide, trang 48, 49]
+- **Kết luận:** Trùng khớp
 
-- **Before**: `X = 100101` (chỉ số: `x0=1, x1=0, x2=0, x3=1, x4=0, x5=1`)
-- **Feedback**: `t = x2 ⊕ x4 ⊕ x5 = 0 ⊕ 0 ⊕ 1 = 1`
-- **Shift**: Mỗi bit chuyển từ vị trí `i` sang vị trí `i+1` (`xj = xj-1` với `j = 5..1`), bit cuối `x5 = 1` ra khỏi register.
-- **New bit**: Feedback `t = 1` nạp vào vị trí `x0`.
-- **After**: `X = 110010`
-- **Slide**: Slide ghi kết quả `110010` [Slide, trang 48, 50]
-- **Khớp?**: Có
+## 2. Register Y (Bước 0, slide trang 48–49)
 
----
+- **Before:** Y = `01001110` (y₀=0, y₁=1, y₂=0, y₃=0, y₄=1, y₅=1, y₆=1, y₇=0)
+- **Feedback:** t = y₆ ⊕ y₇ = 1 ⊕ 0 = `1`
+- **Shift:** mỗi bit chuyển từ vị trí i sang vị trí i+1 (yⱼ = yⱼ₋₁ với j = 7…1); bit y₇ = `0` bị đẩy ra.
+- **New bit:** t = `1` vào vị trí y₀.
+- **After:** Y = `10100111`
+- **Slide:** slide ghi `10100111` [Slide, trang 48, 49]
+- **Kết luận:** Trùng khớp
 
-### 2. Register: Y (Ví dụ Bước 0 từ Slide trang 48, 50)
+## 3. Register Z (Bước 1, slide trang 48–49)
 
-- **Before**: `Y = 01001110` (chỉ số: `y0=0, y1=1, y2=0, y3=0, y4=1, y5=1, y6=1, y7=0`)
-- **Feedback**: `t = y6 ⊕ y7 = 1 ⊕ 0 = 1`
-- **Shift**: Mỗi bit chuyển từ vị trí `i` sang vị trí `i+1` (`yj = yj-1` với `j = 7..1`), bit cuối `y7 = 0` ra khỏi register.
-- **New bit**: Feedback `t = 1` nạp vào vị trí `y0`.
-- **After**: `Y = 10100111`
-- **Slide**: Slide ghi kết quả `10100111` [Slide, trang 48, 50]
-- **Khớp?**: Có
+- **Before:** Z = `100110000` (z₀=1, z₁=0, z₂=0, z₃=1, z₄=1, z₅=0, z₆=0, z₇=0, z₈=0)
+- **Feedback:** t = z₂ ⊕ z₇ ⊕ z₈ = 0 ⊕ 0 ⊕ 0 = `0`
+- **Shift:** mỗi bit chuyển từ vị trí i sang vị trí i+1 (zⱼ = zⱼ₋₁ với j = 8…1); bit z₈ = `0` bị đẩy ra.
+- **New bit:** t = `0` vào vị trí z₀.
+- **After:** Z = `010011000`
+- **Slide:** slide ghi `010011000` [Slide, trang 48, 49]
+- **Kết luận:** Trùng khớp
 
----
+## 4. Register Z (Bước 2, slide trang 50) — có chỗ lệch
 
-### 3. Register: Z (Ví dụ Bước 1 từ Slide trang 48, 50)
+- **Before:** Z = `010011000` (z₀=0, z₁=1, z₂=0, z₃=0, z₄=1, z₅=1, z₆=0, z₇=0, z₈=0)
+- **Feedback:** t = z₂ ⊕ z₇ ⊕ z₈ = 0 ⊕ 0 ⊕ 0 = `0`
+- **Shift:** zⱼ = zⱼ₋₁ với j = 8…1; bit z₈ = `0` bị đẩy ra.
+- **New bit:** t = `0` vào vị trí z₀.
+- **After (tính theo quy tắc):** Z = `001001100`
+- **Slide:** slide ghi `101001100` [Slide, trang 50]
+- **Kết luận:** Không khớp → ghi nhận CONFLICT bên dưới, chuyển Hà Linh chốt ở TD-002.
 
-- **Before**: `Z = 100110000` (chỉ số: `z0=1, z1=0, z2=0, z3=1, z4=1, z5=0, z6=0, z7=0, z8=0`)
-- **Feedback**: `t = z2 ⊕ z7 ⊕ z8 = 0 ⊕ 0 ⊕ 0 = 0`
-- **Shift**: Mỗi bit chuyển từ vị trí `i` sang vị trí `i+1` (`zj = zj-1` với `j = 8..1`), bit cuối `z8 = 0` ra khỏi register.
-- **New bit**: Feedback `t = 0` nạp vào vị trí `z0`.
-- **After**: `Z = 010011000`
-- **Slide**: Slide ghi kết quả `010011000` [Slide, trang 48, 50]
-- **Khớp?**: Có
+```
+CONFLICT-NL-001
+Issue:            Giá trị Z sau Bước 2 của ví dụ TinyA5/1.
+Lecture/Slide:    Z = 101001100 [Slide, trang 50].
+Recalculation:    t = z₂ ⊕ z₇ ⊕ z₈ = 0 ⊕ 0 ⊕ 0 = 0, nên Z = 001001100.
+Possible reason:  Lỗi đánh máy ở bit đầu (z₀) trên slide.
+Impact:           Không ảnh hưởng keystream và bản mã của ví dụ, vì s₂ dùng z₈ = 0 ở cả hai cách. Có ảnh hưởng nếu chạy tiếp Bước 3 trở đi.
+Status:           OPEN (TD-002)
+```
