@@ -24,7 +24,7 @@ Used for: Bối cảnh GSM (background.md mục 1): khóa Kc 64 bit, COUNT 22 bi
 Author/Organization: Marc Briceno, Ian Goldberg, David Wagner
 Year: 1998–1999
 Link: https://mtlin.org/article/a51.html (bản sao); bản A5/1 + A5/2 cùng nhóm tác giả: https://cryptome.org/gsm-a512.htm
-Used for: Ma trận nguồn (Nguồn 1): độ dài R1/R2/R3, clocking bit, feedback taps, bit output (bit cao nhất), nạp key 64 chu kỳ + frame 22 chu kỳ, 100 chu kỳ trộn, 228 bit keystream, test vector. Background mục 5 (lịch sử dịch ngược). Header ghi bản cài đặt "has been verified against official A5/1 test vectors".
+Used for: Ma trận nguồn (Nguồn 1): độ dài R1/R2/R3, bit điều khiển quay (clocking bit), vị trí tính bit t (feedback taps), bit đầu ra (output) (bit cao nhất), nạp key 64 chu kỳ + frame 22 chu kỳ, 100 chu kỳ khởi động, 228 bit dãy S (keystream), test vector. Background mục 5 (lịch sử dịch ngược). Header ghi bản cài đặt "has been verified against official A5/1 test vectors".
 
 [3] Real Time Cryptanalysis of A5/1 on a PC
 Author/Organization: Alex Biryukov, Adi Shamir, David Wagner
@@ -37,13 +37,13 @@ Ghi chú: mới đọc phần Abstract trên Springer, chưa đọc toàn văn.
 Author/Organization: Jay Shah, Ayan Mahalanobis
 Year: 2012
 Link: https://arxiv.org/abs/1204.4535
-Used for: Ma trận nguồn (Nguồn 2): R1/R2/R3 = 19/22/23, taps, clocking bit 8/10/10, công thức output R1[18]⊕R2[21]⊕R3[22] [mục 2, công thức (1)]; 86 chu kỳ (64 + 22) + 100 chu kỳ warm-up, 228 bit. Background mục 4: mỗi chu kỳ có 2 hoặc 3 register được clock, mỗi register di chuyển với xác suất 3/4 [mục 2]. Danh sách các tấn công trước (Anderson 1994, Golić 1997...).
+Used for: Ma trận nguồn (Nguồn 2): R1/R2/R3 = 19/22/23, vị trí tap, bit điều khiển quay 8/10/10, công thức output R1[18]⊕R2[21]⊕R3[22] [mục 2, công thức (1)]; 86 chu kỳ (64 + 22) + 100 chu kỳ warm-up, 228 bit. Background mục 4: mỗi chu kỳ có 2 hoặc 3 thanh ghi được quay, mỗi thanh ghi được quay với xác suất 3/4 [mục 2]. Danh sách các tấn công trước (Anderson 1994, Golić 1997...).
 
 [5] Handbook of Applied Cryptography, Chapter 6: Stream Ciphers
 Author/Organization: Alfred J. Menezes, Paul C. van Oorschot, Scott A. Vanstone (CRC Press)
 Year: 1996
 Link: https://cacr.uwaterloo.ca/hac/about/chap6.pdf
-Used for: Background mục 2 (định nghĩa stream cipher và so sánh với block cipher, trang 191; synchronous stream cipher, Định nghĩa 6.2, trang 192; binary additive stream cipher, Định nghĩa 6.4, trang 194; yêu cầu đồng bộ, không lan truyền lỗi, Ghi chú 6.3, trang 193). Mục 3 (LFSR, Định nghĩa 6.7, trang 195; connection polynomial, Định nghĩa 6.8, trang 196; LFSR dễ dự đoán, Berlekamp–Massey, trang 200 và 204). Mục 4 (clock-controlled generator, mục 6.3.3, trang 209).
+Used for: Background mục 2 (định nghĩa stream cipher và so sánh với block cipher, trang 191; synchronous stream cipher, Định nghĩa 6.2, trang 192; binary additive stream cipher, Định nghĩa 6.4, trang 194; yêu cầu đồng bộ, không lan truyền lỗi, Ghi chú 6.3, trang 193). Mục 3 (LFSR, Định nghĩa 6.7, trang 195; connection polynomial, Định nghĩa 6.8, trang 196; LFSR dễ dự đoán, Berlekamp–Massey, trang 200 và 204). Mục 4 (bộ sinh có điều khiển nhịp, clock-controlled generator, mục 6.3.3, trang 209).
 
 [6] A5/1 — Wikipedia
 Author/Organization: Wikipedia contributors
@@ -67,7 +67,7 @@ Used for: Căn cứ chấm TinyA5/1 trong background.md mục 6; bảng "Yêu c�
 Author/Organization: Wikipedia contributors
 Year: truy cập 04/10/2026
 Link: https://en.wikipedia.org/wiki/Stream_cipher
-Used for: Nguồn thứ hai cho định nghĩa keystream và synchronous stream cipher (background.md mục 2.1); ưu điểm và nhược điểm của stream cipher trong bảng so sánh (mục 2.4): nhanh hơn, phần cứng đơn giản hơn, hợp khi không biết trước độ dài dữ liệu, lỗi không lan, không được dùng lại keystream.
+Used for: Nguồn thứ hai cho định nghĩa dãy S (keystream) và mã dòng đồng bộ (synchronous stream cipher) (background.md mục 2.1); ưu điểm và nhược điểm của stream cipher trong bảng so sánh (mục 2.4): nhanh hơn, phần cứng đơn giản hơn, hợp khi không biết trước độ dài dữ liệu, lỗi không lan, không được dùng lại dãy S.
 
 [10] Block cipher — Wikipedia
 Author/Organization: Wikipedia contributors
@@ -111,14 +111,14 @@ Cột Slide đã đối chiếu trực tiếp với slide gốc (bản "Updated"
 | Độ dài R1, R2, R3 | 19, 22, 23 bít ("thanh ghi X, Y, Z") [Slide, trang 51] | 19, 22, 23 bit (`R1MASK` đến `R3MASK`) | 19, 22, 23 bit [mục 2] | 19, 22, 23 bit | **Khớp**, VERIFIED |
 | Feedback taps | X: 13, 16, 17, 18; Y: 20, 21; Z: 7, 20, 21, 22 [Slide, trang 51] | R1: 18, 17, 16, 13; R2: 21, 20; R3: 22, 21, 20, 7 | R1: 13, 16, 17, 18; R2: 20, 21; R3: 7, 20, 21, 22 [mục 2] | R1: 13, 16, 17, 18; R2: 20, 21; R3: 7, 20, 21, 22 | **Khớp**, VERIFIED |
 | Clocking bit | m = maj(x8, y10, z10) [Slide, trang 51] | R1: bit 8; R2: bit 10; R3: bit 10 | R1: 8; R2: 10; R3: 10 [mục 2] | R1: 8; R2: 10; R3: 10 | **Khớp**, VERIFIED |
-| Bit output | "Sau khi quay bít xong thì bít sinh ra: sᵢ = x8 ⊕ y10 ⊕ z10" [Slide, trang 51] | bit 18 ⊕ bit 21 ⊕ bit 22 (bit cao nhất của mỗi register), lấy sau khi dịch | R1[18] ⊕ R2[21] ⊕ R3[22] [mục 2, công thức (1)] | chưa có (phần đã đọc không nêu) | **Khác**, CONFLICT (xem CONFLICT-001). Ba nguồn ngoài thống nhất bit cao nhất; slide trùng với vị trí clocking bit |
+| Bit output | "Sau khi quay bít xong thì bít sinh ra: sᵢ = x8 ⊕ y10 ⊕ z10" [Slide, trang 51] | bit 18 ⊕ bit 21 ⊕ bit 22 (bit cao nhất của mỗi thanh ghi), lấy sau khi quay | R1[18] ⊕ R2[21] ⊕ R3[22] [mục 2, công thức (1)] | chưa có (phần đã đọc không nêu) | **Khác**, CONFLICT (xem CONFLICT-001). Ba nguồn ngoài thống nhất bit cao nhất; slide trùng với vị trí bit điều khiển quay |
 | Số chu kỳ nạp key, frame, warm-up | Slide không có | 64 (key) + 22 (frame), không dùng majority; sau đó 100 chu kỳ majority, bỏ output | 64 + 22 = 86 chu kỳ, sau đó 100 chu kỳ warm-up [mục 2] | 64 + 22, sau đó 100 chu kỳ majority, bỏ output | **Khớp giữa các nguồn ngoài**, VERIFIED. Slide thiếu. Độ dài key 64 bit và frame 22 bit được [1] xác nhận [Annex C.1.2] |
 | Test vector | Slide không có | Key `12 23 45 67 89 AB CD EF`, frame `0x134`; A→B `534EAA582FE8151AB6E1855A728C00`; B→A `24FD35A35D5FB6526D32F906DF1AC0` | Không có | chưa có (phần đã đọc không nêu) | **SINGLE-SOURCE**. [7] cho cùng giá trị nhưng lấy mã từ cùng gốc với [2]. Cần kiểm chứng bằng cài đặt ở GĐ3 |
 
 Ghi chú thêm cho người chốt TD-003 (thứ tự bit), chỉ ghi nhận, không tự chốt:
 - Cách đánh số bit: [6] đánh số bit 0 là bit thấp nhất (LSB). [2] đánh số các bit của R1 từ 0 đến 18, trong đó bit 18 là bit cao nhất.
 - Thứ tự bit khi nạp khóa theo mã nguồn của [2]: khóa 64 bit được lưu thành 8 byte. Chương trình lấy lần lượt từng byte, và trong mỗi byte lấy **bit thấp nhất (bit 0) trước**, bit cao nhất (bit 7) sau. Ví dụ byte đầu của test vector là `0x12` = `00010010`, nên 8 bit khóa đầu tiên được nạp theo thứ tự `0, 1, 0, 0, 1, 0, 0, 0`.
-- Thứ tự bit khi xuất keystream theo [2] thì ngược lại: bit keystream đầu tiên được đặt vào **bit cao nhất (bit 7)** của byte đầu ra, bit thứ hai vào bit 6, và cứ thế tiếp tục.
+- Thứ tự bit khi xuất dãy S (keystream) theo [2] thì ngược lại: bit đầu tiên của dãy S được đặt vào **bit cao nhất (bit 7)** của byte đầu ra, bit thứ hai vào bit 6, và cứ thế tiếp tục.
 - [5] định nghĩa LFSR dịch về phía stage 0 và lấy output ở stage 0 [trang 195]. Hướng này ngược với cách slide và [2] mô tả A5/1 (bit mới vào vị trí 0). Đây là khác biệt **quy ước trình bày**, không phải mâu thuẫn thông số.
 
 ## 4. Ghi nhận chỗ lệch
@@ -128,7 +128,7 @@ CONFLICT-001
 Issue:            Vị trí bit output của A5/1 đầy đủ (Ma trận nguồn, dòng "Bit output").
 Lecture/Slide:    sᵢ = x8 ⊕ y10 ⊕ z10, tính sau khi quay [Slide, trang 51; trang 52 lặp lại y hệt]. Đã xác nhận trên trang gốc dạng hình.
 External source:  bit 18 ⊕ bit 21 ⊕ bit 22, tức bit cao nhất của mỗi register [2]; R1[18] ⊕ R2[21] ⊕ R3[22] [4, mục 2, công thức (1)].
-Possible reason:  Slide có thể chép nhầm vị trí clocking bit (8, 10, 10) sang công thức output. TinyA5/1 trên slide lấy output ở bit cuối (x5, y7, z8), cùng kiểu với nguồn ngoài.
+Possible reason:  Slide có thể chép nhầm vị trí bit điều khiển quay (8, 10, 10) sang công thức output. TinyA5/1 trên slide lấy output ở bit cuối (x5, y7, z8), cùng kiểu với nguồn ngoài.
 Impact:           Có. Keystream khác thì ciphertext khác, và cài đặt sẽ không khớp test vector của [2].
 Status:           OPEN
 ```
