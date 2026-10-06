@@ -106,7 +106,7 @@ Bộ sinh số gồm 3 thanh ghi X, Y, Z:
     * $t = z_7 \oplus z_{20} \oplus z_{21} \oplus z_{22}$
     * $z_j = z_{j-1}$ với $j = 22, 21, \dots, 1$
     * $z_0 = t$
-* **Sau khi quay bít xong thì bít sinh ra:** $s_i = x_8 \oplus y_{10} \oplus z_{10}$ 
+* **Sau khi quay bít xong thì si sinh ra:** $s_i = x_8 \oplus y_{10} \oplus z_{10}$ 
 * A5/1 được thực hiện dễ dàng bằng các thiết bị phần hardware, tốc độ nhanh.
 ---
 
