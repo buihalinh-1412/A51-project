@@ -1,199 +1,103 @@
-# A5/1 Test Vector
+# Bộ kiểm thử A5/1 (A5/1 Test Vector)
 
-> **Owner:** Vũ  
+> **Owner:** Lại Hoàng Thế Vũ  
 > **Branch:** `docs/vu-a51`  
+> **Giai đoạn:** Phase 1 - Specification and Verification  
 > **File:** `docs/a51_test_vector.md`  
-> **Phase:** Phase 1  
-> **Overall Status:** `SINGLE-SOURCE`  
-> **Related Technical Decisions:** `TD-001`, `TD-003`, `TD-004`, `TD-005`
+> **Trạng thái:** `SINGLE-SOURCE`
 
 ---
 
-## 1. Mục đích
+## 1. Nguồn (Source)
 
-File này ghi lại test vector tham chiếu cho thuật toán A5/1 nhằm kiểm tra:
+Bộ kiểm thử sử dụng nguồn tham chiếu:
 
-- quá trình khởi tạo các thanh ghi;
-- quá trình nạp khóa (`key loading`);
-- quá trình nạp frame (`frame loading`);
-- quá trình warm-up;
-- cơ chế majority clocking;
-- thứ tự bit đầu vào;
-- quy tắc sinh keystream;
-- độ dài keystream;
-- kết quả output kỳ vọng;
-- khả năng đối chiếu giữa implementation và test vector tham chiếu.
+**Marc Briceno, Ian Goldberg, David Wagner — A5/1 Pedagogical Implementation (`A5.1.c`)**
 
-Test vector trong file này được lấy từ implementation A5/1 pedagogical implementation của Marc Briceno, Ian Goldberg và David Wagner.
-
----
-
-# 2. Trạng thái verification
-
-## Overall Status
+Ký hiệu trong tài liệu:
 
 ```text
-SINGLE-SOURCE
+[S2]
 ```
 
-## Lý do
+Nguồn cung cấp trực tiếp:
 
-Test vector hiện tại được lấy từ một implementation tham khảo bên ngoài và có đầy đủ các thông tin cần thiết về:
+- khóa K;
+- số khung (frame number);
+- quy trình nạp khóa;
+- quy trình nạp số khung;
+- thứ tự bít;
+- giai đoạn khởi động (warm-up);
+- dãy bít sinh ra (keystream);
+- đầu ra đúng đã biết trước để kiểm tra implementation.
 
-- key;
-- frame;
-- key loading;
-- frame loading;
-- warm-up;
-- output;
-- reference keystream.
+**Trạng thái:** `SINGLE-SOURCE`
 
-Tuy nhiên, Phase 1 hiện vẫn có vấn đề `TD-001` liên quan đến quy tắc sinh output bit:
+---
 
-- slide môn học mô tả output theo một quy tắc;
-- implementation tham khảo bên ngoài sử dụng quy tắc khác.
+## 2. Tài liệu / URL (URL / Document)
 
-Vì vậy test vector này **chưa được đánh dấu `FINAL`**.
-
-Trạng thái hiện tại là:
+**Tên tài liệu:**
 
 ```text
-SINGLE-SOURCE
+A5/1 Pedagogical Implementation
 ```
 
-Sau khi nhóm giải quyết `TD-001` và thống nhất quy ước bit ordering, test vector mới có thể được chuyển sang trạng thái cuối cùng.
+**Tác giả:**
 
----
+```text
+Marc Briceno
+Ian Goldberg
+David Wagner
+```
 
-# 3. Source
+**File:**
 
-## [S1] Course Slides
-
-**Document:**
-
-`Chương 2 - Mã hóa khóa đối xứng`
-
-Nội dung liên quan:
-
-- cấu trúc TinyA5/1;
-- cấu trúc A5/1;
-- majority clocking;
-- feedback taps;
-- output generation;
-- bit indexing.
-
----
-
-## [S2] Briceno, Goldberg, Wagner
-
-**Title:**
-
-`A5/1 Pedagogical Implementation`
+```text
+A5.1.c
+```
 
 **URL:**
 
 https://github.com/NSAPlayset/TWILIGHTVEGETABLE/blob/master/A5.1/C/A5.1.c
 
-Nội dung được sử dụng trong test vector:
-
-- khởi tạo các register;
-- key loading;
-- frame loading;
-- warm-up;
-- majority clocking;
-- output taps;
-- reference test vector.
-
 ---
 
-## [S3] Biryukov, Shamir, Wagner
+## 3. Khóa K (Key)
 
-**Title:**
-
-`Real Time Cryptanalysis of A5/1 on a PC`
-
-**URL:**
-
-https://www.iacr.org/archive/fse2000/19780071/19780071.pdf
-
-Nội dung tham khảo:
-
-- cấu trúc A5/1;
-- clocking mechanism;
-- key/frame setup;
-- warm-up;
-- keystream generation.
-
----
-
-## [S4] Gendrullis, Novotný, Rupp
-
-**Title:**
-
-`A Real-World Attack Breaking A5/1`
-
-**URL:**
-
-https://www.iacr.org/archive/ches2008/51540262/51540262.pdf
-
-Nội dung tham khảo:
-
-- clocking bits;
-- feedback taps;
-- output taps;
-- cấu trúc A5/1;
-- keystream generation.
-
----
-
-## [S5] 3GPP TS 43.020
-
-**Title:**
-
-`Security related network functions`
-
-**URL:**
-
-https://www.etsi.org/deliver/etsi_ts/143000_143099/143020/07.01.00_60/ts_143020v070100p.pdf
-
-Nội dung tham khảo:
-
-- key length;
-- frame/count input length;
-- payload length.
-
----
-
-# 4. Input
-
-## 4.1. Key
+Khóa sử dụng trong bộ kiểm thử:
 
 ```text
-Key = 0x1223456789ABCDEF
+K = 0x1223456789ABCDEF
 ```
 
-Độ dài key:
+Khóa gồm:
 
 ```text
-64 bits
+8 byte = 64 bít
 ```
 
-### Hexadecimal
+Biểu diễn theo byte:
 
 ```text
 12 23 45 67 89 AB CD EF
 ```
 
-### Binary
+Biểu diễn nhị phân:
 
 ```text
 00010010 00100011 01000101 01100111
 10001001 10101011 11001101 11101111
 ```
 
+**Nguồn:** `[S2]`  
+**Nhãn:** `VERIFIED`
+
 ---
 
-## 4.2. Frame
+## 4. Số khung (Frame Number)
+
+Số khung sử dụng:
 
 ```text
 Frame = 0x134
@@ -202,256 +106,253 @@ Frame = 0x134
 Độ dài:
 
 ```text
-22 bits
+22 bít
 ```
 
-Frame được biểu diễn dưới dạng hexadecimal. Khi thực hiện frame loading, các bit của frame được sử dụng theo quy ước bit ordering của implementation tham khảo.
-
----
-
-# 5. Tổng quan điều kiện chạy
-
-Test vector được thực hiện theo thứ tự:
-
-```text
-1. Khởi tạo R1 = 0
-2. Khởi tạo R2 = 0
-3. Khởi tạo R3 = 0
-4. Key loading: 64 cycles
-5. Frame loading: 22 cycles
-6. Warm-up: 100 cycles
-7. Sinh keystream: 228 bits
-```
-
-Tóm tắt:
-
-| Thành phần | Giá trị |
-|---|---:|
-| Key | `0x1223456789ABCDEF` |
-| Key length | 64 bits |
-| Frame | `0x134` |
-| Frame length | 22 bits |
-| Key loading | 64 cycles |
-| Frame loading | 22 cycles |
-| Warm-up | 100 cycles |
-| Keystream | 228 bits |
-| A → B | 114 bits |
-| B → A | 114 bits |
-
----
-
-# 6. Khởi tạo các thanh ghi
-
-Trước khi bắt đầu key loading:
-
-```text
-R1 = 0000000000000000000
-R2 = 0000000000000000000000
-R3 = 00000000000000000000000
-```
-
-Độ dài các thanh ghi:
-
-```text
-R1 = 19 bits
-R2 = 22 bits
-R3 = 23 bits
-```
-
-Các register được khởi tạo về 0.
-
----
-
-# 7. Key loading
-
-## 7.1. Số vòng
-
-Key có:
-
-```text
-64 bits
-```
-
-Do đó key loading được thực hiện trong:
-
-```text
-64 cycles
-```
-
----
-
-## 7.2. Cách nạp key
-
-Ở mỗi cycle:
-
-1. Lấy một bit của key.
-2. XOR bit đó vào R1.
-3. XOR bit đó vào R2.
-4. XOR bit đó vào R3.
-5. Clock cả ba register.
-
-Trong giai đoạn key loading, không sử dụng majority clocking như giai đoạn sinh keystream.
-
-Pseudocode:
-
-```text
-for i = 0 to 63:
-    key_bit = key[i]
-
-    R1 = R1 XOR key_bit
-    R2 = R2 XOR key_bit
-    R3 = R3 XOR key_bit
-
-    clock R1
-    clock R2
-    clock R3
-```
-
----
-
-# 8. Bit ordering của key
-
-Implementation tham khảo đọc bit key theo thứ tự:
-
-```text
-LSB-first
-```
-
-trong từng byte.
-
-Cách lấy bit trong implementation:
+Trong source:
 
 ```c
-(key[i/8] >> (i&7)) & 1
+word frame = 0x134;
 ```
 
-Điều này có nghĩa với một byte:
-
-```text
-b7 b6 b5 b4 b3 b2 b1 b0
-```
-
-thứ tự các bit được đưa vào là:
-
-```text
-b0 → b1 → b2 → b3 → b4 → b5 → b6 → b7
-```
+**Nguồn:** `[S2]`  
+**Nhãn:** `VERIFIED`
 
 ---
 
-# 9. Frame loading
+## 5. Thứ tự bít (Bit Ordering)
 
-Sau khi hoàn thành key loading, thực hiện frame loading.
+### 5.1. Khóa K
 
-Frame có:
-
-```text
-22 bits
-```
-
-Do đó frame loading gồm:
+Trong quá trình nạp khóa, source lấy:
 
 ```text
-22 cycles
+bít ít quan trọng nhất trước (LSB-first)
 ```
+
+Công thức:
+
+```text
+(key[i/8] >> (i & 7)) & 1
+```
+
+với:
+
+```text
+i = 0 ... 63
+```
+
+Do đó trong từng byte:
+
+```text
+bít 0
+→ bít 1
+→ bít 2
+→ ...
+→ bít 7
+```
+
+Ví dụ:
+
+```text
+0x12 = 00010010
+```
+
+Ba bít đầu được xử lý:
+
+```text
+bít 0 = 0
+bít 1 = 1
+bít 2 = 0
+```
+
+**Nguồn:** `[S2]`
 
 ---
 
-## 9.1. Cách nạp frame
+### 5.2. Số khung
 
-Ở mỗi cycle:
-
-1. Lấy một bit của frame.
-2. XOR bit đó vào R1.
-3. XOR bit đó vào R2.
-4. XOR bit đó vào R3.
-5. Clock cả ba register.
-
-Pseudocode:
+Các bít của số khung cũng được xử lý theo:
 
 ```text
-for i = 0 to 21:
-    frame_bit = frame[i]
-
-    R1 = R1 XOR frame_bit
-    R2 = R2 XOR frame_bit
-    R3 = R3 XOR frame_bit
-
-    clock R1
-    clock R2
-    clock R3
+bít ít quan trọng nhất trước (LSB-first)
 ```
 
----
-
-# 10. Bit ordering của frame
-
-Trong implementation tham khảo, frame cũng được đọc theo:
+Công thức:
 
 ```text
-LSB-first
+(frame >> i) & 1
 ```
 
-Do đó thứ tự sử dụng là:
+với:
+
+```text
+i = 0 ... 21
+```
+
+Thứ tự:
 
 ```text
 frame bit 0
 → frame bit 1
-→ frame bit 2
 → ...
 → frame bit 21
 ```
 
+**Nguồn:** `[S2]`
+
 ---
 
-# 11. Warm-up
+### 5.3. Dãy bít sinh ra
 
-Sau khi hoàn thành:
-
-```text
-64 cycles key loading
-+
-22 cycles frame loading
-```
-
-tiến hành:
+Khi lưu dãy bít sinh ra (keystream) vào byte, source sử dụng:
 
 ```text
-100 warm-up cycles
+bít có trọng số cao nhất trước (MSB-first)
 ```
 
-Trong warm-up:
+Công thức:
 
-- majority clocking được bật;
-- các register được clock theo majority bit;
-- output được tạo ra nhưng không được sử dụng;
-- output trong 100 cycle warm-up bị discard.
+```text
+getbit() << (7 - (i & 7))
+```
 
-Mục đích của warm-up là đưa trạng thái của các register đến trạng thái dùng để sinh keystream.
+Tóm tắt:
+
+```text
+Khóa K:
+LSB-first
+
+Số khung:
+LSB-first
+
+Keystream khi lưu vào byte:
+MSB-first
+```
+
+**Nguồn:** `[S2]`
+
+---
+
+## 6. Nạp khóa K (Key Loading)
+
+### 6.1. Khởi tạo
+
+Ba thanh ghi (register) được đưa về `0`:
+
+```text
+R1 = 0
+R2 = 0
+R3 = 0
+```
+
+**Nguồn:** `[S2]`
+
+---
+
+### 6.2. Số lần nạp
+
+Khóa có:
+
+```text
+64 bít
+```
+
+nên quá trình nạp khóa thực hiện:
+
+```text
+64 lần
+```
+
+Mỗi lần xử lý một bít của khóa.
+
+---
+
+### 6.3. Quy trình
+
+Trong mỗi lần:
+
+```text
+1. Quay R1.
+2. Quay R2.
+3. Quay R3.
+4. Lấy một bít của khóa theo thứ tự LSB-first.
+5. XOR bít khóa vào R1, R2 và R3.
+```
 
 Pseudocode:
 
 ```text
-for i = 0 to 99:
-    m = majority(R1[8], R2[10], R3[10])
+for i = 0 .. 63:
 
-    if R1[8] == m:
-        clock R1
+    Quay R1
+    Quay R2
+    Quay R3
 
-    if R2[10] == m:
-        clock R2
+    key_bit = (key[i/8] >> (i & 7)) & 1
 
-    if R3[10] == m:
-        clock R3
-
-    discard output
+    R1 = R1 XOR key_bit
+    R2 = R2 XOR key_bit
+    R3 = R3 XOR key_bit
 ```
+
+Trong giai đoạn này, quy tắc quay dựa trên hàm `maj` tạm thời không được sử dụng.
+
+**Nguồn:** `[S2]`
 
 ---
 
-# 12. Majority clocking
+## 7. Nạp số khung (Frame Loading)
 
-Ba register sử dụng các clocking bit:
+Sau khi nạp khóa, số khung được nạp trong:
+
+```text
+22 lần
+```
+
+Mỗi lần:
+
+```text
+1. Quay R1.
+2. Quay R2.
+3. Quay R3.
+4. Lấy một bít của số khung theo thứ tự LSB-first.
+5. XOR bít đó vào R1, R2 và R3.
+```
+
+Pseudocode:
+
+```text
+for i = 0 .. 21:
+
+    Quay R1
+    Quay R2
+    Quay R3
+
+    frame_bit = (frame >> i) & 1
+
+    R1 = R1 XOR frame_bit
+    R2 = R2 XOR frame_bit
+    R3 = R3 XOR frame_bit
+```
+
+Quy tắc quay dựa trên hàm `maj` vẫn chưa được sử dụng trong giai đoạn này.
+
+**Nguồn:** `[S2]`
+
+---
+
+## 8. Giai đoạn khởi động (Warm-up)
+
+Sau khi nạp khóa K và số khung, A5/1 thực hiện:
+
+```text
+100 lần
+```
+
+Trong giai đoạn này, quy tắc quay dựa trên **hàm maj (hàm chiếm đa số)** được sử dụng.
+
+Ba bít dùng để tính hàm `maj`:
 
 ```text
 R1[8]
@@ -459,79 +360,84 @@ R2[10]
 R3[10]
 ```
 
-Majority bit được xác định bởi:
+Tính:
 
 ```text
-m = majority(R1[8], R2[10], R3[10])
+m = maj(R1[8], R2[10], R3[10])
 ```
-
-Majority có nghĩa:
-
-```text
-m = 1
-```
-
-nếu ít nhất 2 trong 3 bit bằng 1.
-
-Ngược lại:
-
-```text
-m = 0
-```
-
-nếu ít nhất 2 trong 3 bit bằng 0.
 
 Sau đó:
 
 ```text
-if R1[8] == m:
-    clock R1
-
-if R2[10] == m:
-    clock R2
-
-if R3[10] == m:
-    clock R3
+Nếu R1[8] = m → Quay R1
+Nếu R2[10] = m → Quay R2
+Nếu R3[10] = m → Quay R3
 ```
 
-Vì vậy trong mỗi cycle:
+Quá trình trên được lặp:
 
-- có thể clock cả 3 register;
-- hoặc clock 2 register;
+```text
+100 lần
+```
 
-tùy thuộc vào majority bit.
+Trong 100 lần này:
+
+```text
+không sử dụng bít sinh ra
+```
+
+**Nguồn:** `[S2]`
 
 ---
 
-# 13. Sinh keystream
+## 9. Điều kiện kiểm thử (Conditions)
 
-Sau warm-up bắt đầu sinh keystream thực tế.
-
-Tổng số output:
-
-```text
-228 bits
-```
-
-Bao gồm:
-
-```text
-114 bits A → B
-+
-114 bits B → A
-```
-
-Do đó:
-
-```text
-228 = 114 + 114
-```
+| Thành phần | Giá trị |
+|---|---|
+| Khóa K | `0x1223456789ABCDEF` |
+| Độ dài khóa | 64 bít |
+| Số khung | `0x134` |
+| Độ dài số khung | 22 bít |
+| Trạng thái ban đầu | `R1 = R2 = R3 = 0` |
+| Nạp khóa | 64 lần |
+| Thứ tự bít khóa | LSB-first |
+| Nạp số khung | 22 lần |
+| Thứ tự bít số khung | LSB-first |
+| Giai đoạn khởi động | 100 lần |
+| Quy tắc quay khi khởi động | Theo hàm `maj` |
+| Bít sinh ra trong warm-up | Không sử dụng |
+| Keystream A → B | 114 bít |
+| Keystream B → A | 114 bít |
+| Tổng keystream | 228 bít |
+| Cách lưu keystream | MSB-first trong từng byte |
 
 ---
 
-# 14. Output bit theo implementation tham khảo
+## 10. Sinh dãy bít (Keystream Generation)
 
-Implementation tham khảo sử dụng các output taps:
+Sau giai đoạn khởi động, mỗi bít của dãy bít sinh ra được tạo theo thứ tự:
+
+```text
+1. Đọc R1[8], R2[10], R3[10].
+
+2. Tính:
+   m = maj(R1[8], R2[10], R3[10])
+
+3. Nếu R1[8] = m:
+   Quay R1.
+
+4. Nếu R2[10] = m:
+   Quay R2.
+
+5. Nếu R3[10] = m:
+   Quay R3.
+
+6. Sau khi quay, lấy bít sinh ra của mỗi thanh ghi.
+
+7. XOR ba bít để thu được một bít keystream.
+```
+
+Theo S2, các bít sinh ra được lấy tại:
 
 ```text
 R1[18]
@@ -539,647 +445,364 @@ R2[21]
 R3[22]
 ```
 
-Output được tính:
-
-```text
-s = R1[18] XOR R2[21] XOR R3[22]
-```
-
-Quy tắc này là quy tắc được sử dụng để tạo reference test vector ở file này.
-
----
-
-# 15. Conflict với slide môn học
-
-Đây là technical decision quan trọng của Phase 1.
-
-Slide môn học mô tả generated bit theo:
-
-```text
-s_i = x8 XOR y10 XOR z10
-```
-
-Trong khi implementation tham khảo sử dụng:
-
-```text
-s_i = R1[18] XOR R2[21] XOR R3[22]
-```
-
-Vì vậy hiện tại tồn tại:
-
-```text
-TD-001
-```
-
-với trạng thái:
-
-```text
-CONFLICT
-```
-
-## Course slide
-
-```text
-x8 XOR y10 XOR z10
-```
-
-## External reference
-
-```text
-R1[18] XOR R2[21] XOR R3[22]
-```
-
-Hai quy tắc này không được tự ý hợp nhất hoặc tự chọn một bên.
-
-Nhóm cần chốt quy ước chính thức trước khi test vector được đánh dấu `FINAL`.
-
----
-
-# 16. Reference test vector
-
-## 16.1. Key
-
-```text
-0x1223456789ABCDEF
-```
-
-## 16.2. Frame
-
-```text
-0x134
-```
-
-## 16.3. Keystream A → B
-
-```text
-0x534EAA582FE8151AB6E1855A728C00
-```
-
-## 16.4. Keystream B → A
-
-```text
-0x24FD35A35D5FB6526D32F906DF1AC0
-```
-
----
-
-# 17. Kết quả kỳ vọng đầy đủ
-
-```text
-Key   = 0x1223456789ABCDEF
-Frame = 0x134
-```
-
-Sau:
-
-```text
-64 key-loading cycles
-22 frame-loading cycles
-100 warm-up cycles
-```
-
-expected output theo external reference là:
-
-```text
-A → B
-0x534EAA582FE8151AB6E1855A728C00
-```
-
-và:
-
-```text
-B → A
-0x24FD35A35D5FB6526D32F906DF1AC0
-```
-
----
-
-# 18. Độ dài output
-
-| Output | Length |
-|---|---:|
-| A → B | 114 bits |
-| B → A | 114 bits |
-| Total | 228 bits |
-
 Do đó:
 
 ```text
-114 + 114 = 228 bits
+KS[i] = R1[18] XOR R2[21] XOR R3[22]
+```
+
+Bít keystream được lấy:
+
+```text
+sau khi quay các thanh ghi
+```
+
+**Nguồn:** `[S2]`
+
+---
+
+### 10.1. Hướng A → B
+
+Số bít:
+
+```text
+114 bít
 ```
 
 ---
 
-# 19. Verification procedure
+### 10.2. Hướng B → A
 
-Có thể dùng quy trình sau để kiểm tra implementation:
-
-```text
-INPUT
-  |
-  v
-Key = 0x1223456789ABCDEF
-  |
-  v
-Initialize R1 = R2 = R3 = 0
-  |
-  v
-Key loading
-64 cycles
-  |
-  v
-Frame = 0x134
-  |
-  v
-Frame loading
-22 cycles
-  |
-  v
-Warm-up
-100 cycles
-  |
-  v
-Generate keystream
-228 bits
-  |
-  +-----------------------+
-  |                       |
-  v                       v
-A → B                   B → A
-114 bits                114 bits
-  |                       |
-  +-----------+-----------+
-              |
-              v
-        Compare reference
-```
-
-Reference:
+Số bít:
 
 ```text
-A → B = 0x534EAA582FE8151AB6E1855A728C00
-
-B → A = 0x24FD35A35D5FB6526D32F906DF1AC0
+114 bít
 ```
 
 ---
 
-# 20. Điều kiện để implementation được coi là match
-
-Implementation chỉ được coi là match test vector khi các điều kiện chính sau được thống nhất và thực hiện đúng:
-
-1. Register initialization đúng.
-2. Key loading = 64 cycles.
-3. Frame loading = 22 cycles.
-4. Key bit ordering đúng.
-5. Frame bit ordering đúng.
-6. Warm-up = 100 cycles.
-7. Majority clocking đúng.
-8. Output tap convention đúng.
-9. Sinh đủ 228 output bits.
-10. Output match reference vector.
-
-Nếu output khác reference, cần kiểm tra lần lượt:
+### 10.3. Tổng
 
 ```text
-1. Key input
-2. Frame input
-3. Bit ordering
-4. Register indexing
-5. Feedback taps
-6. Majority clocking
-7. Warm-up
-8. Output taps
-9. Number of generated bits
+114 + 114 = 228 bít
 ```
 
-Không được kết luận implementation sai trước khi xác định implementation đang sử dụng cùng convention với test vector hay chưa.
+**Nguồn:** `[S2]`
 
 ---
 
-# 21. Reference pseudocode
+## 11. Dãy bít mong đợi (Expected Keystream)
 
-Pseudocode dưới đây mô tả convention của external reference được sử dụng để tạo test vector:
+### 11.1. A → B
 
 ```text
-R1 = 0
-R2 = 0
-R3 = 0
-
-for i = 0..63:
-    k = key[i]
-
-    R1 = R1 XOR k
-    R2 = R2 XOR k
-    R3 = R3 XOR k
-
-    clock R1
-    clock R2
-    clock R3
-
-for i = 0..21:
-    f = frame[i]
-
-    R1 = R1 XOR f
-    R2 = R2 XOR f
-    R3 = R3 XOR f
-
-    clock R1
-    clock R2
-    clock R3
-
-repeat 100 times:
-    m = majority(R1[8], R2[10], R3[10])
-
-    if R1[8] == m:
-        clock R1
-
-    if R2[10] == m:
-        clock R2
-
-    if R3[10] == m:
-        clock R3
-
-    discard output
-
-repeat 228 times:
-    m = majority(R1[8], R2[10], R3[10])
-
-    if R1[8] == m:
-        clock R1
-
-    if R2[10] == m:
-        clock R2
-
-    if R3[10] == m:
-        clock R3
-
-    output =
-        R1[18] XOR
-        R2[21] XOR
-        R3[22]
+0x534EAA582FE8151AB6E1855A728C00
 ```
 
-> **Important:** Pseudocode trên mô tả external reference convention. Không sử dụng pseudocode này để tự động thay thế quy ước trong course slide khi `TD-001` chưa được nhóm chốt.
-
----
-
-# 22. Technical Decisions / Open Issues
-
-## TD-001 - Output bit discrepancy
-
-### Problem
-
-Course slide:
+Biểu diễn theo byte:
 
 ```text
-s_i = x8 XOR y10 XOR z10
-```
-
-External reference:
-
-```text
-s_i = R1[18] XOR R2[21] XOR R3[22]
-```
-
-### Status
-
-```text
-CONFLICT
-```
-
-### Action
-
-Không tự ý chọn một trong hai.
-
-Cần nhóm/GĐ3 xác nhận quy ước chính thức trước khi đánh dấu test vector là:
-
-```text
-FINAL
+53 4E AA 58 2F E8 15 1A B6 E1 85 5A 72 8C 00
 ```
 
 ---
 
-## TD-003 - Bit indexing / bit ordering
-
-### Problem
-
-Cần thống nhất:
-
-- cách đánh số bit trong register;
-- cách đọc key;
-- cách đọc frame;
-- cách biểu diễn giá trị hexadecimal;
-- cách biểu diễn output keystream.
-
-### Current external reference
-
-Bit của key/frame được đọc theo:
+### 11.2. B → A
 
 ```text
-LSB-first
+0x24FD35A35D5FB6526D32F906DF1AC0
 ```
 
-trong quá trình loading.
-
-### Status
+Biểu diễn theo byte:
 
 ```text
-NEED LOCKING
+24 FD 35 A3 5D 5F B6 52 6D 32 F9 06 DF 1A C0
 ```
 
-### Action
-
-Đặc tả chính thức phải ghi rõ một convention duy nhất và implementation/test phải sử dụng cùng convention đó.
+**Nguồn:** `[S2]`
 
 ---
 
-## TD-004 - Key / Frame / Warm-up
+### 11.3. Độ dài
 
-### Reference condition
-
-```text
-Key loading  = 64 cycles
-Frame loading = 22 cycles
-Warm-up       = 100 cycles
-```
-
-### Status
+Mỗi hướng có:
 
 ```text
-REFERENCE
+114 bít
 ```
 
-Các giá trị này được lấy từ external implementation được sử dụng để xây dựng test vector.
+Bộ đệm dùng:
+
+```text
+15 byte
+```
+
+Trong đó:
+
+```text
+14 byte = 112 bít
+```
+
+và còn:
+
+```text
+2 bít
+```
+
+ở byte cuối.
+
+Hai bít còn lại được lưu ở các vị trí có trọng số cao nhất của byte cuối.
+
+**Nguồn:** `[S2]`
 
 ---
 
-## TD-005 - Data longer than one keystream segment
+## 12. Bảng bộ kiểm thử
 
-Reference test vector tạo:
-
-```text
-228 bits
-```
-
-trong đó:
-
-```text
-114 bits A → B
-114 bits B → A
-```
-
-Khi implementation xử lý dữ liệu dài hơn một đoạn keystream, specification cần nêu rõ cách tiếp tục sinh keystream và cách áp dụng keystream cho phần dữ liệu tiếp theo.
-
-### Status
-
-```text
-OPEN
-```
+| Nguồn | Tài liệu | Khóa K | Số khung | Keystream mong đợi | Thứ tự bít | Trạng thái |
+|---|---|---|---|---|---|---|
+| S2 | `A5.1.c` | `0x1223456789ABCDEF` | `0x134` | A→B: `0x534EAA582FE8151AB6E1855A728C00`; B→A: `0x24FD35A35D5FB6526D32F906DF1AC0` | Key/frame LSB-first; keystream MSB-first khi lưu | `SINGLE-SOURCE` |
+| Nguồn độc lập thứ hai | Chưa có cùng bộ điều kiện | Không áp dụng | Không áp dụng | Không áp dụng | Không áp dụng | `UNVERIFIED` |
+| Kết luận Phase 1 | Kiểm chứng lại ở GĐ3 | Theo S2 | Theo S2 | Theo S2 | Theo S2 | `SINGLE-SOURCE` |
 
 ---
 
-# 23. Test vector status
+## 13. Xác minh (Verification)
 
-| Item | Value | Status |
-|---|---|---|
-| Key | `0x1223456789ABCDEF` | Available |
-| Key length | 64 bits | Reference |
-| Frame | `0x134` | Available |
-| Frame length | 22 bits | Reference |
-| Key loading | 64 cycles | Reference |
-| Frame loading | 22 cycles | Reference |
-| Warm-up | 100 cycles | Reference |
-| Keystream | 228 bits | Reference |
-| A → B | 114 bits | Reference |
-| B → A | 114 bits | Reference |
-| Input bit order | LSB-first | Reference |
-| Clocking bits | R1[8], R2[10], R3[10] | Reference |
-| External output taps | R1[18], R2[21], R3[22] | Reference |
-| Slide output rule | x8 XOR y10 XOR z10 | Course slide |
-| Output convention | Different between sources | `CONFLICT` |
-| Overall verification | One main test-vector source | `SINGLE-SOURCE` |
-
----
-
-# 24. Why this test vector is not FINAL
-
-Test vector hiện tại không được đánh dấu `FINAL` vì còn tồn tại sự khác nhau giữa:
+S2 thực hiện kiểm tra bằng các giá trị:
 
 ```text
-Course slide
-x8 XOR y10 XOR z10
+Khóa K:
+0x1223456789ABCDEF
+
+Số khung:
+0x134
+
+A → B:
+0x534EAA582FE8151AB6E1855A728C00
+
+B → A:
+0x24FD35A35D5FB6526D32F906DF1AC0
 ```
 
-và:
+Quy trình kiểm tra:
 
 ```text
-External reference
-R1[18] XOR R2[21] XOR R3[22]
+1. Khởi tạo khóa K.
+2. Khởi tạo số khung.
+3. Thiết lập trạng thái A5/1.
+4. Sinh 114 bít cho hướng A → B.
+5. Sinh 114 bít cho hướng B → A.
+6. So sánh kết quả thực tế với các giá trị tham chiếu.
 ```
 
-Do đó trạng thái đúng của file tại Phase 1 là:
+Nếu kết quả khớp hoàn toàn với hai chuỗi tham chiếu thì implementation theo quy ước S2 vượt qua bộ kiểm thử.
+
+Bộ kiểm thử hiện có một nguồn cung cấp trực tiếp đầy đủ:
+
+- khóa K;
+- số khung;
+- thứ tự bít;
+- giai đoạn khởi động;
+- dãy bít sinh ra mong đợi.
+
+Do đó trạng thái hiện tại:
 
 ```text
 SINGLE-SOURCE
 ```
 
-và:
+Bộ kiểm thử cần được kiểm chứng lại bằng implementation của nhóm ở GĐ3.
+
+---
+
+## 14. TD-001 - Bít sinh ra của A5/1
+
+Trong slide môn học:
 
 ```text
-TD-001 = CONFLICT
+s_i = x_8 XOR y_10 XOR z_10
 ```
 
-Không được tự ý sửa thành:
+Trong S2:
+
+```text
+KS[i] = R1[18] XOR R2[21] XOR R3[22]
+```
+
+Hai quy tắc khác nhau.
+
+**Trạng thái:**
+
+```text
+CONFLICT
+```
+
+Sự khác biệt này ảnh hưởng trực tiếp đến:
+
+```text
+dãy bít sinh ra (keystream)
+bản mã (ciphertext)
+kết quả của bộ kiểm thử
+```
+
+Bộ kiểm thử hiện tại sử dụng quy ước của S2.
+
+---
+
+## 15. TD-003 - Thứ tự bít
+
+Quy ước trong S2:
+
+```text
+R1: bít 0 ... 18
+R2: bít 0 ... 21
+R3: bít 0 ... 22
+```
+
+Thứ tự dữ liệu:
+
+```text
+Khóa K:
+LSB-first
+
+Số khung:
+LSB-first
+
+Keystream khi lưu:
+MSB-first
+```
+
+**Trạng thái:**
+
+```text
+VERIFIED theo S2
+```
+
+---
+
+## 16. TD-004 - Khóa, số khung và giai đoạn khởi động
+
+```text
+Khóa K:
+64 bít
+
+Nạp khóa:
+64 lần
+
+Số khung:
+22 bít
+
+Nạp số khung:
+22 lần
+
+Giai đoạn khởi động:
+100 lần
+```
+
+Trong quá trình nạp khóa và số khung:
+
+```text
+Quay cả R1, R2, R3
+Không dùng quy tắc quay theo hàm maj
+```
+
+Trong giai đoạn khởi động:
+
+```text
+Dùng quy tắc quay theo hàm maj
+Không sử dụng bít sinh ra
+```
+
+**Nguồn:** `[S2]`
+
+**Trạng thái:**
 
 ```text
 VERIFIED
 ```
 
-hoặc:
-
-```text
-FINAL
-```
-
-cho đến khi nhóm chốt quy ước.
-
 ---
 
-# 25. Final checklist
+## 17. Ghi chú (Notes)
 
-## Input
-
-- [x] Key được ghi đầy đủ.
-- [x] Frame được ghi đầy đủ.
-- [x] Key length = 64 bits.
-- [x] Frame length = 22 bits.
-
-## Loading
-
-- [x] Key loading = 64 cycles.
-- [x] Frame loading = 22 cycles.
-- [x] Key bit ordering được ghi.
-- [x] Frame bit ordering được ghi.
-
-## Warm-up
-
-- [x] Warm-up = 100 cycles.
-- [x] Output trong warm-up bị discard.
-
-## Keystream
-
-- [x] Keystream length = 228 bits.
-- [x] A → B = 114 bits.
-- [x] B → A = 114 bits.
-- [x] Reference output được ghi đầy đủ.
-
-## Verification
-
-- [x] Source được ghi.
-- [x] Source URL được ghi.
-- [x] Overall status = `SINGLE-SOURCE`.
-- [x] TD-001 được ghi nhận.
-- [x] TD-003 được ghi nhận.
-- [x] TD-004 được ghi nhận.
-- [x] TD-005 được ghi nhận.
-- [x] Không tự ý giải quyết conflict.
-- [ ] Chưa đánh dấu `FINAL`.
-- [ ] Chưa khóa output convention.
-- [ ] Chưa hoàn tất cross-check độc lập.
-
----
-
-# 26. Conclusion
-
-Test vector tham chiếu sử dụng:
+Các ký hiệu chính:
 
 ```text
-Key   = 0x1223456789ABCDEF
-Frame = 0x134
+R1 = thanh ghi 19 bít
+R2 = thanh ghi 22 bít
+R3 = thanh ghi 23 bít
 ```
 
-với:
+Các thuật ngữ sử dụng:
 
 ```text
-Key loading   = 64 cycles
-Frame loading = 22 cycles
-Warm-up       = 100 cycles
-Keystream     = 228 bits
+thanh ghi (register)
+bít điều khiển quay (clocking bit)
+hàm maj / hàm chiếm đa số (majority)
+giá trị phản hồi (feedback)
+dãy bít sinh ra (keystream)
+bản rõ (plaintext)
+bản mã (ciphertext)
+số khung (frame number)
+giai đoạn khởi động (warm-up)
+thứ tự bít (bit ordering)
 ```
 
-Reference output:
-
-```text
-A → B = 0x534EAA582FE8151AB6E1855A728C00
-
-B → A = 0x24FD35A35D5FB6526D32F906DF1AC0
-```
-
-Trạng thái hiện tại:
+Trạng thái bộ kiểm thử:
 
 ```text
 SINGLE-SOURCE
 ```
 
-Technical decision còn mở:
+Điều kiện để chuyển sang bộ kiểm thử cuối cùng:
 
 ```text
-TD-001 = CONFLICT
-TD-003 = NEED LOCKING
-TD-004 = REFERENCE
-TD-005 = OPEN
-```
-
-Test vector chỉ được chuyển sang `FINAL` sau khi nhóm thống nhất:
-
-```text
-1. Output bit convention
-2. Bit indexing
-3. Bit ordering
-4. Reference implementation convention
+1. TD-001 được chốt.
+2. Thứ tự bít của implementation khớp với đặc tả.
+3. Implementation của nhóm tái tạo được keystream mong đợi.
+4. Các quy ước trong coding_convention.md được khóa.
 ```
 
 ---
 
-# 27. Sources
-
-## [S1] Course Slides
-
-`Chương 2 - Mã hóa khóa đối xứng`
-
-Nội dung sử dụng:
-
-- TinyA5/1;
-- A5/1;
-- majority clocking;
-- register structure;
-- feedback taps;
-- output generation.
-
----
-
-## [S2] Briceno, Goldberg, Wagner
-
-`A5/1 Pedagogical Implementation`
-
-https://github.com/NSAPlayset/TWILIGHTVEGETABLE/blob/master/A5.1/C/A5.1.c
-
-Reference:
+## 18. Tóm tắt
 
 ```text
-Key   = 0x1223456789ABCDEF
-Frame = 0x134
+Khóa K:
+0x1223456789ABCDEF
 
-A → B = 0x534EAA582FE8151AB6E1855A728C00
+Số khung:
+0x134
 
-B → A = 0x24FD35A35D5FB6526D32F906DF1AC0
-```
+Nạp khóa:
+64 lần
+LSB-first
 
----
+Nạp số khung:
+22 lần
+LSB-first
 
-## [S3] Biryukov, Shamir, Wagner
+Giai đoạn khởi động:
+100 lần
 
-`Real Time Cryptanalysis of A5/1 on a PC`
+Dãy bít sinh ra:
+228 bít
 
-https://www.iacr.org/archive/fse2000/19780071/19780071.pdf
+A → B:
+114 bít
+0x534EAA582FE8151AB6E1855A728C00
 
----
+B → A:
+114 bít
+0x24FD35A35D5FB6526D32F906DF1AC0
 
-## [S4] Gendrullis, Novotný, Rupp
+Cách lưu keystream:
+MSB-first
 
-`A Real-World Attack Breaking A5/1`
-
-https://www.iacr.org/archive/ches2008/51540262/51540262.pdf
-
----
-
-## [S5] 3GPP TS 43.020
-
-`Security related network functions`
-
-https://www.etsi.org/deliver/etsi_ts/143000_143099/143020/07.01.00_60/ts_143020v070100p.pdf
-
----
-
-# 28. File status
-
-```text
-Owner: Vũ
-Branch: docs/vu-a51
-File: docs/a51_test_vector.md
-
-Overall Status:
+Trạng thái:
 SINGLE-SOURCE
 
-Open:
-TD-001
-TD-003
-TD-005
-
-Reference:
-TD-004
-
-Final:
-NO
+TD-001:
+CONFLICT
 ```
