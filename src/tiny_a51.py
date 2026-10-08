@@ -30,24 +30,23 @@ from __future__ import annotations
 import copy
 
 # ---------------------------------------------------------------------------
-# 1. Hằng số lấy từ slide
+# 1. Hằng số lấy từ slide (tên theo bảng ánh xạ ký hiệu trong
+#    docs/tiny_a51_specification.md; chỉ số bắt đầu từ 0 như slide)
 # ---------------------------------------------------------------------------
 
 KEY_LENGTH = 23
 
-# Độ dài từng thanh ghi [slide trang 46]
-REGISTER_SIZES = {"X": 6, "Y": 8, "Z": 9}
+# Độ dài các thanh ghi X, Y, Z [slide trang 46]
+LENGTH_X, LENGTH_Y, LENGTH_Z = 6, 8, 9
 
-# Bit điều khiển quay (clocking bit): x1, y3, z3 [slide trang 47]
-CLOCK_INDEX = {"X": 1, "Y": 3, "Z": 3}
+# Vị trí bit điều khiển quay (clocking bit): x1, y3, z3 [slide trang 47]
+CLOCK_INDEX_X, CLOCK_INDEX_Y, CLOCK_INDEX_Z = 1, 3, 3
 
-# Các vị trí lấy ra để tính bit t (feedback taps) [slide trang 48]
-TAPS = {"X": (2, 4, 5), "Y": (6, 7), "Z": (2, 7, 8)}
+# Các vị trí lấy ra để tính bit t (feedback bit) [slide trang 48]
+TAPS_X, TAPS_Y, TAPS_Z = (2, 4, 5), (6, 7), (2, 7, 8)
 
-# Bit đầu ra: x5, y7, z8 (bit cuối mỗi thanh ghi) [slide trang 47]
-OUTPUT_INDEX = {"X": 5, "Y": 7, "Z": 8}
-
-REGISTER_NAMES = ("X", "Y", "Z")
+# Vị trí bit đầu ra: x5, y7, z8 (bit cuối mỗi thanh ghi) [slide trang 47]
+OUTPUT_INDEX_X, OUTPUT_INDEX_Y, OUTPUT_INDEX_Z = 5, 7, 8
 
 # Dữ liệu ví dụ trên lớp [slide trang 49–50]
 SLIDE_KEY = "10010101001110100110000"
@@ -142,27 +141,31 @@ class TinyA51:
         """
         self.key = _validate_bits(key, "Khoá K", KEY_LENGTH)
         self.annotate_slide = annotate_slide
-        self.registers: dict[str, list[int]] = {}
+        self.register_x: list[int] = []
+        self.register_y: list[int] = []
+        self.register_z: list[int] = []
         self.step_count = 0
-        self.last_keystream = ""
+        self.keystream = ""   # dãy S của lần mã hoá/giải mã gần nhất
         self.last_trace: list[dict] = []
         self.reset()
 
     # -- Khởi tạo ----------------------------------------------------------
 
     def reset(self) -> None:
-        """Đưa 3 thanh ghi về trạng thái ban đầu nạp từ khoá (K -> XYZ)."""
-        start = 0
-        for name in REGISTER_NAMES:
-            size = REGISTER_SIZES[name]
-            segment = self.key[start:start + size]
-            self.registers[name] = [int(ch) for ch in segment]
-            start += size
+        """Nạp khoá K -> XYZ: 6 bit đầu vào X, 8 bit tiếp vào Y, 9 bit cuối vào Z."""
+        bits = [int(ch) for ch in self.key]
+        self.register_x = bits[:LENGTH_X]
+        self.register_y = bits[LENGTH_X:LENGTH_X + LENGTH_Y]
+        self.register_z = bits[LENGTH_X + LENGTH_Y:]
         self.step_count = 0
 
     def get_state(self) -> dict[str, str]:
         """Trạng thái hiện tại dạng chuỗi, ví dụ {'X': '100101', ...}."""
-        return {name: _bits_to_str(self.registers[name]) for name in REGISTER_NAMES}
+        return {
+            "X": _bits_to_str(self.register_x),
+            "Y": _bits_to_str(self.register_y),
+            "Z": _bits_to_str(self.register_z),
+        }
 
     # -- Một bước sinh số -------------------------------------------------
 
@@ -183,44 +186,49 @@ class TinyA51:
         """
         state_before = self.get_state()
 
-        # Bước 1: đọc 3 bit điều khiển quay và tính hàm chiếm đa số
-        clock_values = {name: self.registers[name][CLOCK_INDEX[name]] for name in REGISTER_NAMES}
-        m = majority(clock_values["X"], clock_values["Y"], clock_values["Z"])
+        # Bước 1: đọc 3 bit điều khiển quay x1, y3, z3 và tính m = maj(x1, y3, z3)
+        clock_x = self.register_x[CLOCK_INDEX_X]
+        clock_y = self.register_y[CLOCK_INDEX_Y]
+        clock_z = self.register_z[CLOCK_INDEX_Z]
+        majority_bit = majority(clock_x, clock_y, clock_z)
 
         # Bước 2: thanh ghi nào có bit điều khiển bằng m thì quay
         rotated: list[str] = []
         feedback_bits: dict[str, int] = {}
-        for name in REGISTER_NAMES:
-            if clock_values[name] == m:
-                self.registers[name], t = _rotate(self.registers[name], TAPS[name])
-                rotated.append(name)
-                feedback_bits[name] = t
+        if clock_x == majority_bit:
+            self.register_x, t = _rotate(self.register_x, TAPS_X)
+            rotated.append("X")
+            feedback_bits["X"] = t
+        if clock_y == majority_bit:
+            self.register_y, t = _rotate(self.register_y, TAPS_Y)
+            rotated.append("Y")
+            feedback_bits["Y"] = t
+        if clock_z == majority_bit:
+            self.register_z, t = _rotate(self.register_z, TAPS_Z)
+            rotated.append("Z")
+            feedback_bits["Z"] = t
 
         # Bước 3: tính bit sinh ra SAU khi quay: s_i = x5 XOR y7 XOR z8
-        output_bit = (
-            self.registers["X"][OUTPUT_INDEX["X"]]
-            ^ self.registers["Y"][OUTPUT_INDEX["Y"]]
-            ^ self.registers["Z"][OUTPUT_INDEX["Z"]]
+        s_i = (
+            self.register_x[OUTPUT_INDEX_X]
+            ^ self.register_y[OUTPUT_INDEX_Y]
+            ^ self.register_z[OUTPUT_INDEX_Z]
         )
 
         record = {
             "step": self.step_count,
-            "clock_bits": {
-                "x1": clock_values["X"],
-                "y3": clock_values["Y"],
-                "z3": clock_values["Z"],
-            },
-            "majority": m,
+            "clock_bits": {"x1": clock_x, "y3": clock_y, "z3": clock_z},
+            "majority": majority_bit,
             "rotated_registers": rotated,
             "feedback_bits": feedback_bits,
             "state_before": state_before,
             "state_after": self.get_state(),
-            "output_bit": output_bit,
+            "output_bit": s_i,
         }
         self._add_slide_note(record)
 
         self.step_count += 1
-        return output_bit, record
+        return s_i, record
 
     def _add_slide_note(self, record: dict) -> None:
         """Ghi chú chỗ slide in khác kết quả tính (chỉ khi bật annotate_slide)."""
@@ -229,11 +237,11 @@ class TinyA51:
         info = SLIDE_RECORDED_MISMATCH.get(record["step"])
         if info is None:
             return
-        name = info["register"]
-        computed = record["state_after"][name]
+        register_name = info["register"]
+        computed = record["state_after"][register_name]
         if computed != info["slide_value"]:
             record["slide_mismatch"] = {
-                "register": name,
+                "register": register_name,
                 "computed": computed,
                 "slide": info["slide_value"],
                 "slide_page": info["slide_page"],
@@ -255,8 +263,8 @@ class TinyA51:
         bits: list[str] = []
         trace: list[dict] = []
         for _ in range(length):
-            bit, record = self.step_with_trace()
-            bits.append(str(bit))
+            keystream_bit, record = self.step_with_trace()
+            bits.append(str(keystream_bit))
             trace.append(record)
         return "".join(bits), trace
 
@@ -267,9 +275,9 @@ class TinyA51:
         bits = _validate_bits(data, name)
         self.reset()  # luôn bắt đầu từ trạng thái nạp khoá
         keystream, trace = self.generate_keystream(len(bits))
-        self.last_keystream = keystream
+        self.keystream = keystream
         self.last_trace = trace
-        return "".join(str(int(p) ^ int(s)) for p, s in zip(bits, keystream))
+        return "".join(str(int(a) ^ int(b)) for a, b in zip(bits, keystream))
 
     def encrypt(self, plaintext: str) -> str:
         """Mã hoá: C = P XOR S. Trace của lần chạy lưu ở self.last_trace."""
