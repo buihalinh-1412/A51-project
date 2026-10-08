@@ -12,5 +12,3 @@ Project môn An toàn và bảo mật thông tin.
 ## Project
 Study and implementation of A5/1 stream cipher.
 
-## Status
-Phase 1 — Specification and Verification
