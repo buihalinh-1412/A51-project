@@ -77,6 +77,29 @@ def _bits_to_str(register: list[int]) -> str:
     return "".join(str(b) for b in register)
 
 
+def _feedback_bit(register: list[int], taps: tuple[int, ...]) -> int:
+    """Tính bit t = XOR các bit ở vị trí tap."""
+    t = 0
+    for index in taps:
+        t ^= register[index]
+    return t
+
+
+def _rotate(register: list[int], taps: tuple[int, ...]) -> tuple[list[int], int]:
+    """Quay một thanh ghi theo slide trang 48.
+
+    1. Tính t từ các vị trí tap.
+    2. Dịch: phần tử j nhận giá trị của phần tử j-1 (j từ cuối về 1),
+       bit cuối cùng bị đẩy ra ngoài.
+    3. Đưa t vào vị trí 0.
+
+    Trả về (thanh ghi mới, t). Không sửa list đầu vào.
+    """
+    t = _feedback_bit(register, taps)
+    new_register = [t] + register[:-1]
+    return new_register, t
+
+
 # ---------------------------------------------------------------------------
 # 3. Lớp TinyA51
 # ---------------------------------------------------------------------------
