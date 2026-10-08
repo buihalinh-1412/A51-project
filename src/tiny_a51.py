@@ -72,6 +72,14 @@ def _validate_bits(bits: str, name: str, length: int | None = None) -> str:
     return cleaned
 
 
+def majority(a: int, b: int, c: int) -> int:
+    """Hàm chiếm đa số maj(a, b, c).
+
+    Theo slide trang 47: nếu có từ hai bit 0 trở lên thì trả về 0, ngược lại trả về 1.
+    """
+    return 1 if (a + b + c) >= 2 else 0
+
+
 def _bits_to_str(register: list[int]) -> str:
     """Đổi thanh ghi [1, 0, 0, ...] thành chuỗi '100...' để ghi vào trace."""
     return "".join(str(b) for b in register)
@@ -109,8 +117,8 @@ class TinyA51:
 
     Ví dụ:
         >>> cipher = TinyA51("10010101001110100110000")
-        >>> cipher.get_state()
-        {'X': '100101', 'Y': '01001110', 'Z': '100110000'}
+        >>> [cipher.step() for _ in range(3)]
+        [1, 0, 0]
     """
 
     def __init__(self, key: str) -> None:
@@ -135,3 +143,25 @@ class TinyA51:
     def get_state(self) -> dict[str, str]:
         """Trạng thái hiện tại dạng chuỗi, ví dụ {'X': '100101', ...}."""
         return {name: _bits_to_str(self.registers[name]) for name in REGISTER_NAMES}
+
+    # -- Một bước sinh số -------------------------------------------------
+
+    def step(self) -> int:
+        """Thực hiện một bước sinh số (quay theo hàm chiếm đa số), trả về bit s_i."""
+        # Bước 1: đọc 3 bit điều khiển quay và tính hàm chiếm đa số
+        clock_values = {name: self.registers[name][CLOCK_INDEX[name]] for name in REGISTER_NAMES}
+        m = majority(clock_values["X"], clock_values["Y"], clock_values["Z"])
+
+        # Bước 2: thanh ghi nào có bit điều khiển bằng m thì quay
+        for name in REGISTER_NAMES:
+            if clock_values[name] == m:
+                self.registers[name], _ = _rotate(self.registers[name], TAPS[name])
+
+        # Bước 3: tính bit sinh ra SAU khi quay: s_i = x5 XOR y7 XOR z8
+        output_bit = (
+            self.registers["X"][OUTPUT_INDEX["X"]]
+            ^ self.registers["Y"][OUTPUT_INDEX["Y"]]
+            ^ self.registers["Z"][OUTPUT_INDEX["Z"]]
+        )
+        self.step_count += 1
+        return output_bit
