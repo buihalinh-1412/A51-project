@@ -53,6 +53,12 @@ REGISTER_NAMES = ("X", "Y", "Z")
 SLIDE_KEY = "10010101001110100110000"
 SLIDE_PLAINTEXT = "111"
 
+# Giá trị slide in ra khác với kết quả tính theo quy tắc (TD-002).
+# Slide trang 50 ghi Z sau Bước 2 là 101001100; tính theo công thức
+# t = z2 XOR z7 XOR z8 = 0 thì Z phải là 001001100.
+SLIDE_RECORDED_MISMATCH = {
+    2: {"register": "Z", "slide_value": "101001100", "slide_page": 50},
+}
 
 
 # ---------------------------------------------------------------------------
@@ -126,9 +132,16 @@ class TinyA51:
         '011'
     """
 
-    def __init__(self, key: str) -> None:
-        """Tạo bộ sinh với khoá K 23 bit (chuỗi 23 ký tự '0'/'1')."""
+    def __init__(self, key: str, annotate_slide: bool = False) -> None:
+        """Tạo bộ sinh với khoá K 23 bit.
+
+        key: chuỗi 23 ký tự '0'/'1'.
+        annotate_slide: nếu True, trace sẽ ghi chú thêm các bước mà slide
+            in giá trị khác kết quả tính theo quy tắc (chỉ áp dụng khi khoá
+            đúng là khoá ví dụ trên lớp). Không làm thay đổi kết quả tính.
+        """
         self.key = _validate_bits(key, "Khoá K", KEY_LENGTH)
+        self.annotate_slide = annotate_slide
         self.registers: dict[str, list[int]] = {}
         self.step_count = 0
         self.last_keystream = ""
@@ -204,9 +217,29 @@ class TinyA51:
             "state_after": self.get_state(),
             "output_bit": output_bit,
         }
+        self._add_slide_note(record)
 
         self.step_count += 1
         return output_bit, record
+
+    def _add_slide_note(self, record: dict) -> None:
+        """Ghi chú chỗ slide in khác kết quả tính (chỉ khi bật annotate_slide)."""
+        if not self.annotate_slide or self.key != SLIDE_KEY:
+            return
+        info = SLIDE_RECORDED_MISMATCH.get(record["step"])
+        if info is None:
+            return
+        name = info["register"]
+        computed = record["state_after"][name]
+        if computed != info["slide_value"]:
+            record["slide_mismatch"] = {
+                "register": name,
+                "computed": computed,
+                "slide": info["slide_value"],
+                "slide_page": info["slide_page"],
+                "affects_output": False,  # s_i dùng z8, cả hai giá trị đều có z8 = 0
+                "note": "Slide ghi khác kết quả tính theo quy tắc quay (xem TD-002).",
+            }
 
     # -- Sinh nhiều bit ----------------------------------------------------
 
