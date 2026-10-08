@@ -59,15 +59,3 @@ class A51:
         """
         t = self.Z[7] ^ self.Z[20] ^ self.Z[21] ^ self.Z[22] ^ feedback_input
         self.Z = [t] + self.Z[:-1]
-if __name__ == "__main__":
-    bo_ma = A51()
-    print("--- KIỂM TRA KHỞI TẠO BỘ SINH SỐ A5/1 ---")
-    print("Độ dài thanh ghi X:", len(bo_ma.X), "bít (Kỳ vọng: 19)")
-    print("Độ dài thanh ghi Y:", len(bo_ma.Y), "bít (Kỳ vọng: 22)")
-    print("Độ dài thanh ghi Z:", len(bo_ma.Z), "bít (Kỳ vọng: 23)")
-
-    # Thử nghiệm phép Quay X với bít nạp vào là 1
-    bo_ma._quay_X(feedback_input=1)
-    print("Trạng thái X sau 1 lần quay với bít nạp 1:")
-    print("x0 =", bo_ma.X[0], "(Kỳ vọng: 1)")
-    print("Toàn bộ X:", "".join(map(str, bo_ma.X)))
