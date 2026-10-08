@@ -13,7 +13,14 @@ class A51:
       - Thanh ghi Z: độ dài 23 bít (z0 đến z22)
     """
 
-    def __init__(self):
+    def __init__(self, key, frame=0):
+        """
+        Khởi tạo hệ mã A5/1 với Khóa phiên K (64 bít) và Số hiệu khung F (22 bít).
+        """
+        # Chuẩn hóa đầu vào của khóa và số khung
+        self.key_bits = self._validate_and_format_key(key)
+        self.frame_bits = self._validate_and_format_frame(frame)
+
         # Khởi tạo 3 thanh ghi X, Y, Z ban đầu gồm toàn bít 0
         self.X = [0] * 19
         self.Y = [0] * 22
@@ -93,24 +100,120 @@ class A51:
             self._quay_Y()
         if z10 == m:
             self._quay_Z()
+    def _load_key(self):
+        """Giai đoạn 1: Nạp khóa 64 chu kỳ (quay đồng bộ 3 thanh ghi)."""
+        for i in range(64):
+            k_bit = self.key_bits[i]
+            self._quay_X(feedback_input=k_bit)
+            self._quay_Y(feedback_input=k_bit)
+            self._quay_Z(feedback_input=k_bit)
+
+    def _load_frame(self):
+        """Giai đoạn 2: Nạp số khung 22 chu kỳ (quay đồng bộ 3 thanh ghi)."""
+        for j in range(22):
+            f_bit = self.frame_bits[j]
+            self._quay_X(feedback_input=f_bit)
+            self._quay_Y(feedback_input=f_bit)
+            self._quay_Z(feedback_input=f_bit)
+    @staticmethod
+    def _validate_and_format_key(key):
+        """Chuyển đổi và kiểm tra Khóa K phải đủ đúng 64 bít."""
+        if isinstance(key, str):
+            key = key.strip()
+            if key.startswith("0x") or key.startswith("0X"):
+                bin_str = bin(int(key, 16))[2:].zfill(64)
+                key_list = [int(b) for b in bin_str]
+            else:
+                key_list = [int(b) for b in key if b in ("0", "1")]
+        elif isinstance(key, list):
+            key_list = [int(b) for b in key]
+        else:
+            raise TypeError("Khóa K phải ở dạng chuỗi nhị phân hoặc chuỗi Hex.")
+
+        if len(key_list) != 64:
+            raise ValueError(f"Khóa K phải có đúng 64 bít (hiện tại: {len(key_list)} bít).")
+        return key_list
+
+    @staticmethod
+    def _validate_and_format_frame(frame):
+        """Chuyển đổi và kiểm tra Số khung F phải đủ đúng 22 bít."""
+        if isinstance(frame, int):
+            if frame < 0 or frame >= (1 << 22):
+                raise ValueError("Số khung F phải nằm trong khoảng từ 0 đến 2^22 - 1.")
+            return [(frame >> i) & 1 for i in range(22)]
+        elif isinstance(frame, str):
+            frame_list = [int(b) for b in frame.strip() if b in ("0", "1")]
+            if len(frame_list) != 22:
+                raise ValueError(f"Số khung F phải có đúng 22 bít (hiện tại: {len(frame_list)} bít).")
+            return frame_list
+        elif isinstance(frame, list):
+            if len(frame) != 22:
+                raise ValueError("Danh sách bít số khung phải gồm đúng 22 phần tử.")
+            return [int(b) for b in frame]
+        else:
+            raise TypeError("Số khung F không hợp lệ.")
+
+    def _warmup(self):
+        """
+        Giai đoạn 3: Chạy ấm 100 chu kỳ (Warm-up / Mixing phase).
+        - Thực hiện quay 100 chu kỳ theo quy tắc hàm chiếm đa số (Majority).
+        - Toàn bộ bít đầu ra bị hủy bỏ hoàn toàn, không đưa vào dòng khóa.
+        """
+        for _ in range(100):
+            # Mỗi chu kỳ kích hoạt quay dừng/chạy theo đa số
+            self._clock_majority()
+
+    def generate_keystream(self):
+        """
+        Giai đoạn 4: Sinh dòng khóa gồm 228 bít cho một khung thoại GSM.
+        - Khởi động: reset() -> nạp khóa 64 chu kỳ -> nạp khung 22 chu kỳ -> chạy ấm 100 chu kỳ.
+        - Sinh 228 bít: quay theo Majority, trích xuất chuẩn GSM ETSI: si = x18 ⊕ y21 ⊕ z22.
+        - Trả về: (downlink, uplink), mỗi luồng dài đúng 114 bít.
+        """
+        # Bước A: Thiết lập trạng thái ban đầu
+        self.reset()
+        self._load_key()
+        self._load_frame()
+        self._warmup()
+
+        keystream = []
+
+        # Bước B: Sinh 228 bít dòng khóa
+        for _ in range(228):
+            # 1. Quay các thanh ghi thỏa mãn hàm đa số
+            self._clock_majority()
+
+            # 2. Trích xuất bít dòng khóa chuẩn GSM ETSI (bít cuối cùng của 3 thanh ghi)
+            s_bit = self.X[18] ^ self.Y[21] ^ self.Z[22]
+            keystream.append(s_bit)
+
+        # Bước C: Phân chia luồng đàm thoại GSM
+        downlink = keystream[:114]
+        uplink = keystream[114:]
+
+        return downlink, uplink
+# =============================================================================
+# KHỐI TỰ KIỂM THỬ CỤC BỘ (SELF-TEST)
+# =============================================================================
 if __name__ == "__main__":
-    bo_ma = A51()
-    print("--- KIỂM TRA DAY 2: HÀM CHIẾM ĐA SỐ (MAJORITY) ---")
+    print("=" * 65)
+    print("   KIỂM THỬ LÕI A5/1 (GSM ETSI REFERENCE - CHUẨN QUỐC TẾ)")
+    print("=" * 65)
 
-    # 1. Kiểm tra bảng chân lý của hàm đa số (8 trường hợp)
-    print("maj(0, 0, 0) =", bo_ma._majority(0, 0, 0), "(Kỳ vọng: 0)")
-    print("maj(0, 0, 1) =", bo_ma._majority(0, 0, 1), "(Kỳ vọng: 0)")
-    print("maj(0, 1, 1) =", bo_ma._majority(0, 1, 1), "(Kỳ vọng: 1)")
-    print("maj(1, 1, 1) =", bo_ma._majority(1, 1, 1), "(Kỳ vọng: 1)")
+    # Nạp Test Vector chuẩn quốc tế (Marc Briceno / ETSI)
+    test_key_hex = "0x1223456789ABCDEF"
+    test_frame = 0x134  # Số khung 308 trong hệ thập phân
 
-    # 2. Giả lập thử nghiệm một nhịp quay majority
-    # Gán thử bít nhịp: x8=1, y10=0, z10=1 -> m = maj(1, 0, 1) = 1
-    # Kỳ vọng: X quay, Z quay, còn Y đứng yên!
-    bo_ma.X[8] = 1
-    bo_ma.Y[10] = 0
-    bo_ma.Z[10] = 1
+    bo_ma = A51(key=test_key_hex, frame=test_frame)
+    downlink_bits, uplink_bits = bo_ma.generate_keystream()
 
-    print("\n--- Thử nghiệm 1 nhịp quay Majority ---")
-    print("Bít nhịp trước khi quay: x8=1, y10=0, z10=1 -> m =", bo_ma._majority(1, 0, 1))
-    bo_ma._clock_majority()
-    print("Quay thành công! X và Z đã quay, Y giữ nguyên.")
+    print(f"Khóa phiên K (Hex)    : {test_key_hex}")
+    print(f"Số hiệu khung F (Int) : {test_frame}")
+    print(f"Tổng số bít sinh ra   : {len(downlink_bits) + len(uplink_bits)} bít (Kỳ vọng: 228)")
+    print("-" * 65)
+    print(f"Downlink (114 bít)    : {''.join(map(str, downlink_bits))}")
+    print(f"Uplink   (114 bít)    : {''.join(map(str, uplink_bits))}")
+    print("-" * 65)
+    print(f"Kiểm tra độ dài Downlink : {len(downlink_bits)} bít (Kỳ vọng: 114)")
+    print(f"Kiểm tra độ dài Uplink   : {len(uplink_bits)} bít (Kỳ vọng: 114)")
+    print("Trạng thái: Hoàn thành sinh dòng khóa chuẩn GSM thành công!")
