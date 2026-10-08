@@ -117,8 +117,9 @@ class TinyA51:
 
     Ví dụ:
         >>> cipher = TinyA51("10010101001110100110000")
-        >>> [cipher.step() for _ in range(3)]
-        [1, 0, 0]
+        >>> keystream, trace = cipher.generate_keystream(3)
+        >>> keystream
+        '100'
     """
 
     def __init__(self, key: str) -> None:
@@ -146,16 +147,35 @@ class TinyA51:
 
     # -- Một bước sinh số -------------------------------------------------
 
-    def step(self) -> int:
-        """Thực hiện một bước sinh số (quay theo hàm chiếm đa số), trả về bit s_i."""
+    def step_with_trace(self) -> tuple[int, dict]:
+        """Thực hiện một bước sinh số và trả về (bit s_i, bản ghi trace).
+
+        Bản ghi trace có dạng:
+        {
+            "step": 0,
+            "clock_bits": {"x1": 0, "y3": 0, "z3": 1},
+            "majority": 0,
+            "rotated_registers": ["X", "Y"],
+            "feedback_bits": {"X": 1, "Y": 1},
+            "state_before": {"X": "100101", "Y": "01001110", "Z": "100110000"},
+            "state_after":  {"X": "110010", "Y": "10100111", "Z": "100110000"},
+            "output_bit": 1
+        }
+        """
+        state_before = self.get_state()
+
         # Bước 1: đọc 3 bit điều khiển quay và tính hàm chiếm đa số
         clock_values = {name: self.registers[name][CLOCK_INDEX[name]] for name in REGISTER_NAMES}
         m = majority(clock_values["X"], clock_values["Y"], clock_values["Z"])
 
         # Bước 2: thanh ghi nào có bit điều khiển bằng m thì quay
+        rotated: list[str] = []
+        feedback_bits: dict[str, int] = {}
         for name in REGISTER_NAMES:
             if clock_values[name] == m:
-                self.registers[name], _ = _rotate(self.registers[name], TAPS[name])
+                self.registers[name], t = _rotate(self.registers[name], TAPS[name])
+                rotated.append(name)
+                feedback_bits[name] = t
 
         # Bước 3: tính bit sinh ra SAU khi quay: s_i = x5 XOR y7 XOR z8
         output_bit = (
@@ -163,5 +183,40 @@ class TinyA51:
             ^ self.registers["Y"][OUTPUT_INDEX["Y"]]
             ^ self.registers["Z"][OUTPUT_INDEX["Z"]]
         )
+
+        record = {
+            "step": self.step_count,
+            "clock_bits": {
+                "x1": clock_values["X"],
+                "y3": clock_values["Y"],
+                "z3": clock_values["Z"],
+            },
+            "majority": m,
+            "rotated_registers": rotated,
+            "feedback_bits": feedback_bits,
+            "state_before": state_before,
+            "state_after": self.get_state(),
+            "output_bit": output_bit,
+        }
+
         self.step_count += 1
-        return output_bit
+        return output_bit, record
+
+    # -- Sinh nhiều bit ----------------------------------------------------
+
+    def generate_keystream(self, length: int) -> tuple[str, list[dict]]:
+        """Sinh `length` bit dãy S tiếp theo.
+
+        Trả về (dãy S dạng chuỗi '0'/'1', danh sách bản ghi trace từng bước).
+        Gọi tiếp lần nữa sẽ sinh tiếp từ trạng thái hiện tại; muốn bắt đầu
+        lại từ khoá thì gọi reset().
+        """
+        if not isinstance(length, int) or length < 0:
+            raise ValueError("Số bit cần sinh phải là số nguyên không âm")
+        bits: list[str] = []
+        trace: list[dict] = []
+        for _ in range(length):
+            bit, record = self.step_with_trace()
+            bits.append(str(bit))
+            trace.append(record)
+        return "".join(bits), trace
