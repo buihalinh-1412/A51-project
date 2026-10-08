@@ -27,6 +27,8 @@ Quy ước code (docs/coding_convention.md mục 5–8):
 
 from __future__ import annotations
 
+import copy
+
 # ---------------------------------------------------------------------------
 # 1. Hằng số lấy từ slide
 # ---------------------------------------------------------------------------
@@ -120,6 +122,8 @@ class TinyA51:
         >>> keystream, trace = cipher.generate_keystream(3)
         >>> keystream
         '100'
+        >>> cipher.encrypt("111")
+        '011'
     """
 
     def __init__(self, key: str) -> None:
@@ -127,6 +131,8 @@ class TinyA51:
         self.key = _validate_bits(key, "Khoá K", KEY_LENGTH)
         self.registers: dict[str, list[int]] = {}
         self.step_count = 0
+        self.last_keystream = ""
+        self.last_trace: list[dict] = []
         self.reset()
 
     # -- Khởi tạo ----------------------------------------------------------
@@ -220,3 +226,26 @@ class TinyA51:
             bits.append(str(bit))
             trace.append(record)
         return "".join(bits), trace
+
+    # -- Mã hoá / giải mã -------------------------------------------------
+
+    def _xor_with_keystream(self, data: str, name: str) -> str:
+        """XOR chuỗi bit với dãy S sinh mới từ khoá (dùng chung cho 2 chiều)."""
+        bits = _validate_bits(data, name)
+        self.reset()  # luôn bắt đầu từ trạng thái nạp khoá
+        keystream, trace = self.generate_keystream(len(bits))
+        self.last_keystream = keystream
+        self.last_trace = trace
+        return "".join(str(int(p) ^ int(s)) for p, s in zip(bits, keystream))
+
+    def encrypt(self, plaintext: str) -> str:
+        """Mã hoá: C = P XOR S. Trace của lần chạy lưu ở self.last_trace."""
+        return self._xor_with_keystream(plaintext, "Bản rõ P")
+
+    def decrypt(self, ciphertext: str) -> str:
+        """Giải mã: P = C XOR S (cùng khoá thì sinh lại đúng dãy S)."""
+        return self._xor_with_keystream(ciphertext, "Bản mã C")
+
+    def export_trace(self) -> list[dict]:
+        """Trả về bản sao trace của lần mã hoá/giải mã gần nhất (cho demo_cli)."""
+        return copy.deepcopy(self.last_trace)
