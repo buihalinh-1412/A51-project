@@ -1,261 +1,269 @@
 """
-Chương trình: Hệ mã hóa dòng A5/1 (Phiên bản đầy đủ chuẩn GSM)
-Học phần: An toàn và bảo mật thông tin
-Sinh viên thực hiện: Bùi Hà Linh
-Mô tả: Lõi thuật toán A5/1, sử dụng thuần Python, không dùng thư viện ngoài.
+Học phần: An toàn và bảo mật thông tin.
+Người phụ trách: Bùi Hà Linh.
+
+Lõi thuật toán A5/1 viết bằng Python thuần, KHÔNG dùng thư viện mật mã.
+File này KHÔNG in ra màn hình; phần tự kiểm tra nằm ở tests/run_verification.py.
+
+Cấu trúc (register_x = R1, register_y = R2, register_z = R3; chỉ số từ 0):
+  register_x: 19 bít, bít nhịp x8,  taps x13 x16 x17 x18   [S#, trang]
+  register_y: 22 bít, bít nhịp y10, taps y20 y21           [S#, trang]
+  register_z: 23 bít, bít nhịp z10, taps z7 z20 z21 z22    [S#, trang]
+Quay một thanh ghi: t = XOR(taps) ^ (bít nạp ngoài); dịch xj = x(j-1); x0 = t.
+Bít keystream: x18 ^ y21 ^ z22 (lấy SAU khi quay). Lưu ý: x8/y10/z10 là bít NHỊP,
+không phải bít output.
+
+Quy trình mỗi khung: xoá -> nạp 64 bít khoá (quay cả 3, XOR bít khoá vào t)
+ -> nạp 22 bít số khung (tương tự) -> 100 chu kỳ warm-up (quay theo majority,
+ bỏ output) -> 228 chu kỳ sinh keystream (114 downlink + 114 uplink).
+
+Quy ước bít (theo cài đặt tham chiếu của Marc Briceno) [S#, trang]:
+  - Khoá dạng hex/bytes: byte đầu tiên trước, trong mỗi byte nạp bít LSB trước.
+  - Khoá dạng chuỗi 64 ký tự 0/1: ký tự đầu là K0 (nạp trước), KHÁC quy ước hex (TD-003).
+  - Số khung: nạp bít LSB (bít 0) trước.
+  - Đóng gói keystream ra byte/hex: bít sinh ra đầu tiên nằm ở bít MSB.
+
+Biểu diễn nội bộ: mỗi thanh ghi là một số nguyên (bitmask), bít thứ i của số = x_i.
+Dịch "xj = x(j-1)" tương ứng phép dịch trái 1 bít (reg << 1).
 """
 
+from __future__ import annotations
+
+# ---------------------------------------------------------------------------
+# Hằng số
+# ---------------------------------------------------------------------------
+LEN_X, LEN_Y, LEN_Z = 19, 22, 23
+KEY_BITS = 64
+FRAME_BITS = 22
+WARMUP_CYCLES = 100
+KEYSTREAM_BITS = 228          # mỗi khung
+HALF = 114                    # mỗi hướng (downlink / uplink)
+
+CLOCK_X, CLOCK_Y, CLOCK_Z = 8, 10, 10   # vị trí bít nhịp
+
+
+def _mask(*positions: int) -> int:
+    value = 0
+    for p in positions:
+        value |= 1 << p
+    return value
+
+
+MASK_X = (1 << LEN_X) - 1
+MASK_Y = (1 << LEN_Y) - 1
+MASK_Z = (1 << LEN_Z) - 1
+TAPS_X = _mask(13, 16, 17, 18)
+TAPS_Y = _mask(20, 21)
+TAPS_Z = _mask(7, 20, 21, 22)
+
+MAX_FRAMES = 1 << FRAME_BITS  # số khung tối đa trước khi số khung lặp lại
+
+
+# ---------------------------------------------------------------------------
+# Hàm phụ trợ
+# ---------------------------------------------------------------------------
+def _majority(b1: int, b2: int, b3: int) -> int:
+    """Hàm chiếm đa số: 1 nếu có từ hai bít 1 trở lên, ngược lại 0."""
+    return 1 if (b1 + b2 + b3) >= 2 else 0
+
+
+def _parity(x: int) -> int:
+    return bin(x).count("1") & 1
+
+
+def _shift(register: int, mask: int, taps: int, feedback_input: int = 0) -> int:
+    """Quay một thanh ghi: t = XOR(taps) ^ feedback_input; dịch; x0 = t."""
+    t = _parity(register & taps) ^ feedback_input
+    return ((register << 1) & mask) | t
+
+
+def bits_to_hex(bits) -> str:
+    """Gom danh sách bít thành chuỗi Hex, MSB-first (chuẩn test vector Briceno).
+    Đệm 0 vào cuối nếu chưa đủ byte (114 bít -> 15 byte)."""
+    bits = list(bits)
+    bits += [0] * (-len(bits) % 8)
+    out = []
+    for i in range(0, len(bits), 8):
+        v = 0
+        for b in bits[i:i + 8]:
+            v = (v << 1) | b
+        out.append(f"{v:02X}")
+    return "".join(out)
+
+
+def _format_key(key) -> list:
+    """Chuẩn hoá khoá về list 64 bít K0..K63. Chấp nhận: chuỗi hex 16 ký tự
+    (có thể có 0x), bytes dài 8, chuỗi nhị phân 64 ký tự, list 64 bít."""
+    if isinstance(key, (bytes, bytearray)):
+        if len(key) != 8:
+            raise ValueError(f"Khoá phải dài 8 byte (nhận {len(key)} byte).")
+        return [(b >> i) & 1 for b in key for i in range(8)]
+    if isinstance(key, str):
+        s = key.strip().replace(" ", "")
+        if s[:2] in ("0x", "0X"):
+            s = s[2:]
+        if len(s) == 64 and set(s) <= {"0", "1"}:
+            return [int(c) for c in s]
+        if len(s) != 16:
+            raise ValueError(
+                "Khoá phải là 16 ký tự hex (64 bít) hoặc 64 ký tự 0/1; "
+                f"nhận {len(s)} ký tự.")
+        try:
+            raw = bytes.fromhex(s)
+        except ValueError:
+            raise ValueError("Khoá chứa ký tự không phải hex.") from None
+        return [(b >> i) & 1 for b in raw for i in range(8)]
+    if isinstance(key, (list, tuple)):
+        if len(key) != KEY_BITS or any(b not in (0, 1) for b in key):
+            raise ValueError("Khoá dạng list phải gồm đúng 64 phần tử 0/1.")
+        return [int(b) for b in key]
+    raise TypeError("Khoá phải là chuỗi hex/nhị phân, bytes hoặc list bít.")
+
+
+def _format_frame(frame) -> list:
+    """Chuẩn hoá số khung về list 22 bít F0..F21 (LSB trước)."""
+    if isinstance(frame, bool):
+        raise TypeError("Số khung không hợp lệ.")
+    if isinstance(frame, int):
+        if not 0 <= frame < MAX_FRAMES:
+            raise ValueError("Số khung phải nằm trong [0, 2^22 - 1].")
+        return [(frame >> i) & 1 for i in range(FRAME_BITS)]
+    if isinstance(frame, str):
+        s = frame.strip()
+        if len(s) != FRAME_BITS or not set(s) <= {"0", "1"}:
+            raise ValueError("Số khung dạng chuỗi phải gồm đúng 22 ký tự 0/1.")
+        return [int(c) for c in s]
+    if isinstance(frame, (list, tuple)):
+        if len(frame) != FRAME_BITS or any(b not in (0, 1) for b in frame):
+            raise ValueError("Số khung dạng list phải gồm đúng 22 bít 0/1.")
+        return [int(b) for b in frame]
+    raise TypeError("Số khung không hợp lệ.")
+
+
+# ---------------------------------------------------------------------------
+# Lớp A51
+# ---------------------------------------------------------------------------
 class A51:
-    """
-    Lớp A51 mô phỏng bộ sinh số gồm 3 thanh ghi X, Y, Z theo Slide bài giảng:
-      - Thanh ghi X: độ dài 19 bít (x0 đến x18)
-      - Thanh ghi Y: độ dài 22 bít (y0 đến y21)
-      - Thanh ghi Z: độ dài 23 bít (z0 đến z22)
-    """
+    """Bộ sinh dòng khoá A5/1 cho một khoá phiên K (64 bít) và số khung F."""
 
-    def __init__(self, key, frame=0):
-        """
-        Khởi tạo hệ mã A5/1 với Khóa phiên K (64 bít) và Số hiệu khung F (22 bít).
-        """
-        # Chuẩn hóa đầu vào của khóa và số khung
-        self.key_bits = self._validate_and_format_key(key)
-        self.frame_bits = self._validate_and_format_frame(frame)
+    def __init__(self, key, frame=0) -> None:
+        self.key_bits = _format_key(key)
+        self.frame_bits = _format_frame(frame)
+        # Luôn là int (sửa lỗi: trước đây lưu nguyên giá trị gốc, có thể là str/list)
+        self.frame = sum(b << i for i, b in enumerate(self.frame_bits))
+        self.register_x = self.register_y = self.register_z = 0
 
-        # Khởi tạo 3 thanh ghi X, Y, Z ban đầu gồm toàn bít 0
-        self.X = [0] * 19
-        self.Y = [0] * 22
-        self.Z = [0] * 23
+    # -- thanh ghi -----------------------------------------------------
+    def reset(self) -> None:
+        self.register_x = self.register_y = self.register_z = 0
 
-    def reset(self):
-        """Đưa trạng thái của cả 3 thanh ghi X, Y, Z về toàn bít 0."""
-        self.X = [0] * 19
-        self.Y = [0] * 22
-        self.Z = [0] * 23
+    def get_state(self) -> dict:
+        """Trạng thái dạng chuỗi bít x0..x18, y0..y21, z0..z22 (cho trace/debug)."""
+        def to_str(reg, n):
+            return "".join(str((reg >> i) & 1) for i in range(n))
+        return {"X": to_str(self.register_x, LEN_X),
+                "Y": to_str(self.register_y, LEN_Y),
+                "Z": to_str(self.register_z, LEN_Z)}
 
-    def _quay_X(self, feedback_input=0):
-        """
-        Thao tác Quay X (Slide 51):
-          - Tính bít phản hồi: t = x13 ⊕ x16 ⊕ x17 ⊕ x18 ⊕ feedback_input
-          - Dịch bít: xj = xj-1 với j = 18, 17, ..., 1
-          - Nạp bít mới: x0 = t
-        """
-        # 1. Tính bít phản hồi t bằng phép XOR (toán tử ^ trong Python)
-        t = self.X[13] ^ self.X[16] ^ self.X[17] ^ self.X[18] ^ feedback_input
+    def _clock_r1(self, feedback_input: int = 0) -> None:
+        self.register_x = _shift(self.register_x, MASK_X, TAPS_X, feedback_input)
 
-        # 2. Dịch bít sang phải và nạp t vào ô đầu tiên x0
-        # self.X[:-1] cắt bỏ bít cuối cùng x18
-        # [t] + self.X[:-1] chèn bít t vào vị trí x0
-        self.X = [t] + self.X[:-1]
+    def _clock_r2(self, feedback_input: int = 0) -> None:
+        self.register_y = _shift(self.register_y, MASK_Y, TAPS_Y, feedback_input)
 
-    def _quay_Y(self, feedback_input=0):
-        """
-        Thao tác Quay Y (Slide 51):
-          - Tính bít phản hồi: t = y20 ⊕ y21 ⊕ feedback_input
-          - Dịch bít: yj = yj-1 với j = 21, 20, ..., 1
-          - Nạp bít mới: y0 = t
-        """
-        t = self.Y[20] ^ self.Y[21] ^ feedback_input
-        self.Y = [t] + self.Y[:-1]
+    def _clock_r3(self, feedback_input: int = 0) -> None:
+        self.register_z = _shift(self.register_z, MASK_Z, TAPS_Z, feedback_input)
 
-    def _quay_Z(self, feedback_input=0):
-        """
-        Thao tác Quay Z (Slide 51):
-          - Tính bít phản hồi: t = z7 ⊕ z20 ⊕ z21 ⊕ z22 ⊕ feedback_input
-          - Dịch bít: zj = zj-1 với j = 22, 21, ..., 1
-          - Nạp bít mới: z0 = t
-        """
-        t = self.Z[7] ^ self.Z[20] ^ self.Z[21] ^ self.Z[22] ^ feedback_input
-        self.Z = [t] + self.Z[:-1]
-    @staticmethod
-    def _majority(b1, b2, b3):
-        """
-        Hàm chiếm đa số m = maj(b1, b2, b3) (Slide 49 & Slide 51):
-          - Nếu trong 3 bít có từ hai bít 0 trở lên -> trả về 0.
-          - Nếu trong 3 bít có từ hai bít 1 trở lên -> trả về 1.
-        """
-        # Cách 1: Đếm tổng các bít (rất trực quan theo đúng định nghĩa slide)
-        if (b1 + b2 + b3) >= 2:
-            return 1
-        else:
-            return 0
-    def _clock_majority(self):
-        """
-        Điều khiển nhịp dừng/chạy cho 3 thanh ghi theo hàm chiếm đa số (Slide 51):
-          - Lấy 3 bít nhịp: x8, y10, z10.
-          - Tính m = maj(x8, y10, z10).
-          - Thanh ghi nào có bít nhịp bằng m thì được kích hoạt quay.
-        """
-        # 1. Trích xuất 3 bít nhịp từ các vị trí quy định trên slide
-        x8 = self.X[8]
-        y10 = self.Y[10]
-        z10 = self.Z[10]
+    def _clock_all(self, bit: int) -> None:
+        """Quay đồng bộ cả 3 thanh ghi, XOR 'bit' vào bít phản hồi (nạp khoá/khung)."""
+        self._clock_r1(bit)
+        self._clock_r2(bit)
+        self._clock_r3(bit)
 
-        # 2. Tính giá trị chiếm đa số m
-        m = self._majority(x8, y10, z10)
+    def _clock_majority(self) -> None:
+        """Quay theo hàm chiếm đa số của x8, y10, z10."""
+        clock_bit_x = (self.register_x >> CLOCK_X) & 1
+        clock_bit_y = (self.register_y >> CLOCK_Y) & 1
+        clock_bit_z = (self.register_z >> CLOCK_Z) & 1
+        majority_bit = _majority(clock_bit_x, clock_bit_y, clock_bit_z)
+        if clock_bit_x == majority_bit:
+            self._clock_r1()
+        if clock_bit_y == majority_bit:
+            self._clock_r2()
+        if clock_bit_z == majority_bit:
+            self._clock_r3()
 
-        # 3. Kích hoạt quay các thanh ghi có bít nhịp bằng m
-        if x8 == m:
-            self._quay_X()
-        if y10 == m:
-            self._quay_Y()
-        if z10 == m:
-            self._quay_Z()
-    def _load_key(self):
-        """Giai đoạn 1: Nạp khóa 64 chu kỳ (quay đồng bộ 3 thanh ghi)."""
-        for i in range(64):
-            k_bit = self.key_bits[i]
-            self._quay_X(feedback_input=k_bit)
-            self._quay_Y(feedback_input=k_bit)
-            self._quay_Z(feedback_input=k_bit)
+    def _output_bit(self) -> int:
+        return ((self.register_x >> (LEN_X - 1))
+                ^ (self.register_y >> (LEN_Y - 1))
+                ^ (self.register_z >> (LEN_Z - 1))) & 1
 
-    def _load_frame(self):
-        """Giai đoạn 2: Nạp số khung 22 chu kỳ (quay đồng bộ 3 thanh ghi)."""
-        for j in range(22):
-            f_bit = self.frame_bits[j]
-            self._quay_X(feedback_input=f_bit)
-            self._quay_Y(feedback_input=f_bit)
-            self._quay_Z(feedback_input=f_bit)
-    @staticmethod
-    def _validate_and_format_key(key):
-        """Chuyển đổi và kiểm tra Khóa K phải đủ đúng 64 bít."""
-        if isinstance(key, str):
-            key = key.strip()
-            if key.startswith("0x") or key.startswith("0X"):
-                bin_str = bin(int(key, 16))[2:].zfill(64)
-                key_list = [int(b) for b in bin_str]
-            else:
-                key_list = [int(b) for b in key if b in ("0", "1")]
-        elif isinstance(key, list):
-            key_list = [int(b) for b in key]
-        else:
-            raise TypeError("Khóa K phải ở dạng chuỗi nhị phân hoặc chuỗi Hex.")
+    # -- các giai đoạn -------------------------------------------------
+    def _load_key(self) -> None:
+        for k in self.key_bits:
+            self._clock_all(k)
 
-        if len(key_list) != 64:
-            raise ValueError(f"Khóa K phải có đúng 64 bít (hiện tại: {len(key_list)} bít).")
-        return key_list
+    def _load_frame(self) -> None:
+        for f in self.frame_bits:
+            self._clock_all(f)
 
-    @staticmethod
-    def _validate_and_format_frame(frame):
-        """Chuyển đổi và kiểm tra Số khung F phải đủ đúng 22 bít."""
-        if isinstance(frame, int):
-            if frame < 0 or frame >= (1 << 22):
-                raise ValueError("Số khung F phải nằm trong khoảng từ 0 đến 2^22 - 1.")
-            return [(frame >> i) & 1 for i in range(22)]
-        elif isinstance(frame, str):
-            frame_list = [int(b) for b in frame.strip() if b in ("0", "1")]
-            if len(frame_list) != 22:
-                raise ValueError(f"Số khung F phải có đúng 22 bít (hiện tại: {len(frame_list)} bít).")
-            return frame_list
-        elif isinstance(frame, list):
-            if len(frame) != 22:
-                raise ValueError("Danh sách bít số khung phải gồm đúng 22 phần tử.")
-            return [int(b) for b in frame]
-        else:
-            raise TypeError("Số khung F không hợp lệ.")
-
-    def _warmup(self):
-        """
-        Giai đoạn 3: Chạy ấm 100 chu kỳ (Warm-up / Mixing phase).
-        - Thực hiện quay 100 chu kỳ theo quy tắc hàm chiếm đa số (Majority).
-        - Toàn bộ bít đầu ra bị hủy bỏ hoàn toàn, không đưa vào dòng khóa.
-        """
-        for _ in range(100):
-            # Mỗi chu kỳ kích hoạt quay dừng/chạy theo đa số
+    def _warmup(self) -> None:
+        for _ in range(WARMUP_CYCLES):
             self._clock_majority()
 
     def generate_keystream(self):
-        """
-        Giai đoạn 4: Sinh dòng khóa gồm 228 bít cho một khung thoại GSM.
-        - Khởi động: reset() -> nạp khóa 64 chu kỳ -> nạp khung 22 chu kỳ -> chạy ấm 100 chu kỳ.
-        - Sinh 228 bít: quay theo Majority, trích xuất chuẩn GSM ETSI: si = x18 ⊕ y21 ⊕ z22.
-        - Trả về: (downlink, uplink), mỗi luồng dài đúng 114 bít.
-        """
-        # Bước A: Thiết lập trạng thái ban đầu
+        """Trả về (downlink, uplink): hai list 114 bít cho khung hiện tại."""
         self.reset()
         self._load_key()
         self._load_frame()
         self._warmup()
-
         keystream = []
-
-        # Bước B: Sinh 228 bít dòng khóa
-        for _ in range(228):
-            # 1. Quay các thanh ghi thỏa mãn hàm đa số
+        for _ in range(KEYSTREAM_BITS):
             self._clock_majority()
+            keystream.append(self._output_bit())
+        return keystream[:HALF], keystream[HALF:]
 
-            # 2. Trích xuất bít dòng khóa chuẩn GSM ETSI (bít cuối cùng của 3 thanh ghi)
-            s_bit = self.X[18] ^ self.Y[21] ^ self.Z[22]
-            keystream.append(s_bit)
-
-        # Bước C: Phân chia luồng đàm thoại GSM
-        downlink = keystream[:114]
-        uplink = keystream[114:]
-
-        return downlink, uplink
-    def encrypt_bits(self, plaintext_bits, use_uplink=True):
-        """
-        Mã hóa chuỗi bít bản rõ P bằng phép XOR với dòng khóa S: C = P ⊕ S
-        - plaintext_bits: Danh sách các bít [0, 1, 1, 0...] (tối đa 114 bít cho 1 khung)
-        - use_uplink: True nếu mã hóa chiều Uplink, False cho Downlink
-        - Trả về: Danh sách bít bản mã ciphertext_bits
-        """
-        downlink, uplink = self.generate_keystream()
-        keystream = uplink if use_uplink else downlink
-
+    # -- mã hoá / giải mã chuỗi bít (tối đa 114 bít, một khung) ---------
+    def encrypt_bits(self, plaintext_bits, use_uplink: bool = False):
+        """C = P xor S trên một khung. Mặc định dùng keystream downlink."""
+        down, up = self.generate_keystream()
+        keystream = up if use_uplink else down
         if len(plaintext_bits) > len(keystream):
-            raise ValueError(f"Dữ liệu bản rõ ({len(plaintext_bits)} bít) vượt quá độ dài dòng khóa khung ({len(keystream)} bít).")
+            raise ValueError(
+                f"Một khung chỉ mã được {len(keystream)} bít "
+                f"(nhận {len(plaintext_bits)}). Dùng encrypt_bytes cho dữ liệu dài.")
+        return [int(p) ^ s for p, s in zip(plaintext_bits, keystream)]
 
-        # Thực hiện C_i = P_i ⊕ S_i
-        ciphertext_bits = [p ^ s for p, s in zip(plaintext_bits, keystream)]
-        return ciphertext_bits
+    def decrypt_bits(self, ciphertext_bits, use_uplink: bool = False):
+        return self.encrypt_bits(ciphertext_bits, use_uplink)
 
-    def decrypt_bits(self, ciphertext_bits, use_uplink=True):
-        """
-        Giải mã chuỗi bít bản mã C bằng phép XOR với dòng khóa S: P = C ⊕ S
-        Do tính chất tự nghịch đảo của phép XOR: (P ⊕ S) ⊕ S = P
-        """
-        # Giải mã hoàn toàn giống mã hóa (dùng lại đúng dòng khóa S)
-        return self.encrypt_bits(ciphertext_bits, use_uplink=use_uplink)
-    
-if __name__ == "__main__":
-        print("=" * 70)
-        print("   KIỂM THỬ LÕI A5/1 (GSM ETSI REFERENCE & ROUND-TRIP TEST)")
-        print("=" * 70)
+    # -- mã hoá / giải mã dữ liệu dài (TD-005) --------------------------
+    def keystream_bytes(self, nbytes: int, use_uplink: bool = False) -> bytes:
+        """Sinh nbytes byte keystream: nối các khung liên tiếp (frame, frame+1, ...),
+        mỗi khung lấy 114 bít, đóng gói MSB-first."""
+        nbits = nbytes * 8
+        frames_needed = -(-nbits // HALF)
+        if self.frame + frames_needed > MAX_FRAMES:
+            raise ValueError(
+                "Dữ liệu quá dài: số khung vượt 2^22, keystream sẽ bị lặp lại.")
+        bits = []
+        for n in range(frames_needed):
+            sub = A51(self.key_bits, self.frame + n)
+            down, up = sub.generate_keystream()
+            bits.extend(up if use_uplink else down)
+        bits = bits[:nbits]
+        out = bytearray()
+        for i in range(0, nbits, 8):
+            v = 0
+            for b in bits[i:i + 8]:
+                v = (v << 1) | b
+            out.append(v)
+        return bytes(out)
 
-        # 1. Khai báo Test Vector chuẩn GSM ETSI
-        test_key_hex = "0x1223456789ABCDEF"
-        test_frame = 0x134
+    def encrypt_bytes(self, data: bytes, use_uplink: bool = False) -> bytes:
+        """Mã hoá dữ liệu bất kỳ độ dài (text, ảnh...). Bản mã dài bằng bản rõ."""
+        keystream = self.keystream_bytes(len(data), use_uplink)
+        return bytes(d ^ k for d, k in zip(data, keystream))
 
-        print(f"[*] Khởi tạo A5/1 với:")
-        print(f"    - Khóa K (Hex)    : {test_key_hex}")
-        print(f"    - Số khung F (Hex): {hex(test_frame)} ({test_frame})\n")
-
-        a51_engine = A51(key=test_key_hex, frame=test_frame)
-
-        # 2. Tạo bản rõ thử nghiệm P (8 bít nhị phân)
-        P_original = [1, 1, 0, 1, 0, 0, 1, 1]
-        print(f"1. Bản rõ ban đầu (P)      : {P_original}")
-
-        # 3. Mã hóa phía Máy di động (Uplink: Máy -> Trạm)
-        C_cipher = a51_engine.encrypt_bits(P_original, use_uplink=True)
-        print(f"2. Bản mã thu được (C)     : {C_cipher}")
-
-        # 4. Giải mã phía Trạm thu phát (Uplink: Trạm nhận được C và giải mã bằng cùng dòng khóa Uplink)
-        # Khởi tạo lại một bộ A51 độc lập ở phía nhận với cùng Key và Frame
-        a51_receiver = A51(key=test_key_hex, frame=test_frame)
-        P_decrypted = a51_receiver.decrypt_bits(C_cipher, use_uplink=True)
-        print(f"3. Bản rõ sau giải mã (P') : {P_decrypted}")
-
-        # 5. Kiểm tra tính đúng đắn Round-trip
-        is_correct = (P_original == P_decrypted)
-        print("-" * 70)
-        print(f"Kết quả kiểm tra Round-trip (P' == P): {is_correct}")
-        if is_correct:
-            print("=> XÁC NHẬN: Giải mã khôi phục CHÍNH XÁC 100% bản rõ ban đầu!")
-
-        # 6. Kiểm tra sinh Keystream 228 bít (114 bít Downlink + 114 bít Uplink)
-        print("-" * 70)
-        downlink, uplink = a51_engine.generate_keystream()
-        print(f"[*] Dòng khóa Downlink (114 bít): {downlink[:16]}... (độ dài: {len(downlink)})")
-        print(f"[*] Dòng khóa Uplink   (114 bít): {uplink[:16]}... (độ dài: {len(uplink)})")
-        print("=" * 70)
+    def decrypt_bytes(self, data: bytes, use_uplink: bool = False) -> bytes:
+        return self.encrypt_bytes(data, use_uplink)
