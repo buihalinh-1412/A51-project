@@ -192,28 +192,70 @@ class A51:
         uplink = keystream[114:]
 
         return downlink, uplink
-# =============================================================================
-# KHỐI TỰ KIỂM THỬ CỤC BỘ (SELF-TEST)
-# =============================================================================
+    def encrypt_bits(self, plaintext_bits, use_uplink=True):
+        """
+        Mã hóa chuỗi bít bản rõ P bằng phép XOR với dòng khóa S: C = P ⊕ S
+        - plaintext_bits: Danh sách các bít [0, 1, 1, 0...] (tối đa 114 bít cho 1 khung)
+        - use_uplink: True nếu mã hóa chiều Uplink, False cho Downlink
+        - Trả về: Danh sách bít bản mã ciphertext_bits
+        """
+        downlink, uplink = self.generate_keystream()
+        keystream = uplink if use_uplink else downlink
+
+        if len(plaintext_bits) > len(keystream):
+            raise ValueError(f"Dữ liệu bản rõ ({len(plaintext_bits)} bít) vượt quá độ dài dòng khóa khung ({len(keystream)} bít).")
+
+        # Thực hiện C_i = P_i ⊕ S_i
+        ciphertext_bits = [p ^ s for p, s in zip(plaintext_bits, keystream)]
+        return ciphertext_bits
+
+    def decrypt_bits(self, ciphertext_bits, use_uplink=True):
+        """
+        Giải mã chuỗi bít bản mã C bằng phép XOR với dòng khóa S: P = C ⊕ S
+        Do tính chất tự nghịch đảo của phép XOR: (P ⊕ S) ⊕ S = P
+        """
+        # Giải mã hoàn toàn giống mã hóa (dùng lại đúng dòng khóa S)
+        return self.encrypt_bits(ciphertext_bits, use_uplink=use_uplink)
+    
 if __name__ == "__main__":
-    print("=" * 65)
-    print("   KIỂM THỬ LÕI A5/1 (GSM ETSI REFERENCE - CHUẨN QUỐC TẾ)")
-    print("=" * 65)
+        print("=" * 70)
+        print("   KIỂM THỬ LÕI A5/1 (GSM ETSI REFERENCE & ROUND-TRIP TEST)")
+        print("=" * 70)
 
-    # Nạp Test Vector chuẩn quốc tế (Marc Briceno / ETSI)
-    test_key_hex = "0x1223456789ABCDEF"
-    test_frame = 0x134  # Số khung 308 trong hệ thập phân
+        # 1. Khai báo Test Vector chuẩn GSM ETSI
+        test_key_hex = "0x1223456789ABCDEF"
+        test_frame = 0x134
 
-    bo_ma = A51(key=test_key_hex, frame=test_frame)
-    downlink_bits, uplink_bits = bo_ma.generate_keystream()
+        print(f"[*] Khởi tạo A5/1 với:")
+        print(f"    - Khóa K (Hex)    : {test_key_hex}")
+        print(f"    - Số khung F (Hex): {hex(test_frame)} ({test_frame})\n")
 
-    print(f"Khóa phiên K (Hex)    : {test_key_hex}")
-    print(f"Số hiệu khung F (Int) : {test_frame}")
-    print(f"Tổng số bít sinh ra   : {len(downlink_bits) + len(uplink_bits)} bít (Kỳ vọng: 228)")
-    print("-" * 65)
-    print(f"Downlink (114 bít)    : {''.join(map(str, downlink_bits))}")
-    print(f"Uplink   (114 bít)    : {''.join(map(str, uplink_bits))}")
-    print("-" * 65)
-    print(f"Kiểm tra độ dài Downlink : {len(downlink_bits)} bít (Kỳ vọng: 114)")
-    print(f"Kiểm tra độ dài Uplink   : {len(uplink_bits)} bít (Kỳ vọng: 114)")
-    print("Trạng thái: Hoàn thành sinh dòng khóa chuẩn GSM thành công!")
+        a51_engine = A51(key=test_key_hex, frame=test_frame)
+
+        # 2. Tạo bản rõ thử nghiệm P (8 bít nhị phân)
+        P_original = [1, 1, 0, 1, 0, 0, 1, 1]
+        print(f"1. Bản rõ ban đầu (P)      : {P_original}")
+
+        # 3. Mã hóa phía Máy di động (Uplink: Máy -> Trạm)
+        C_cipher = a51_engine.encrypt_bits(P_original, use_uplink=True)
+        print(f"2. Bản mã thu được (C)     : {C_cipher}")
+
+        # 4. Giải mã phía Trạm thu phát (Uplink: Trạm nhận được C và giải mã bằng cùng dòng khóa Uplink)
+        # Khởi tạo lại một bộ A51 độc lập ở phía nhận với cùng Key và Frame
+        a51_receiver = A51(key=test_key_hex, frame=test_frame)
+        P_decrypted = a51_receiver.decrypt_bits(C_cipher, use_uplink=True)
+        print(f"3. Bản rõ sau giải mã (P') : {P_decrypted}")
+
+        # 5. Kiểm tra tính đúng đắn Round-trip
+        is_correct = (P_original == P_decrypted)
+        print("-" * 70)
+        print(f"Kết quả kiểm tra Round-trip (P' == P): {is_correct}")
+        if is_correct:
+            print("=> XÁC NHẬN: Giải mã khôi phục CHÍNH XÁC 100% bản rõ ban đầu!")
+
+        # 6. Kiểm tra sinh Keystream 228 bít (114 bít Downlink + 114 bít Uplink)
+        print("-" * 70)
+        downlink, uplink = a51_engine.generate_keystream()
+        print(f"[*] Dòng khóa Downlink (114 bít): {downlink[:16]}... (độ dài: {len(downlink)})")
+        print(f"[*] Dòng khóa Uplink   (114 bít): {uplink[:16]}... (độ dài: {len(uplink)})")
+        print("=" * 70)
