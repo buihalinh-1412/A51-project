@@ -1,120 +1,126 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 560" width="1060" height="560" font-family="Arial, Helvetica, sans-serif" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo0ZTliMWU2Mi0wNjQ4LTRiYTItODg4ZS1mMjdkOTcyYjgwM2MAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaIpjtJEmIC2LNbTWuGqEsq4AAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDpkNGYyYTM3My03MjM0LTQ3NTItODBhNy02M2IxYzI3YWUwNTRscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoy4N0NcPaTBzaFfoIzdO6ngAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggBGy6yBfAS9nihxWQLsNdaC7qQSaZBWqJikxu1/E5qMykZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaM+HvcpPLc6JEE2G2IkyiZ8AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCCT2bxTDWRWGs7TlAFOnufz8y7XkvfTnH+xXFIKHY828WRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjDZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjRlOWIxZTYyLTA2NDgtNGJhMi04ODhlLWYyN2Q5NzJiODAzYy9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjc0YmNjNGI1LTRlNjUtNDUxZi05MWNlLWMxN2E4Y2Y3ZWQ2MHJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCAEbLrIF8BL2eKHFZAuw11oLupBJpkFaomKTG7X8TmozKJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFgg4+52RAfh/W9oQQ1xSNHSNanqAN11JUzHGe54XVLTlyKiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggTb8q2ADsFvRNXmTIgeUiEXAsCnHIygG0j5ixvjfOKvp0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQPvNe291aukWz+M5HwwXkD0aGOziGgSPocjOLR9HGrYyG/LwaQ87/fQGuxGNLFoD49Bd/RA098aJ7HdaWf8nCUI=</c2pa:manifest></metadata>
-<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>
-<rect width="1060" height="560" fill="#fff"/>
-<text x="530.0" y="28" text-anchor="middle" font-size="18" font-weight="bold">Sơ đồ khối phần cứng TinyA5/1 (theo slide Chương 2, trang 46–48)</text>
-<text x="330" y="85.0" font-size="16" font-weight="bold">X <tspan font-size="12" fill="#555" font-weight="normal">(6 bit)</tspan></text>
-<rect x="330" y="93.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="352.0" y="115" text-anchor="middle" font-size="15">x0</text>
-<rect x="374" y="93.0" width="44" height="34" fill="#fff3bf" stroke="#333" stroke-width="1.6"/>
-<text x="396.0" y="115" text-anchor="middle" font-size="15">x1</text>
-<rect x="418" y="93.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="440.0" y="115" text-anchor="middle" font-size="15">x2</text>
-<rect x="462" y="93.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="484.0" y="115" text-anchor="middle" font-size="15">x3</text>
-<rect x="506" y="93.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="528.0" y="115" text-anchor="middle" font-size="15">x4</text>
-<rect x="550" y="93.0" width="44" height="34" fill="#d3f9d8" stroke="#333" stroke-width="1.6"/>
-<text x="572.0" y="115" text-anchor="middle" font-size="15">x5</text>
-
-<line x1="440.0" y1="127.0" x2="440.0" y2="143.0" stroke="#333" stroke-width="1.6"/>
-<line x1="528.0" y1="127.0" x2="528.0" y2="143.0" stroke="#333" stroke-width="1.6"/>
-<line x1="572.0" y1="127.0" x2="572.0" y2="143.0" stroke="#333" stroke-width="1.6"/>
-<line x1="440.0" y1="143.0" x2="572.0" y2="143.0" stroke="#333" stroke-width="1.6"/>
-<polyline points="440.0,143.0 300,143.0 300,121" fill="none" stroke="#333" stroke-width="1.6"/>
-<circle cx="300" cy="110" r="11" fill="#fff" stroke="#333" stroke-width="1.6"/>
-<line x1="289" y1="110" x2="311" y2="110" stroke="#333" stroke-width="1.4"/>
-<line x1="300" y1="99" x2="300" y2="121" stroke="#333" stroke-width="1.4"/>
-<line x1="300" y1="121" x2="300" y2="121" stroke="#333" stroke-width="1.6"/>
-<line x1="311" y1="110" x2="330" y2="110" stroke="#333" stroke-width="1.6" marker-end="url(#ar)"/>
-<text x="330" y="159.0" font-size="12" fill="#b02a2a">t = x2 ⊕ x4 ⊕ x5</text>
-<text x="330" y="225.0" font-size="16" font-weight="bold">Y <tspan font-size="12" fill="#555" font-weight="normal">(8 bit)</tspan></text>
-<rect x="330" y="233.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="352.0" y="255" text-anchor="middle" font-size="15">y0</text>
-<rect x="374" y="233.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="396.0" y="255" text-anchor="middle" font-size="15">y1</text>
-<rect x="418" y="233.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="440.0" y="255" text-anchor="middle" font-size="15">y2</text>
-<rect x="462" y="233.0" width="44" height="34" fill="#fff3bf" stroke="#333" stroke-width="1.6"/>
-<text x="484.0" y="255" text-anchor="middle" font-size="15">y3</text>
-<rect x="506" y="233.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="528.0" y="255" text-anchor="middle" font-size="15">y4</text>
-<rect x="550" y="233.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="572.0" y="255" text-anchor="middle" font-size="15">y5</text>
-<rect x="594" y="233.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="616.0" y="255" text-anchor="middle" font-size="15">y6</text>
-<rect x="638" y="233.0" width="44" height="34" fill="#d3f9d8" stroke="#333" stroke-width="1.6"/>
-<text x="660.0" y="255" text-anchor="middle" font-size="15">y7</text>
-
-<line x1="616.0" y1="267.0" x2="616.0" y2="283.0" stroke="#333" stroke-width="1.6"/>
-<line x1="660.0" y1="267.0" x2="660.0" y2="283.0" stroke="#333" stroke-width="1.6"/>
-<line x1="616.0" y1="283.0" x2="660.0" y2="283.0" stroke="#333" stroke-width="1.6"/>
-<polyline points="616.0,283.0 300,283.0 300,261" fill="none" stroke="#333" stroke-width="1.6"/>
-<circle cx="300" cy="250" r="11" fill="#fff" stroke="#333" stroke-width="1.6"/>
-<line x1="289" y1="250" x2="311" y2="250" stroke="#333" stroke-width="1.4"/>
-<line x1="300" y1="239" x2="300" y2="261" stroke="#333" stroke-width="1.4"/>
-<line x1="300" y1="261" x2="300" y2="261" stroke="#333" stroke-width="1.6"/>
-<line x1="311" y1="250" x2="330" y2="250" stroke="#333" stroke-width="1.6" marker-end="url(#ar)"/>
-<text x="330" y="299.0" font-size="12" fill="#b02a2a">t = y6 ⊕ y7</text>
-<text x="330" y="365.0" font-size="16" font-weight="bold">Z <tspan font-size="12" fill="#555" font-weight="normal">(9 bit)</tspan></text>
-<rect x="330" y="373.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="352.0" y="395" text-anchor="middle" font-size="15">z0</text>
-<rect x="374" y="373.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="396.0" y="395" text-anchor="middle" font-size="15">z1</text>
-<rect x="418" y="373.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="440.0" y="395" text-anchor="middle" font-size="15">z2</text>
-<rect x="462" y="373.0" width="44" height="34" fill="#fff3bf" stroke="#333" stroke-width="1.6"/>
-<text x="484.0" y="395" text-anchor="middle" font-size="15">z3</text>
-<rect x="506" y="373.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="528.0" y="395" text-anchor="middle" font-size="15">z4</text>
-<rect x="550" y="373.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="572.0" y="395" text-anchor="middle" font-size="15">z5</text>
-<rect x="594" y="373.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="616.0" y="395" text-anchor="middle" font-size="15">z6</text>
-<rect x="638" y="373.0" width="44" height="34" fill="#e7f0fd" stroke="#333" stroke-width="1.6"/>
-<text x="660.0" y="395" text-anchor="middle" font-size="15">z7</text>
-<rect x="682" y="373.0" width="44" height="34" fill="#d3f9d8" stroke="#333" stroke-width="1.6"/>
-<text x="704.0" y="395" text-anchor="middle" font-size="15">z8</text>
-
-<line x1="440.0" y1="407.0" x2="440.0" y2="423.0" stroke="#333" stroke-width="1.6"/>
-<line x1="660.0" y1="407.0" x2="660.0" y2="423.0" stroke="#333" stroke-width="1.6"/>
-<line x1="704.0" y1="407.0" x2="704.0" y2="423.0" stroke="#333" stroke-width="1.6"/>
-<line x1="440.0" y1="423.0" x2="704.0" y2="423.0" stroke="#333" stroke-width="1.6"/>
-<polyline points="440.0,423.0 300,423.0 300,401" fill="none" stroke="#333" stroke-width="1.6"/>
-<circle cx="300" cy="390" r="11" fill="#fff" stroke="#333" stroke-width="1.6"/>
-<line x1="289" y1="390" x2="311" y2="390" stroke="#333" stroke-width="1.4"/>
-<line x1="300" y1="379" x2="300" y2="401" stroke="#333" stroke-width="1.4"/>
-<line x1="300" y1="401" x2="300" y2="401" stroke="#333" stroke-width="1.6"/>
-<line x1="311" y1="390" x2="330" y2="390" stroke="#333" stroke-width="1.6" marker-end="url(#ar)"/>
-<text x="330" y="439.0" font-size="12" fill="#b02a2a">t = z2 ⊕ z7 ⊕ z8</text>
-<rect x="30" y="190" width="170" height="120" rx="10" fill="#ffe3e3" stroke="#b02a2a" stroke-width="2"/>
-<text x="115.0" y="236" text-anchor="middle" font-size="15" font-weight="bold">Hàm chiếm đa số</text>
-<text x="115.0" y="256" text-anchor="middle" font-size="12">m = maj(x1, y3, z3)</text>
-<text x="115.0" y="280" text-anchor="middle" font-size="12" fill="#b02a2a">Thanh ghi nào có bit điều</text>
-<text x="115.0" y="296" text-anchor="middle" font-size="12" fill="#b02a2a">khiển = m thì được quay</text>
-<polyline points="396.0,93.0 396.0,79.0 70,79.0 70,190" fill="none" stroke="#b8860b" stroke-width="1.6" marker-end="url(#ar)"/>
-<polyline points="484.0,233.0 484.0,215.0 200,215.0" fill="none" stroke="#b8860b" stroke-width="1.6" marker-end="url(#ar)"/>
-<polyline points="484.0,373.0 484.0,343.0 115.0,343.0 115.0,310" fill="none" stroke="#b8860b" stroke-width="1.6" marker-end="url(#ar)"/>
-<text x="402.0" y="75.0" font-size="11" fill="#b8860b">x1</text>
-<text x="490.0" y="211.0" font-size="11" fill="#b8860b">y3</text>
-<text x="490.0" y="339.0" font-size="11" fill="#b8860b">z3</text>
-<line x1="594" y1="110" x2="806" y2="110" stroke="#2b8a3e" stroke-width="1.6"/>
-<line x1="682" y1="250" x2="806" y2="250" stroke="#2b8a3e" stroke-width="1.6"/>
-<line x1="726" y1="390" x2="806" y2="390" stroke="#2b8a3e" stroke-width="1.6"/>
-<line x1="806" y1="110" x2="806" y2="390" stroke="#2b8a3e" stroke-width="1.6"/>
-<circle cx="846" cy="250" r="13" fill="#fff" stroke="#333" stroke-width="1.6"/>
-<line x1="833" y1="250" x2="859" y2="250" stroke="#333" stroke-width="1.4"/>
-<line x1="846" y1="237" x2="846" y2="263" stroke="#333" stroke-width="1.4"/>
-<line x1="806" y1="250" x2="833" y2="250" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#ar)"/>
-<text x="846" y="228" text-anchor="middle" font-size="12" fill="#2b8a3e">x5 ⊕ y7 ⊕ z8</text>
-<line x1="859" y1="250" x2="916" y2="250" stroke="#333" stroke-width="1.6" marker-end="url(#ar)"/>
-<text x="918" y="255" font-size="14" font-weight="bold">s_i</text>
-<rect x="878" y="310" width="120" height="86" rx="8" fill="#f1f3f5" stroke="#555"/>
-<text x="938" y="332" text-anchor="middle" font-size="12" font-weight="bold">Mã hoá</text>
-<text x="938" y="354" text-anchor="middle" font-size="12">C = P ⊕ S</text>
-<text x="938" y="374" text-anchor="middle" font-size="12">P = C ⊕ S</text>
-<polyline points="901,250 901,310" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="40" y="490" width="16" height="14" fill="#fff3bf" stroke="#333"/><text x="62" y="502" font-size="12">bit điều khiển quay (clocking bit): x1, y3, z3</text>
-<rect x="40" y="512" width="16" height="14" fill="#d3f9d8" stroke="#333"/><text x="62" y="524" font-size="12">bit đầu ra: x5, y7, z8 (lấy SAU khi quay)</text>
-<text x="560" y="502" font-size="12">⊕ : XOR.  Bit t đưa vào vị trí 0 sau khi các bit còn lại dịch sang phải.</text>
-<text x="560" y="524" font-size="12">Khoá K 23 bit: 6 bit đầu vào X, 8 bit tiếp vào Y, 9 bit cuối vào Z.</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 1000" width="1900" height="1000" font-family="DejaVu Sans, Arial, sans-serif" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo2YzFjZTg0ZS0xNzhkLTQ3ODQtODlhNC03MDE0N2E5NTk2N2UAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaEPhA62YzPh2vgXmsJqwoGQAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo5OTRkYWE1ZS03MzA1LTRiZjktOTRlYS05NTZkMmQ2NTE2YWRscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNo1EaXKTdBsgnvcCsRk3B1qQAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggSjUFIeXi9Hj2DTS1LTuSB39fv+QmXjO1sAlAIehKHk2kZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaG51L1fS5wwv0sveJCNurOQAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCDMvHYo56qV9AXNEEd0b38AT/tzSAEaiCXVyNh8O6g+I2RuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjHZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjZjMWNlODRlLTE3OGQtNDc4NC04OWE0LTcwMTQ3YTk1OTY3ZS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmE2ZWE5MDUyLTE3NTUtNDU4NC04NDMzLWM3NzY5YTQ1YzdkNXJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCBKNQUh5eL0ePYNNLUtO5IHf1+/5CZeM7WwCUAh6EoeTaJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFgg1WS56Y1O7JbZCyvlTBT4+eh8U1n6vFQqa1qqBQLQfWWiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggQxsz7+N1IzNR03YWhic+sRA09suLvjwm7pmoCCfaoq10Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQPJp1/dlWmWpTld/OowFWGKhTqwJaxJRAc2tcqjeZCtU2xoH13PHc5fTQVZvQ2jT29HQWcwXVtUjJxB0F5o+75E=</c2pa:manifest></metadata><defs><marker id="ark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#222"/></marker><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c92a2a"/></marker><marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b8a3e"/></marker><marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b8860b"/></marker></defs><rect width="1900" height="1000" fill="#fff"/>
+<text class="t" x="950.0" y="48" font-size="30" text-anchor="middle" font-weight="bold" fill="#111">Sơ đồ khối kiến trúc TinyA5/1 (theo slide Chương 2, trang 46–48)</text>
+<text class="t" x="440" y="308" font-size="40" text-anchor="start" font-weight="bold" fill="#111">X</text>
+<text class="t" x="440" y="340" font-size="20" text-anchor="start" font-weight="normal" fill="#555">6 bit</text>
+<rect id="r1" x="640" y="272.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r1" x="675.0" y="307" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">x0</text>
+<rect id="r2" x="710" y="272.0" width="70" height="56" rx="0" fill="#fff0a8" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r2" x="745.0" y="307" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">x1</text>
+<rect id="r3" x="780" y="272.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r3" x="815.0" y="307" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">x2</text>
+<rect id="r4" x="850" y="272.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r4" x="885.0" y="307" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">x3</text>
+<rect id="r5" x="920" y="272.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r5" x="955.0" y="307" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">x4</text>
+<rect id="r6" x="990" y="272.0" width="70" height="56" rx="0" fill="#c9f0d0" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r6" x="1025.0" y="307" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">x5</text>
+<polyline class="ln" points="815.0,328.0 815.0,352.0" fill="none" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="955.0,328.0 955.0,352.0" fill="none" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="1025.0,328.0 1025.0,352.0" fill="none" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="1025.0,352.0 590,352.0 590,317" fill="none" stroke="#222" stroke-width="2.5" marker-end="url(#ark)"/>
+<circle cx="590" cy="300" r="16" fill="#fff" stroke="#222" stroke-width="2.5"/>
+<polyline class="x" points="574,300 606,300" stroke="#222" stroke-width="2.5"/>
+<polyline class="x" points="590,284 590,316" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="607,300 639,300" fill="none" stroke="#222" stroke-width="2.5" marker-end="url(#ark)"/>
+<text class="t" x="640" y="382.0" font-size="19" text-anchor="start" font-weight="normal" fill="#7a1f1f">bit t = x2 ⊕ x4 ⊕ x5  (đưa vào x0)</text>
+<text class="t" x="440" y="528" font-size="40" text-anchor="start" font-weight="bold" fill="#111">Y</text>
+<text class="t" x="440" y="560" font-size="20" text-anchor="start" font-weight="normal" fill="#555">8 bit</text>
+<rect id="r7" x="640" y="492.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r7" x="675.0" y="527" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">y0</text>
+<rect id="r8" x="710" y="492.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r8" x="745.0" y="527" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">y1</text>
+<rect id="r9" x="780" y="492.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r9" x="815.0" y="527" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">y2</text>
+<rect id="r10" x="850" y="492.0" width="70" height="56" rx="0" fill="#fff0a8" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r10" x="885.0" y="527" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">y3</text>
+<rect id="r11" x="920" y="492.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r11" x="955.0" y="527" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">y4</text>
+<rect id="r12" x="990" y="492.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r12" x="1025.0" y="527" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">y5</text>
+<rect id="r13" x="1060" y="492.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r13" x="1095.0" y="527" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">y6</text>
+<rect id="r14" x="1130" y="492.0" width="70" height="56" rx="0" fill="#c9f0d0" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r14" x="1165.0" y="527" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">y7</text>
+<polyline class="ln" points="1095.0,548.0 1095.0,572.0" fill="none" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="1165.0,548.0 1165.0,572.0" fill="none" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="1165.0,572.0 590,572.0 590,537" fill="none" stroke="#222" stroke-width="2.5" marker-end="url(#ark)"/>
+<circle cx="590" cy="520" r="16" fill="#fff" stroke="#222" stroke-width="2.5"/>
+<polyline class="x" points="574,520 606,520" stroke="#222" stroke-width="2.5"/>
+<polyline class="x" points="590,504 590,536" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="607,520 639,520" fill="none" stroke="#222" stroke-width="2.5" marker-end="url(#ark)"/>
+<text class="t" x="640" y="602.0" font-size="19" text-anchor="start" font-weight="normal" fill="#7a1f1f">bit t = y6 ⊕ y7  (đưa vào y0)</text>
+<text class="t" x="440" y="748" font-size="40" text-anchor="start" font-weight="bold" fill="#111">Z</text>
+<text class="t" x="440" y="780" font-size="20" text-anchor="start" font-weight="normal" fill="#555">9 bit</text>
+<rect id="r15" x="640" y="712.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r15" x="675.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z0</text>
+<rect id="r16" x="710" y="712.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r16" x="745.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z1</text>
+<rect id="r17" x="780" y="712.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r17" x="815.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z2</text>
+<rect id="r18" x="850" y="712.0" width="70" height="56" rx="0" fill="#fff0a8" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r18" x="885.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z3</text>
+<rect id="r19" x="920" y="712.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r19" x="955.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z4</text>
+<rect id="r20" x="990" y="712.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r20" x="1025.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z5</text>
+<rect id="r21" x="1060" y="712.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r21" x="1095.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z6</text>
+<rect id="r22" x="1130" y="712.0" width="70" height="56" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r22" x="1165.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z7</text>
+<rect id="r23" x="1200" y="712.0" width="70" height="56" rx="0" fill="#c9f0d0" stroke="#222" stroke-width="2.5"/>
+<text class="t" data-in="r23" x="1235.0" y="747" font-size="22" text-anchor="middle" font-weight="normal" fill="#111">z8</text>
+<polyline class="ln" points="815.0,768.0 815.0,792.0" fill="none" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="1165.0,768.0 1165.0,792.0" fill="none" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="1235.0,768.0 1235.0,792.0" fill="none" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="1235.0,792.0 590,792.0 590,757" fill="none" stroke="#222" stroke-width="2.5" marker-end="url(#ark)"/>
+<circle cx="590" cy="740" r="16" fill="#fff" stroke="#222" stroke-width="2.5"/>
+<polyline class="x" points="574,740 606,740" stroke="#222" stroke-width="2.5"/>
+<polyline class="x" points="590,724 590,756" stroke="#222" stroke-width="2.5"/>
+<polyline class="ln" points="607,740 639,740" fill="none" stroke="#222" stroke-width="2.5" marker-end="url(#ark)"/>
+<text class="t" x="640" y="822.0" font-size="19" text-anchor="start" font-weight="normal" fill="#7a1f1f">bit t = z2 ⊕ z7 ⊕ z8  (đưa vào z0)</text>
+<rect id="r24" x="50" y="450" width="240" height="140" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="3"/>
+<text class="t" data-in="r24" x="170.0" y="490" font-size="20" text-anchor="middle" font-weight="bold" fill="#111">Hàm chiếm đa số</text>
+<text class="t" data-in="r24" x="170.0" y="516" font-size="17" text-anchor="middle" font-weight="normal" fill="#111">m = maj(x1, y3, z3)</text>
+<text class="t" data-in="r24" x="170.0" y="546" font-size="16" text-anchor="middle" font-weight="normal" fill="#c92a2a">Thanh ghi nào có bit điều</text>
+<text class="t" data-in="r24" x="170.0" y="566" font-size="16" text-anchor="middle" font-weight="normal" fill="#c92a2a">khiển = m thì được quay</text>
+<polyline class="ln" points="760.0,272.0 760.0,218 80,218 80,450" fill="none" stroke="#b8860b" stroke-width="2.5" marker-end="url(#aro)"/>
+<polyline class="ln" points="120,450 120,240 730.0,240 730.0,272.0" fill="none" stroke="#c92a2a" stroke-width="2.5" marker-end="url(#arr)"/>
+<polyline class="ln" points="900.0,492.0 900.0,398.0 170,398.0 170,450" fill="none" stroke="#b8860b" stroke-width="2.5" marker-end="url(#aro)"/>
+<polyline class="ln" points="220,450 220,422.0 870.0,422.0 870.0,492.0" fill="none" stroke="#c92a2a" stroke-width="2.5" marker-end="url(#arr)"/>
+<polyline class="ln" points="130,590 130,672.0 870.0,672.0 870.0,712.0" fill="none" stroke="#c92a2a" stroke-width="2.5" marker-end="url(#arr)"/>
+<polyline class="ln" points="900.0,712.0 900.0,648.0 170,648.0 170,590" fill="none" stroke="#b8860b" stroke-width="2.5" marker-end="url(#aro)"/>
+<text class="t" x="767.0" y="260.0" font-size="18" text-anchor="start" font-weight="bold" fill="#b8860b">x1</text>
+<text class="t" x="907.0" y="480.0" font-size="18" text-anchor="start" font-weight="bold" fill="#b8860b">y3</text>
+<text class="t" x="907.0" y="700.0" font-size="18" text-anchor="start" font-weight="bold" fill="#b8860b">z3</text>
+<polyline class="ln" points="1060,300 1330,300" fill="none" stroke="#2b8a3e" stroke-width="2.5"/>
+<polyline class="ln" points="1200,520 1330,520" fill="none" stroke="#2b8a3e" stroke-width="2.5"/>
+<polyline class="ln" points="1270,740 1330,740" fill="none" stroke="#2b8a3e" stroke-width="2.5"/>
+<polyline class="ln" points="1330,300 1330,740" fill="none" stroke="#2b8a3e" stroke-width="2.5"/>
+<polyline class="ln" points="1330,520 1402,520" fill="none" stroke="#2b8a3e" stroke-width="2.5" marker-end="url(#arg)"/>
+<circle cx="1425" cy="520" r="22" fill="#fff" stroke="#222" stroke-width="2.5"/>
+<polyline class="x" points="1403,520 1447,520" stroke="#222" stroke-width="2.5"/>
+<polyline class="x" points="1425,498 1425,542" stroke="#222" stroke-width="2.5"/>
+<text class="t" x="1370" y="468" font-size="18" text-anchor="start" font-weight="bold" fill="#2b8a3e">x5 ⊕ y7 ⊕ z8  (lấy SAU khi quay)</text>
+<polyline class="ln" points="1448,520 1750,520 1750,615" fill="none" stroke="#222" stroke-width="2.5" marker-end="url(#ark)"/>
+<text class="t" x="1485" y="508" font-size="26" text-anchor="start" font-weight="bold" fill="#111">s_i</text>
+<rect id="r25" x="1600" y="615" width="290" height="150" rx="10" fill="#f1f3f5" stroke="#444" stroke-width="2.5"/>
+<text class="t" data-in="r25" x="1745" y="655" font-size="20" text-anchor="middle" font-weight="bold" fill="#111">Mã hoá: C = P ⊕ S</text>
+<text class="t" data-in="r25" x="1745" y="688" font-size="20" text-anchor="middle" font-weight="bold" fill="#111">Giải mã: P = C ⊕ S</text>
+<text class="t" data-in="r25" x="1745" y="725" font-size="16" text-anchor="middle" font-weight="normal" fill="#444">P: bản rõ, C: bản mã,</text>
+<text class="t" data-in="r25" x="1745" y="746" font-size="16" text-anchor="middle" font-weight="normal" fill="#444">S: dãy các bit s_i</text>
+<rect id="r26" x="50" y="85" width="400" height="120" rx="10" fill="#f1f3f5" stroke="#444" stroke-width="2.5"/>
+<text class="t" data-in="r26" x="250" y="118" font-size="19" text-anchor="middle" font-weight="bold" fill="#111">Khoá K gồm 23 bit nạp ban đầu</text>
+<text class="t" data-in="r26" x="250" y="152" font-size="18" text-anchor="middle" font-weight="normal" fill="#111">6 bit đầu → X,  8 bit tiếp → Y,</text>
+<text class="t" data-in="r26" x="250" y="180" font-size="18" text-anchor="middle" font-weight="normal" fill="#111">9 bit cuối → Z</text>
+<rect id="r27" x="50" y="890" width="28" height="24" rx="0" fill="#fff0a8" stroke="#222" stroke-width="2"/>
+<text class="t" x="88" y="909" font-size="18" text-anchor="start" font-weight="normal" fill="#111">bit điều khiển quay (clocking bit)</text>
+<rect id="r28" x="520" y="890" width="28" height="24" rx="0" fill="#c9f0d0" stroke="#222" stroke-width="2"/>
+<text class="t" x="558" y="909" font-size="18" text-anchor="start" font-weight="normal" fill="#111">bit đầu ra</text>
+<rect id="r29" x="990" y="890" width="28" height="24" rx="0" fill="#dbe7fb" stroke="#222" stroke-width="2"/>
+<text class="t" x="1028" y="909" font-size="18" text-anchor="start" font-weight="normal" fill="#111">các bit còn lại</text>
+<polyline class="ln" points="50,940 100,940" fill="none" stroke="#b8860b" stroke-width="2.5" marker-end="url(#aro)"/>
+<text class="t" x="112" y="946" font-size="18" text-anchor="start" font-weight="normal" fill="#111">bit điều khiển đi vào khối majority</text>
+<polyline class="ln" points="520,940 570,940" fill="none" stroke="#c92a2a" stroke-width="2.5" marker-end="url(#arr)"/>
+<text class="t" x="582" y="946" font-size="18" text-anchor="start" font-weight="normal" fill="#111">kết quả m: quay nếu bit điều khiển = m</text>
+<text class="t" x="50" y="982" font-size="18" text-anchor="start" font-weight="normal" fill="#444">Đường đi xuống từ ô = vị trí lấy bit để XOR thành bit t. Bit t vào x0 và các bit dịch sang phải; bit cuối bị đẩy ra.</text>
 </svg>
