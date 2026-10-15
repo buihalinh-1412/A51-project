@@ -10,19 +10,9 @@ Cách chạy:
 
     python tests/run_verification.py
 
-Giả định giao diện của src/a51.py:
-
-    A51(key_bin, frame_int)
-
-và:
-
-    generate_keystream()
-
-trả về:
+generate_keystream() trả về:
 
     (downlink_bits, uplink_bits)
-
-Mỗi luồng gồm 114 bít.
 """
 
 from pathlib import Path
@@ -32,14 +22,6 @@ import sys
 # ============================================================
 # THIẾT LẬP ĐƯỜNG DẪN PROJECT
 # ============================================================
-
-# Khi chạy:
-#
-#     python tests/run_verification.py
-#
-# Python bắt đầu từ thư mục tests/.
-# Đoạn này thêm thư mục gốc project vào sys.path
-# để có thể import src.a51.
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -57,14 +39,14 @@ from src.a51 import A51
 # TEST VECTOR THAM CHIẾU
 # ============================================================
 
-KEY_HEX = 0x1223456789ABCDEF
+KEY_HEX = "1223456789ABCDEF"
 
-KEY_BIN = f"{KEY_HEX:064b}"
+# Dùng bytes để src/a51.py xử lý đúng:
+# byte đầu tiên trước, từng byte LSB-first.
+KEY = bytes.fromhex(KEY_HEX)
 
 FRAME = 0x134
 
-
-# Theo bộ test vector được sử dụng trong project.
 
 EXPECTED_UPLINK_HEX = (
     "534EAA582FE8151AB6E1855A728C00"
@@ -81,12 +63,7 @@ EXPECTED_DOWNLINK_HEX = (
 
 def normalize_bits(bits):
     """
-    Chuyển output về list[int].
-
-    Hỗ trợ:
-    - chuỗi "010101..."
-    - list[int]
-    - tuple[int]
+    Chuẩn hóa output về list[int].
     """
 
     if isinstance(bits, str):
@@ -124,14 +101,10 @@ def reference_hex_to_114_bits(hex_string):
     """
     Chuyển test vector hexadecimal thành 114 bít.
 
-    Chuỗi tham chiếu được lưu trong:
+    15 byte = 120 bít.
 
-        15 byte = 120 bít
-
-    Trong đó:
-
-        114 bít đầu có ý nghĩa
-        6 bít cuối là phần đệm.
+    Chỉ 114 bít đầu có ý nghĩa.
+    6 bít cuối là phần đệm.
     """
 
     packed_bits = bin(
@@ -148,18 +121,15 @@ def reference_hex_to_114_bits(hex_string):
 
 def bits_114_to_hex(bits):
     """
-    Chuyển 114 bít keystream thành dạng hexadecimal.
+    Chuyển 114 bít thành chuỗi hexadecimal 15 byte.
 
-    114 bít được thêm 6 bít 0 ở cuối để tạo:
-
-        120 bít = 15 byte
-
-    Output được đóng gói MSB-first.
+    Thêm 6 bít 0 ở cuối để đủ 120 bít.
     """
 
     bits = normalize_bits(bits)
 
     if len(bits) != 114:
+
         raise ValueError(
             "Keystream phải có đúng 114 bít, "
             f"nhưng nhận được {len(bits)} bít."
@@ -170,7 +140,6 @@ def bits_114_to_hex(bits):
         for bit in bits
     )
 
-    # Thêm 6 bít đệm.
     bit_string += "0" * 6
 
     hex_value = int(
@@ -186,7 +155,7 @@ def compare_stream(
     expected_hex
 ):
     """
-    So sánh keystream thực tế với test vector tham chiếu.
+    So sánh keystream thực tế với giá trị tham chiếu.
     """
 
     actual_bits = normalize_bits(
@@ -223,7 +192,7 @@ def print_stream_result(
     actual_bits
 ):
     """
-    In kết quả đối chiếu cho một luồng.
+    In kết quả đối chiếu của một luồng.
     """
 
     actual_bits = normalize_bits(
@@ -291,22 +260,15 @@ def print_stream_result(
 # ============================================================
 
 def main():
-    """
-    Chạy A5/1 với test vector chuẩn và in bảng đối chiếu.
-    """
 
     cipher = A51(
-        KEY_BIN,
+        KEY,
         FRAME
     )
 
-    # Theo giao diện src/a51.py:
+    # src/a51.py trả:
     #
-    # generate_keystream()
-    #
-    # trả về:
-    #
-    # (downlink_bits, uplink_bits)
+    # (downlink, uplink)
 
     (
         downlink_bits,
@@ -344,7 +306,7 @@ def main():
 
 
     # ========================================================
-    # IN BẢNG
+    # IN BẢNG ĐỐI CHIẾU
     # ========================================================
 
     print(
@@ -362,7 +324,7 @@ def main():
 
     print(
         f"Khoa phien (Key)  : "
-        f"0x{KEY_HEX:016X}"
+        f"0x{KEY_HEX}"
     )
 
     print(
@@ -427,22 +389,20 @@ def main():
 
         return 0
 
-    else:
+    print(
+        "KET QUA CUOI:"
+    )
 
-        print(
-            "KET QUA CUOI:"
-        )
+    print(
+        "[ FAIL - CO LUONG "
+        "KHONG KHOP TEST VECTOR ]"
+    )
 
-        print(
-            "[ FAIL - CO LUONG "
-            "KHONG KHOP TEST VECTOR ]"
-        )
+    print(
+        "=" * 72
+    )
 
-        print(
-            "=" * 72
-        )
-
-        return 1
+    return 1
 
 
 # ============================================================
