@@ -12,7 +12,7 @@ def bits_to_text(bits: str) -> str:
         raise ValueError("Do dai chuoi bit phai la boi so cua 8.")
     chars = [chr(int(bits[i : i + 8], 2)) for i in range(0, len(bits), 8)]
     return "".join(chars)
-  """Module cung cap cac ham tien ich xu ly chuoi bit va xac thuc du lieu."""
+    """Module cung cap cac ham tien ich xu ly chuoi bit va xac thuc du lieu."""
 
 
 def text_to_bits(text: str) -> str:
