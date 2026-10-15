@@ -173,10 +173,25 @@ Bảng đối chiếu giữa ký hiệu trên Slide và định danh biến dự
 | Clocking bit của X | $x_1$ | `register_x[1]` | `int` |
 | Clocking bit của Y | $y_3$ | `register_y[3]` | `int` |
 | Clocking bit của Z | $z_3$ | `register_z[3]` | `int` |
-| Bit phản hồi mới (Feedback) | $t$ | `t` / `feedback_bit` | `int` |
+| Bit phản hồi mới (Feedback) | $t$ | `t` / `feedback_bit` | `int`; trong code là hàm `_feedback_bit(register, taps)` |
 | Output bit của X | $x_5$ | `register_x[5]` | `int` |
 | Output bit của Y | $y_7$ | `register_y[7]` | `int` |
 | Output bit của Z | $z_8$ | `register_z[8]` | `int` |
+| Bit chiếm đa số | $m$ | `majority` (trace) | `int`; `m = majority(x1, y3, z3)` |
+| Số bước đã sinh | $i$ | `step_count` | `int`, đếm từ 0 |
+| Điều kiện quay | $x_1 = m$ ... | `rotated_registers` (trace) | `list[str]` tên thanh ghi được quay, ví dụ `["X", "Y"]` |
+| Bit phản hồi từng thanh ghi | $t_X, t_Y, t_Z$ | `feedback_bits` (trace) | `dict` chỉ gồm thanh ghi được quay, ví dụ `{"X": 1, "Y": 1}` |
+| Trạng thái trước / sau bước | X, Y, Z | `state_before` / `state_after` (trace) | `dict` `{"X": str, "Y": str, "Z": str}` |
+| Các bit clocking (trace) | $x_1, y_3, z_3$ | `clock_bits` | `dict` `{"x1","y3","z3"}` |
+| Độ dài khoá | 23 | `KEY_LENGTH` | hằng số `int` |
+| Độ dài 3 thanh ghi | 6, 8, 9 | `LENGTH_X`, `LENGTH_Y`, `LENGTH_Z` | hằng số `int` |
+| Chỉ số clocking bit | 1, 3, 3 | `CLOCK_INDEX_X`, `CLOCK_INDEX_Y`, `CLOCK_INDEX_Z` | hằng số `int` |
+| Vị trí tap tính feedback | (2,4,5), (6,7), (2,7,8) | `TAPS_X`, `TAPS_Y`, `TAPS_Z` | hằng số `tuple[int, ...]` |
+| Chỉ số output bit | 5, 7, 8 | `OUTPUT_INDEX_X`, `OUTPUT_INDEX_Y`, `OUTPUT_INDEX_Z` | hằng số `int` |
+| Khoá / bản rõ ví dụ trên slide | $K$, $P$ | `SLIDE_KEY`, `SLIDE_PLAINTEXT` | hằng số `str` (dùng để kiểm thử) |
+| Trạng thái hiện tại | X, Y, Z | `get_state()` | trả `dict[str, str]` |
+| Hàm chiếm đa số | maj | `majority(a, b, c)` | trả `int` (0 nếu có >= 2 bit 0, ngược lại 1) |
+| Sinh keystream | S | `generate_keystream(length)` | trả `(str, list[dict])` (dãy S, trace) |
 ---
 ## 4. Majority function (Hàm chiếm đa số)
 
