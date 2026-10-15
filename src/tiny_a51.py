@@ -23,6 +23,11 @@ Quy ước code (docs/coding_convention.md mục 5–8):
 - Mỗi thanh ghi là list các số nguyên 0/1; phần tử [0] ứng với x0 của slide.
 - Lõi KHÔNG dùng print() và KHÔNG dùng thư viện mật mã; chỉ xử lý dữ liệu và
   trả về kết quả hoặc nhật ký (trace). Phần in ra màn hình do demo_cli.py làm.
+- Nhiệm vụ chính của lõi là SINH KEYSTREAM (generate_keystream,
+  step_with_trace). Theo coding_convention.md mục 8, phép XOR với dữ liệu thuộc
+  lớp ngoài (file_crypto.py). Hai hàm encrypt()/decrypt() ở đây chỉ là tiện ích
+  mỏng phục vụ demo_cli.py và kiểm thử ví dụ slide (P=111 -> C=011); chúng chỉ
+  gọi lại generate_keystream rồi XOR từng bit, không chứa logic mật mã riêng.
 """
 
 from __future__ import annotations
@@ -280,11 +285,18 @@ class TinyA51:
         return "".join(str(int(a) ^ int(b)) for a, b in zip(bits, keystream))
 
     def encrypt(self, plaintext: str) -> str:
-        """Mã hoá: C = P XOR S. Trace của lần chạy lưu ở self.last_trace."""
+        """Mã hoá: C = P XOR S. Trace của lần chạy lưu ở self.last_trace.
+
+        Tiện ích cho demo/kiểm thử; mã hoá dữ liệu thực tế do lớp ngoài
+        (file_crypto.py) lấy keystream từ generate_keystream rồi tự XOR.
+        """
         return self._xor_with_keystream(plaintext, "Bản rõ P")
 
     def decrypt(self, ciphertext: str) -> str:
-        """Giải mã: P = C XOR S (cùng khoá thì sinh lại đúng dãy S)."""
+        """Giải mã: P = C XOR S (cùng khoá thì sinh lại đúng dãy S).
+
+        Tiện ích cho demo/kiểm thử, xem ghi chú ở encrypt().
+        """
         return self._xor_with_keystream(ciphertext, "Bản mã C")
 
     def export_trace(self) -> list[dict]:
