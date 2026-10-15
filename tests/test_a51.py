@@ -6,9 +6,9 @@ Bộ kiểm thử chính cho hệ mã A5/1.
 Người phụ trách:
 Lại Hoàng Thế Vũ
 
-Giả định giao diện của module src/a51.py:
+Giao diện của module src/a51.py:
 
-    A51(key_bin, frame_int)
+    A51(key, frame)
 
 và:
 
@@ -28,10 +28,12 @@ from src.a51 import A51
 # TEST VECTOR THAM CHIẾU
 # ============================================================
 
-KEY_HEX = 0x1223456789ABCDEF
+# Khóa tham chiếu được giữ ở dạng hexadecimal để hiển thị.
+KEY_HEX = "1223456789ABCDEF"
 
-# Khóa K chuẩn hóa thành chuỗi nhị phân 64 bít.
-KEY_BIN = f"{KEY_HEX:064b}"
+# src/a51.py xử lý khóa dạng bytes theo đúng quy ước:
+# byte đầu tiên trước, trong mỗi byte nạp bít LSB trước.
+KEY = bytes.fromhex(KEY_HEX)
 
 FRAME = 0x134
 
@@ -39,7 +41,7 @@ FRAME = 0x134
 FRAME_BIN = f"{FRAME:022b}"
 
 
-# Theo bộ test vector được nhóm sử dụng.
+# Test vector tham chiếu.
 EXPECTED_UPLINK_HEX = "534EAA582FE8151AB6E1855A728C00"
 
 EXPECTED_DOWNLINK_HEX = "24FD35A35D5FB6526D32F906DF1AC0"
@@ -57,9 +59,6 @@ def normalize_bits(bits):
     - chuỗi "010101..."
     - list[int]
     - tuple[int]
-
-    Kết quả:
-    [0, 1, 0, 1, ...]
     """
 
     if isinstance(bits, str):
@@ -83,13 +82,10 @@ def normalize_bits(bits):
 
 def reference_hex_to_114_bits(hex_string):
     """
-    Chuyển test vector dạng hexadecimal thành 114 bít.
+    Chuyển test vector hexadecimal thành 114 bít.
 
-    Test vector được lưu trong 15 byte:
-
-        15 byte = 120 bít
-
-    Trong đó chỉ 114 bít đầu có ý nghĩa.
+    Test vector được lưu trong 15 byte = 120 bít.
+    Chỉ 114 bít đầu có ý nghĩa.
     6 bít cuối là phần đệm.
     """
 
@@ -116,9 +112,7 @@ EXPECTED_DOWNLINK_BITS = reference_hex_to_114_bits(
 
 def text_to_bits(text):
     """
-    Chuyển văn bản thành danh sách bít UTF-8.
-
-    Mỗi byte được biểu diễn bằng 8 bít.
+    Chuyển văn bản UTF-8 thành danh sách bít.
     """
 
     data = text.encode("utf-8")
@@ -142,7 +136,6 @@ def xor_bits(data_bits, keystream_bits):
     """
 
     if len(data_bits) != len(keystream_bits):
-
         raise ValueError(
             "Dữ liệu và keystream phải có cùng độ dài."
         )
@@ -156,19 +149,14 @@ def xor_bits(data_bits, keystream_bits):
 
 def generate_test_keystream(length):
     """
-    Sinh đủ keystream cho ca kiểm thử round-trip.
+    Sinh đủ keystream cho kiểm thử round-trip.
 
-    Mỗi lần A5/1 sinh:
-
+    Mỗi frame sinh:
         114 bít Downlink
         114 bít Uplink
 
     Tổng:
-
-        228 bít / frame
-
-    Nếu dữ liệu dài hơn 228 bít thì sử dụng frame tiếp theo
-    cho đến khi đủ số bít cần kiểm thử.
+        228 bít
     """
 
     keystream = []
@@ -178,7 +166,7 @@ def generate_test_keystream(length):
     while len(keystream) < length:
 
         cipher = A51(
-            KEY_BIN,
+            KEY,
             current_frame
         )
 
@@ -202,8 +190,7 @@ def generate_test_keystream(length):
             uplink_bits
         )
 
-        # Chuyển sang frame tiếp theo.
-        # Frame A5/1 có 22 bít.
+        # Frame có 22 bít.
         current_frame = (
             current_frame + 1
         ) % (1 << 22)
@@ -213,28 +200,22 @@ def generate_test_keystream(length):
 
 # ============================================================
 # TEST 1
-# KIỂM TRA TEST VECTOR A5/1
+# TEST VECTOR THAM CHIẾU
 # ============================================================
 
 def test_reference_gsm_vector():
     """
-    Kiểm tra kết quả A5/1 với test vector tham chiếu.
+    Kiểm tra A5/1 với test vector tham chiếu.
 
     Key:
         0x1223456789ABCDEF
 
     Frame:
         0x134
-
-    Expected Uplink:
-        534EAA582FE8151AB6E1855A728C00
-
-    Expected Downlink:
-        24FD35A35D5FB6526D32F906DF1AC0
     """
 
     cipher = A51(
-        KEY_BIN,
+        KEY,
         FRAME
     )
 
@@ -261,7 +242,7 @@ def test_reference_gsm_vector():
 
 # ============================================================
 # TEST 2
-# KIỂM TRA ĐỘ DÀI DÒNG KHÓA
+# KIỂM TRA ĐỘ DÀI KEYSTREAM
 # ============================================================
 
 def test_keystream_length():
@@ -270,7 +251,7 @@ def test_keystream_length():
     """
 
     cipher = A51(
-        KEY_BIN,
+        KEY,
         FRAME
     )
 
@@ -293,7 +274,7 @@ def test_keystream_length():
 
 # ============================================================
 # TEST 3
-# KIỂM TRA DÒNG KHÓA CHỈ CHỨA BÍT 0 VÀ 1
+# KIỂM TRA KEYSTREAM CHỈ CHỨA 0 VÀ 1
 # ============================================================
 
 def test_keystream_is_binary():
@@ -302,7 +283,7 @@ def test_keystream_is_binary():
     """
 
     cipher = A51(
-        KEY_BIN,
+        KEY,
         FRAME
     )
 
@@ -329,27 +310,26 @@ def test_keystream_is_binary():
 
 # ============================================================
 # TEST 4
-# KIỂM TRA KEY VÀ FRAME ĐÃ ĐƯỢC CHUẨN HÓA
+# KIỂM TRA DỮ LIỆU TEST VECTOR
 # ============================================================
 
 def test_reference_input_lengths():
     """
-    Kiểm tra dữ liệu test vector:
+    Khóa tham chiếu:
+        8 byte = 64 bít
 
-    Key:
-        64 bít
+    Chuỗi hex:
+        16 ký tự
 
     Frame:
         22 bít
     """
 
-    assert len(KEY_BIN) == 64
+    assert len(KEY) == 8
+
+    assert len(KEY_HEX) == 16
 
     assert len(FRAME_BIN) == 22
-
-    assert set(KEY_BIN).issubset(
-        {"0", "1"}
-    )
 
     assert set(FRAME_BIN).issubset(
         {"0", "1"}
@@ -363,15 +343,18 @@ def test_reference_input_lengths():
 
 def test_text_round_trip_100_characters():
     """
-    Kiểm tra tính đúng đắn của phép XOR:
+    Kiểm tra:
 
         P → C → P'
 
-    Sau khi mã hóa rồi giải mã bằng cùng keystream:
+    với:
+
+        C  = P XOR S
+        P' = C XOR S
+
+    Kết quả yêu cầu:
 
         P' == P
-
-    Văn bản kiểm thử có đúng 100 ký tự ASCII.
     """
 
     plaintext = (
@@ -380,7 +363,6 @@ def test_text_round_trip_100_characters():
         "must recover original data."
     )
 
-    # Chuẩn hóa đúng 100 ký tự.
     plaintext = plaintext[:100]
 
     plaintext = plaintext.ljust(
@@ -390,32 +372,22 @@ def test_text_round_trip_100_characters():
 
     assert len(plaintext) == 100
 
-    # Chuyển bản rõ sang bít.
     plaintext_bits = text_to_bits(
         plaintext
     )
 
-    # Sinh đủ keystream.
     keystream = generate_test_keystream(
         len(plaintext_bits)
     )
 
-    # Mã hóa:
-    #
-    # C = P XOR S
     ciphertext_bits = xor_bits(
         plaintext_bits,
         keystream
     )
 
-    # Giải mã:
-    #
-    # P' = C XOR S
     recovered_bits = xor_bits(
         ciphertext_bits,
         keystream
     )
 
-    # Kiểm tra dữ liệu sau giải mã
-    # phải giống hoàn toàn bản rõ ban đầu.
     assert recovered_bits == plaintext_bits
