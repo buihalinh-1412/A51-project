@@ -2,7 +2,7 @@
 import pytest
 from src.common import xor_bit_strings
 from src.tiny_a51 import TinyA51
-
+from src.tiny_a51 import TinyA51
 KEY_SLIDE = "10010101001110100110000"
 PLAINTEXT_SLIDE = "111"
 EXPECTED_S = "100"
