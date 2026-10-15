@@ -478,7 +478,46 @@ def test_same_key_and_frame_are_deterministic():
         REFERENCE_KEY_BIN,
         FRAME
     )
+# ============================================================
+# TEST 9
+# FRAME VƯỢT QUÁ GIỚI HẠN 22 BÍT
+# ============================================================
 
+def test_frame_too_large_raises_value_error():
+    """
+    Số khung của A5/1 có 22 bít.
+
+    Giá trị hợp lệ:
+        0 <= frame < 2^22
+
+    Frame = 2^22 phải bị từ chối.
+    """
+
+    invalid_frame = 1 << 22
+
+    with pytest.raises(ValueError):
+        A51(
+            REFERENCE_KEY_BIN,
+            invalid_frame
+        )
+
+
+# ============================================================
+# TEST 10
+# FRAME DẠNG BOOL KHÔNG HỢP LỆ
+# ============================================================
+
+def test_boolean_frame_raises_type_error():
+    """
+    True và False không được coi là
+    số khung hợp lệ.
+    """
+
+    with pytest.raises(TypeError):
+        A51(
+            REFERENCE_KEY_BIN,
+            True
+        )
     assert stream_1 == stream_2, (
         "Cùng khóa và cùng frame "
         "phải sinh cùng một keystream."
