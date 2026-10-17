@@ -85,10 +85,7 @@ def _validate_bits(bits: str, name: str, length: int | None = None) -> str:
 
 
 def majority(a: int, b: int, c: int) -> int:
-    """Hàm chiếm đa số maj(a, b, c).
-
-    Theo slide trang 47: nếu có từ hai bit 0 trở lên thì trả về 0, ngược lại trả về 1.
-    """
+    """Hàm chiếm đa số maj(a, b, c): Trả về 1 nếu có từ hai bit 1 trở lên, ngược lại trả về 0."""
     return 1 if (a + b + c) >= 2 else 0
 
 
