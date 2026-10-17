@@ -1,7 +1,8 @@
 """
 demo_cli.py — Công cụ demo dòng lệnh tương tác cho TinyA5/1 và A5/1.
 
-Người phụ trách: Nguyễn Thị Nhật Linh (việc 2.6, Giai đoạn 2).
+Người phụ trách: Nguyễn Thị Nhật Linh (việc 2.6, Giai đoạn 2). Bản rà soát: dùng lõi A51
+cho mọi phép mã hóa/giải mã dữ liệu dài (không tự chia khung nữa), mặc định luồng Downlink.
 
 Chạy từ thư mục gốc của repo:
     python demo_cli.py             # menu chính (chọn TinyA5/1 hoặc A5/1)
@@ -14,12 +15,16 @@ tệp này không import thư viện mật mã và không sao chép thuật toá
 
 Ví dụ trên lớp [slide Chương 2, trang 49–50]:
     K = 10010101001110100110000, P = 111  ->  S = 100, C = 011
-Slide trang 50 in Z sau Bước 2 là 101001100, nhưng tính theo quy tắc quay
-là 001001100 (TD-002). Demo báo rõ chỗ lệch này, không tự sửa cho khớp slide.
+Slide trang 50 in Z sau Bước 2 là 101001100, đây là lỗi in của slide: tính theo
+quy tắc quay (t = z2^z7^z8 = 0) thì Z đúng là 001001100 (TD-002). Demo luôn dùng
+giá trị tính theo quy tắc và ghi chú rõ chỗ slide in sai; lỗi này không ảnh hưởng
+bit s_i vì s_i chỉ dùng z8 (cả hai giá trị đều có z8 = 0).
 
-Lưu ý về A5/1 [TD-005]: một khung GSM chỉ mã được 114 bít. Với văn bản dài,
-CLI chia thành nhiều khung liên tiếp (số khung = frame + k). Đây là quy ước
-tạm thời của nhóm, KHÔNG phải chuẩn GSM; báo cáo cần ghi chú rõ điều này.
+Lưu ý về A5/1 [TD-005]: một khung GSM chỉ mã được 114 bít. Với văn bản dài, lõi A51
+chia thành nhiều khung liên tiếp (số khung = frame + k). Đây là quy ước tạm của nhóm,
+KHÔNG phải chuẩn GSM; báo cáo cần ghi chú rõ điều này.
+Hướng: Downlink = 114 bít đầu = Trạm phát (BTS) -> Máy di động (MS);
+       Uplink   = 114 bít sau = Máy di động (MS) -> Trạm phát (BTS).
 """
 
 from __future__ import annotations
@@ -43,10 +48,11 @@ except ImportError:
 SLIDE_KEYSTREAM = "100"      # S theo slide trang 50
 SLIDE_CIPHERTEXT = "011"     # C theo slide trang 50
 
-A51_FRAME_BITS = 114         # số bít keystream mỗi hướng của một khung
 A51_FRAME_COUNT_BITS = 22    # độ dài số khung (bít)
 A51_KEY_EXAMPLE = "1223456789ABCDEF"
 A51_FRAME_EXAMPLE = "0x134"
+# Mặc định giống lõi A51 (encrypt_bytes dùng Downlink) để CLI, file_crypto (GĐ3) và test cùng một quy ước
+A51_USE_UPLINK = False
 # Test vector Briceno [S2] cho khoá/khung ví dụ ở trên (docs/a51_test_vector.md)
 A51_EXPECTED_DOWNLINK = "534EAA582FE8151AB6E1855A728C00"
 A51_EXPECTED_UPLINK = "24FD35A35D5FB6526D32F906DF1AC0"
@@ -86,7 +92,6 @@ A51_MENU = """
 =========================================
 """
 
-
 def setup_console() -> None:
     """Ép stdin/stdout/stderr dùng UTF-8 để không lỗi tiếng Việt trên Windows."""
     for stream in (sys.stdout, sys.stderr, sys.stdin):
@@ -96,7 +101,6 @@ def setup_console() -> None:
             except (ValueError, OSError):
                 pass
 
-
 # ---------------------------------------------------------------------------
 # TinyA5/1 — định dạng đầu ra
 # ---------------------------------------------------------------------------
@@ -104,7 +108,6 @@ def setup_console() -> None:
 def format_state(state: dict[str, str]) -> str:
     """'X=100101  Y=01001110  Z=100110000'."""
     return "  ".join(f"{name}={bits}" for name, bits in state.items())
-
 
 def format_step(record: dict) -> str:
     """Biến một bản ghi trace thành đoạn văn bản nhiều dòng (chế độ chạy từng bước)."""
@@ -126,16 +129,14 @@ def format_step(record: dict) -> str:
     note = record.get("slide_mismatch")
     if note:
         lines.append(
-            f"  [Lưu ý] Thanh ghi {note['register']}: tính theo quy tắc = {note['computed']}, "
-            f"slide trang {note['slide_page']} in = {note['slide']} (TD-002); "
+            f"  [Lưu ý] Thanh ghi {note['register']}: ĐÚNG theo quy tắc quay = {note['computed']}; "
+            f"slide trang {note['slide_page']} in SAI = {note['slide']} (lỗi in, TD-002); "
             f"không ảnh hưởng bit s_i."
         )
     return "\n".join(lines)
 
-
 TABLE_HEADER = ["Bước", "X trước", "Y trước", "Z trước", "x1 y3 z3",
                 "m", "Quay", "X sau", "Y sau", "Z sau", "s_i"]
-
 
 def format_trace_table(trace: list[dict]) -> str:
     """Bảng trace căn lề, chỉ dùng ký tự + - | (không vỡ trên terminal Windows cũ)."""
@@ -161,12 +162,11 @@ def format_trace_table(trace: list[dict]) -> str:
         note = r.get("slide_mismatch")
         if note:
             out.append(
-                f"* Bước {r['step']}: {note['register']} tính theo quy tắc = {note['computed']}, "
-                f"slide trang {note['slide_page']} in = {note['slide']} (TD-002), "
+                f"* Bước {r['step']}: {note['register']} ĐÚNG theo quy tắc quay = {note['computed']}; "
+                f"slide trang {note['slide_page']} in SAI = {note['slide']} (lỗi in, TD-002); "
                 f"không ảnh hưởng s_i."
             )
     return "\n".join(out)
-
 
 # ---------------------------------------------------------------------------
 # TinyA5/1 — các chức năng của menu (nhận hàm nhập/xuất để có thể kiểm thử)
@@ -183,7 +183,6 @@ def read_bits(prompt: str, input_fn=input, length: int | None = None) -> str | N
         raise ValueError(f"Cần đúng {length} bit, bạn nhập {len(text)} bit.")
     return text
 
-
 def run_slide_example(output_fn=print) -> bool:
     """Chạy ví dụ slide, in bảng trace và đối chiếu S, C. Trả về True nếu khớp."""
     cipher = TinyA51(SLIDE_KEY, annotate_slide=True)
@@ -193,14 +192,16 @@ def run_slide_example(output_fn=print) -> bool:
     output_fn(format_trace_table(trace))
     cipher.reset()
     ciphertext = cipher.encrypt(SLIDE_PLAINTEXT)
-    ok = keystream == SLIDE_KEYSTREAM and ciphertext == SLIDE_CIPHERTEXT
+    decrypted = cipher.decrypt(ciphertext)
+    ok = (keystream == SLIDE_KEYSTREAM and ciphertext == SLIDE_CIPHERTEXT
+          and decrypted == SLIDE_PLAINTEXT)
     output_fn("")
     output_fn(f"Bản rõ P = {SLIDE_PLAINTEXT}")
     output_fn(f"Dãy S    = {keystream}   (slide: {SLIDE_KEYSTREAM})")
     output_fn(f"Bản mã C = {ciphertext}   (slide: {SLIDE_CIPHERTEXT})")
+    output_fn(f"Giải mã  = {decrypted}   (phải bằng P)")
     output_fn("Kết quả: KHỚP slide." if ok else "Kết quả: KHÔNG khớp slide!")
     return ok
-
 
 def step_through(cipher: TinyA51, input_fn=input, output_fn=print) -> None:
     """Chạy từng bước theo yêu cầu người dùng."""
@@ -215,7 +216,6 @@ def step_through(cipher: TinyA51, input_fn=input, output_fn=print) -> None:
         keystream += str(bit)
         output_fn(format_step(record))
         output_fn(f"  Dãy S hiện có       : {keystream}")
-
 
 def handle_choice(choice: str, cipher: TinyA51, input_fn=input, output_fn=print) -> TinyA51:
     """Xử lý một lựa chọn trong menu TinyA5/1; trả về bộ sinh (có thể là bộ mới)."""
@@ -257,7 +257,6 @@ def handle_choice(choice: str, cipher: TinyA51, input_fn=input, output_fn=print)
         output_fn("Lựa chọn không hợp lệ, hãy nhập số từ 0 đến 8.")
     return cipher
 
-
 def tiny_menu(cipher: TinyA51, input_fn=input, output_fn=print) -> TinyA51:
     """Vòng lặp menu TinyA5/1; '0' quay lại menu chính."""
     while True:
@@ -270,17 +269,15 @@ def tiny_menu(cipher: TinyA51, input_fn=input, output_fn=print) -> TinyA51:
         except ValueError as error:
             output_fn(f"Lỗi: {error}")
 
-
 # ---------------------------------------------------------------------------
 # A5/1 — chuyển đổi định dạng và kiểm tra đầu vào (adapter)
-# A5/1 chỉ cung cấp keystream (generate_keystream) và encrypt_bits;
-# văn bản, bít, hex và chia khung là việc của CLI.
+# Lõi A51 lo toàn bộ keystream, chia khung (encrypt_bytes) và XOR;
+# văn bản <-> byte <-> hex là việc của CLI.
 # ---------------------------------------------------------------------------
 
 def bytes_to_bits(data: bytes) -> list[int]:
     """Bytes -> danh sách bít, MSB-first (bít cao của mỗi byte đi trước)."""
     return [(byte >> (7 - i)) & 1 for byte in data for i in range(8)]
-
 
 def bits_to_bytes(bits: list[int]) -> bytes:
     """Danh sách bít (MSB-first) -> bytes; số bít phải chia hết cho 8."""
@@ -294,11 +291,9 @@ def bits_to_bytes(bits: list[int]) -> bytes:
         out.append(value)
     return bytes(out)
 
-
 def bits_to_hex(bits) -> str:
     """Danh sách bít -> chuỗi hex in hoa; đệm 0 vào cuối nếu chưa đủ byte."""
     return bits_to_bytes(list(bits) + [0] * (-len(bits) % 8)).hex().upper()
-
 
 def parse_key_hex(text: str) -> str:
     """Khoá phải là ĐÚNG 16 ký tự hex (64 bít). Không tự cắt/đệm."""
@@ -308,7 +303,6 @@ def parse_key_hex(text: str) -> str:
     if len(t) != 16 or any(ch not in "0123456789abcdefABCDEF" for ch in t):
         raise ValueError("Khoá phiên phải đúng 16 ký tự hex (64 bit), ví dụ 1223456789ABCDEF.")
     return "0x" + t
-
 
 def parse_frame(text: str) -> int:
     """Số khung: số nguyên thập phân hoặc dạng 0x..., trong [0, 2^22 - 1]."""
@@ -321,52 +315,35 @@ def parse_frame(text: str) -> int:
         raise ValueError("Số khung phải nằm trong khoảng 0 đến 4194303 (22 bit).")
     return value
 
+def a51_encrypt_text(text: str, key_hex: str, frame: int, use_uplink: bool = A51_USE_UPLINK) -> str:
+    """Văn bản -> UTF-8 -> A51.encrypt_bytes -> hex in hoa."""
+    return A51(key_hex, frame).encrypt_bytes(text.encode("utf-8"), use_uplink).hex().upper()
 
-def a51_xor_bits(bits: list[int], key_hex: str, frame: int, use_uplink: bool = True) -> list[int]:
-    """XOR chuỗi bít với keystream A5/1, chia thành các khối 114 bít (mỗi khối một khung).
-
-    Khối thứ k dùng số khung = frame + k [TD-005: quy ước tạm của nhóm].
-    Dùng chung cho mã hóa và giải mã (P xor S xor S = P).
-    """
-    out: list[int] = []
-    for k in range(0, len(bits), A51_FRAME_BITS):
-        frame_k = (frame + k // A51_FRAME_BITS) % (1 << A51_FRAME_COUNT_BITS)
-        out += A51(key_hex, frame_k).encrypt_bits(bits[k:k + A51_FRAME_BITS], use_uplink)
-    return out
-
-
-def a51_encrypt_text(text: str, key_hex: str, frame: int, use_uplink: bool = True) -> str:
-    """Văn bản -> UTF-8 -> bít -> XOR keystream -> byte -> hex in hoa."""
-    bits = bytes_to_bits(text.encode("utf-8"))
-    return bits_to_bytes(a51_xor_bits(bits, key_hex, frame, use_uplink)).hex().upper()
-
-
-def a51_decrypt_hex(hex_text: str, key_hex: str, frame: int, use_uplink: bool = True) -> str:
-    """Hex -> bít -> XOR keystream -> byte -> văn bản UTF-8."""
+def a51_decrypt_hex(hex_text: str, key_hex: str, frame: int, use_uplink: bool = A51_USE_UPLINK) -> str:
+    """Hex -> bytes -> A51.decrypt_bytes -> văn bản UTF-8."""
     try:
         data = bytes.fromhex(hex_text.strip().replace(" ", ""))
     except ValueError:
         raise ValueError("Bản mã phải là chuỗi hex hợp lệ (số ký tự chẵn, chỉ 0-9 và A-F).") from None
-    plain = bits_to_bytes(a51_xor_bits(bytes_to_bits(data), key_hex, frame, use_uplink))
+    plain = A51(key_hex, frame).decrypt_bytes(data, use_uplink)
     try:
         return plain.decode("utf-8")
     except UnicodeDecodeError:
         raise ValueError("Kết quả không phải UTF-8 hợp lệ: có thể sai khoá, sai số khung hoặc sai chiều.") from None
 
-
 # ---------------------------------------------------------------------------
 # A5/1 — menu
 # ---------------------------------------------------------------------------
 
-def ask_a51_params(input_fn, output_fn) -> tuple[str, int]:
+def ask_a51_params(input_fn, output_fn=print) -> tuple[str, int]:
     """Hỏi khoá và số khung; Enter để dùng giá trị ví dụ."""
     key_text = input_fn(f"Khoá phiên 64 bit (16 hex) [Enter = {A51_KEY_EXAMPLE}]: ").strip() or A51_KEY_EXAMPLE
     frame_text = input_fn(f"Số khung (thập phân hoặc 0x...) [Enter = {A51_FRAME_EXAMPLE}]: ").strip() or A51_FRAME_EXAMPLE
     return parse_key_hex(key_text), parse_frame(frame_text)
 
-
 def handle_a51_choice(choice: str, input_fn=input, output_fn=print) -> None:
     """Xử lý một lựa chọn trong menu A5/1."""
+    direction = "Uplink (MS -> BTS, 114 bit sau)" if A51_USE_UPLINK else "Downlink (BTS -> MS, 114 bit đầu)"
     if choice == "1":
         key, frame = ask_a51_params(input_fn, output_fn)
         text = input_fn("Nhập bản rõ: ")
@@ -374,7 +351,7 @@ def handle_a51_choice(choice: str, input_fn=input, output_fn=print) -> None:
             output_fn("Chưa nhập bản rõ.")
             return
         output_fn(f"Bản mã (hex) : {a51_encrypt_text(text, key, frame)}")
-        output_fn(f"Dùng luồng    : Uplink (114 bit sau của khung); khoá={key}, khung={frame}")
+        output_fn(f"Dùng luồng    : {direction}; khoá={key}, khung={frame}")
         output_fn("Hãy ghi nhớ khoá và số khung: cần đúng cả hai để giải mã.")
     elif choice == "2":
         key, frame = ask_a51_params(input_fn, output_fn)
@@ -396,14 +373,13 @@ def handle_a51_choice(choice: str, input_fn=input, output_fn=print) -> None:
         key, frame = ask_a51_params(input_fn, output_fn)
         downlink, uplink = A51(key, frame).generate_keystream()
         down_hex, up_hex = bits_to_hex(downlink), bits_to_hex(uplink)
-        output_fn(f"Downlink (114 bit đầu): {down_hex}")
-        output_fn(f"Uplink   (114 bit sau): {up_hex}")
-        if (key.upper() == "0X" + A51_KEY_EXAMPLE and frame == int(A51_FRAME_EXAMPLE, 16)):
+        output_fn(f"Downlink (114 bit đầu, BTS -> MS): {down_hex}")
+        output_fn(f"Uplink   (114 bit sau, MS -> BTS): {up_hex}")
+        if key.upper() == "0X" + A51_KEY_EXAMPLE and frame == int(A51_FRAME_EXAMPLE, 16):
             same = down_hex == A51_EXPECTED_DOWNLINK and up_hex == A51_EXPECTED_UPLINK
             output_fn("Đối chiếu test vector Briceno [S2]: " + ("KHỚP." if same else "KHÔNG KHỚP!"))
     else:
         output_fn("Lựa chọn không hợp lệ, hãy nhập số từ 0 đến 4.")
-
 
 def a51_menu(input_fn=input, output_fn=print) -> None:
     """Vòng lặp menu A5/1; '0' quay lại menu chính."""
@@ -419,7 +395,6 @@ def a51_menu(input_fn=input, output_fn=print) -> None:
             handle_a51_choice(choice, input_fn, output_fn)
         except (ValueError, TypeError) as error:
             output_fn(f"Lỗi: {error}")
-
 
 # ---------------------------------------------------------------------------
 # Chương trình chính
@@ -451,7 +426,6 @@ def main(argv: list[str] | None = None) -> int:
     except (EOFError, KeyboardInterrupt):
         print()
         return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())
