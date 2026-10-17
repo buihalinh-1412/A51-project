@@ -271,9 +271,9 @@ def main():
     # (downlink, uplink)
 
     (
-        downlink_bits,
-        uplink_bits
-    ) = cipher.generate_keystream()
+    uplink_bits,
+    downlink_bits
+    ) = cipher.generate_keystream() 
 
     downlink_bits = normalize_bits(
         downlink_bits
