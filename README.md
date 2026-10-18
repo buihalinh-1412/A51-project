@@ -70,13 +70,13 @@ Nếu gặp lỗi `No module named 'src'`, chạy lại lệnh trên ở thư m�
 
 ```
 A51-project/
-├── README.md
-├── requirements.txt
-├── demo_cli.py          # Giao diện dòng lệnh
-├── src/                 # Lõi thuật toán
-├── gui/                 # Giao diện Tkinter
-├── tests/               # Kiểm thử pytest
-├── examples/            # File mẫu p1.txt, p2.txt
-└── docs/                # Tài liệu, kết quả benchmark
+├── src/                   # Mã nguồn lõi (a51, tiny_a51, file_crypto, benchmark...)
+├── gui/                   # Mã nguồn giao diện Tkinter
+├── tests/                 # Bộ kiểm thử tự động (pytest)
+├── examples/              # Tệp mẫu phục vụ demo & tấn công
+├── docs/                  # Báo cáo, tài liệu đặc tả & bằng chứng kiểm thử
+├── demo_cli.py            # Chương trình chạy CLI
+├── requirements.txt       # Danh sách thư viện phụ thuộc
+└── README.md              # Tài liệu hướng dẫn sử dụng
 ```
 
