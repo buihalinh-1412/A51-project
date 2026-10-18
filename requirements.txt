@@ -1,2 +1,1 @@
-# Dependencies for Phase 2
-pytest
+pytest>=7.0.0
