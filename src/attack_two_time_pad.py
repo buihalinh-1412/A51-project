@@ -9,7 +9,7 @@ Người phụ trách: Hoàng Yến Nhi (việc 5.3, Giai đoạn 3).
 Kẻ nghe lén chỉ cần đoán một đoạn chữ (crib) của P1 là đọc được đoạn
 tương ứng của P2.
 
-Quy ước (docs/coding_convention.md): file trong src/ không dùng print(),
+Quy ước (docs/coding_convention.md): file trong src/ không in ra màn hình,
 chỉ trả về giá trị. Mã hoá dùng crypt_bytes của src/file_crypto.py (Hà Linh).
 """
 
