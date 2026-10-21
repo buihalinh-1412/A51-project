@@ -223,7 +223,7 @@ class A51:
             keystream.append(self._output_bit())
         return keystream[:HALF], keystream[HALF:]
 
-        # -- mã hoá / giải mã chuỗi bít (tối đa 114 bít, một khung) ---------
+           # -- mã hoá / giải mã chuỗi bít (tối đa 114 bít, một khung) ---------
     def encrypt_bits(self, plaintext_bits, use_uplink: bool = False):
         """C = P xor S trên một khung. Mặc định dùng keystream downlink."""
         down, up = self.generate_keystream()
@@ -231,9 +231,39 @@ class A51:
         if len(plaintext_bits) > len(keystream):
             raise ValueError(
                 f"Một khung chỉ mã được {len(keystream)} bít "
-                f"(nhận {len(plaintext_bits)}). Dùng crypt_bytes trong "
-                "file_crypto.py cho dữ liệu dài.")
+                f"(nhận {len(plaintext_bits)}). Dùng encrypt_bytes cho dữ liệu dài.")
         return [int(p) ^ s for p, s in zip(plaintext_bits, keystream)]
 
     def decrypt_bits(self, ciphertext_bits, use_uplink: bool = False):
         return self.encrypt_bits(ciphertext_bits, use_uplink)
+
+    # -- mã hoá / giải mã dữ liệu dài (TD-005) --------------------------
+    def keystream_bytes(self, nbytes: int, use_uplink: bool = False) -> bytes:
+        """Sinh nbytes byte keystream: nối các khung liên tiếp (frame, frame+1, ...),
+        mỗi khung lấy 114 bít, đóng gói MSB-first."""
+        nbits = nbytes * 8
+        frames_needed = -(-nbits // HALF)
+        if self.frame + frames_needed > MAX_FRAMES:
+            raise ValueError(
+                "Dữ liệu quá dài: số khung vượt 2^22, keystream sẽ bị lặp lại.")
+        bits = []
+        for n in range(frames_needed):
+            sub = A51(self.key_bits, self.frame + n)
+            down, up = sub.generate_keystream()
+            bits.extend(up if use_uplink else down)
+        bits = bits[:nbits]
+        out = bytearray()
+        for i in range(0, nbits, 8):
+            v = 0
+            for b in bits[i:i + 8]:
+                v = (v << 1) | b
+            out.append(v)
+        return bytes(out)
+
+    def encrypt_bytes(self, data: bytes, use_uplink: bool = False) -> bytes:
+        """Mã hoá dữ liệu bất kỳ độ dài (text, ảnh...). Bản mã dài bằng bản rõ."""
+        keystream = self.keystream_bytes(len(data), use_uplink)
+        return bytes(d ^ k for d, k in zip(data, keystream))
+
+    def decrypt_bytes(self, data: bytes, use_uplink: bool = False) -> bytes:
+        return self.encrypt_bytes(data, use_uplink)
