@@ -12,7 +12,7 @@ Phần này chạy chương trình trên dữ liệu thật: mã hóa và giải
 
 **Hình 4.2.3 (ảnh 3: `Loc_selfcheck_D1.png`).** Chọn `loc_test.txt.enc`, bấm "Giải mã". Chương trình báo "Đã giải mã xong" với file `loc_test.txt.enc.dec` (không cần nhập lại số khung vì đã nằm trong 4 byte đầu của file). Ô "Xem trước" hiện lại `Hello A5/1, day la thu nghiem cua Loc`, giống file gốc.
 
-*Kiểm tra file giải mã so với file gốc:* [điền kết quả lệnh `Get-FileHash` trong hướng dẫn: hai mã băm giống nhau hay khác nhau].
+*Kiểm tra file giải mã so với file gốc:* dùng lệnh `Get-FileHash loc_test.txt, loc_test.txt.enc.dec` (PowerShell). Mã băm SHA256 của cả hai file đều là `7D3EC0DAC2204DDC2BF8677CC8485B0AC26727B23FB36ADEA9AFF23D073C5DB1`, nên file giải mã giống hệt file gốc.
 
 ## 4.2.2. Mã hóa và giải mã ảnh PNG
 
@@ -24,7 +24,7 @@ Mở tab "Tấn công", bấm "Nạp file mẫu" (P1 = `The meeting will start a
 
 **Hình 4.2.4 (ảnh 4: `Loc_selfcheck_D3_reuse.png`).** Tick "Dùng lại số khung" và bấm "Chạy mô phỏng": hai tin dùng cùng số khung 7 nên cùng một dòng khóa. Chương trình hiện C1 ⊕ C2 dạng hex (bắt đầu bằng `040400411e0045070c...`). Với crib `The meeting` (có trong P1), bảng dò crib cho dòng đầu tiên: vị trí `0`, đoạn chữ lộ ra `Please send`, điểm `1.00`. Đây chính là phần đầu của P2, kẻ tấn công đọc được mà không cần biết khóa.
 
-**Hình 4.2.5 (ảnh 5: `Loc_selfcheck_D3_diff.png`).** Bỏ tick "Dùng lại số khung" (số khung của P2 là 8), bấm "Chạy mô phỏng" lại: chương trình báo hai dòng khóa khác nhau. Dò crib `The meeting`: [điền theo ảnh 5: bảng hiện gì, có chữ đọc được không, điểm cao nhất bao nhiêu]. Vì hai dòng khóa khác nhau nên không còn triệt tiêu nhau, C1 ⊕ C2 không còn bằng P1 ⊕ P2.
+**Hình 4.2.5 (ảnh 5: `Loc_selfcheck_D3_diff.png`).** Bỏ tick "Dùng lại số khung" (số khung của P2 là 8), bấm "Chạy mô phỏng" lại: chương trình báo hai dòng khóa khác nhau. C1 ⊕ C2 lúc này bắt đầu bằng `8e406c25e4911f...`, khác hẳn trường hợp dùng lại số khung. Dò crib `The meeting`: bảng chỉ hiện các chuỗi ký tự vô nghĩa, không có chữ đọc được nào, điểm cao nhất chỉ là `0.45` (các vị trí 21, 23, 13), các dòng còn lại `0.36`. Vì hai dòng khóa khác nhau nên không còn triệt tiêu nhau, C1 ⊕ C2 không còn bằng P1 ⊕ P2.
 
 ## 4.2.4. Kết quả dò crib
 
