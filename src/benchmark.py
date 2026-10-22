@@ -8,6 +8,7 @@ from pathlib import Path
 # Cho phép chạy trực tiếp bằng:
 # python src/benchmark.py
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -52,7 +53,13 @@ def run_benchmark(sizes=DEFAULT_SIZES) -> list:
         end = time.perf_counter()
 
         seconds = end - start
-        kib_per_s = size / 1024 / seconds
+
+        # Tránh chia cho 0 trong trường hợp bộ đếm thời gian
+        # trả về cùng một giá trị ở hai thời điểm.
+        if seconds > 0:
+            kib_per_s = size / 1024 / seconds
+        else:
+            kib_per_s = float("inf")
 
         results.append(
             {
@@ -93,30 +100,39 @@ def save_csv(results, output_path=None):
     return output_path
 
 
-def print_results(results):
-    """In bảng kết quả benchmark ra Terminal."""
-    print(
-        f"{'Kich thuoc':<15}"
+def format_table(results) -> str:
+    """
+    Định dạng kết quả benchmark thành bảng văn bản.
+
+    Hàm chỉ trả về chuỗi, không tự in ra Terminal.
+    """
+    lines = []
+
+    lines.append(
+        f"{'Kich thuoc (KiB)':<20}"
         f"{'Thoi gian (s)':<20}"
-        f"{'KiB/s':<15}"
+        f"{'Toc do (KiB/s)':<20}"
     )
 
-    print("-" * 50)
+    lines.append("-" * 60)
 
     for result in results:
         size_kib = result["size"] / 1024
 
-        print(
-            f"{size_kib:<15.2f}"
+        lines.append(
+            f"{size_kib:<20.2f}"
             f"{result['seconds']:<20.6f}"
-            f"{result['kib_per_s']:<15.2f}"
+            f"{result['kib_per_s']:<20.2f}"
         )
+
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":
     benchmark_results = run_benchmark()
 
-    print_results(benchmark_results)
+    # Chỉ in khi chạy trực tiếp file benchmark.py.
+    print(format_table(benchmark_results))
 
     csv_path = save_csv(benchmark_results)
 
