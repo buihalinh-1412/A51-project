@@ -18,6 +18,14 @@ FRAME = 0
         bytes(range(58)),
         bytes(range(256)) * 40,  # 10 KB
     ],
+    ids=[
+        "0B",
+        "1B",
+        "56B",
+        "57B",
+        "58B",
+        "10KB",
+    ],
 )
 def test_crypt_bytes_round_trip(data):
     """Mã hóa hai lần với cùng khóa và frame phải thu lại dữ liệu gốc."""
@@ -47,8 +55,18 @@ def test_encrypt_decrypt_file_round_trip(tmp_path):
 
     input_file.write_bytes(original_data)
 
-    encrypt_file(input_file, encrypted_file, KEY_A, start_frame=FRAME)
-    decrypt_file(encrypted_file, decrypted_file, KEY_A)
+    encrypt_file(
+        input_file,
+        encrypted_file,
+        KEY_A,
+        start_frame=FRAME,
+    )
+
+    decrypt_file(
+        encrypted_file,
+        decrypted_file,
+        KEY_A,
+    )
 
     assert decrypted_file.read_bytes() == original_data
 
@@ -59,7 +77,12 @@ def test_encrypt_file_same_input_output_raises_value_error(tmp_path):
     file_path.write_bytes(b"Hello A5/1")
 
     with pytest.raises(ValueError):
-        encrypt_file(file_path, file_path, KEY_A, start_frame=FRAME)
+        encrypt_file(
+            file_path,
+            file_path,
+            KEY_A,
+            start_frame=FRAME,
+        )
 
 
 def test_invalid_key_length_raises_value_error():
@@ -67,7 +90,11 @@ def test_invalid_key_length_raises_value_error():
     invalid_key = "1234"
 
     with pytest.raises(ValueError):
-        crypt_bytes(b"Hello", invalid_key, FRAME)
+        crypt_bytes(
+            b"Hello",
+            invalid_key,
+            FRAME,
+        )
 
 
 def test_invalid_key_for_encrypt_file_raises_value_error(tmp_path):
