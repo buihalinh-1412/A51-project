@@ -1,8 +1,8 @@
 """
 demo_cli.py — Công cụ demo dòng lệnh tương tác cho TinyA5/1 và A5/1.
 
-Người phụ trách: Nguyễn Thị Nhật Linh (việc 2.6, Giai đoạn 2). Bản rà soát: dùng lõi A51
-cho mọi phép mã hóa/giải mã dữ liệu dài (không tự chia khung nữa), mặc định luồng Downlink.
+Người phụ trách: Nguyễn Thị Nhật Linh (việc 2.6, Giai đoạn 2). Mã hóa/giải mã văn bản
+dùng crypt_bytes của src/file_crypto.py, cùng quy ước với tab A5/1 Text và mã hóa file.
 
 Chạy từ thư mục gốc của repo:
     python demo_cli.py             # menu chính (chọn TinyA5/1 hoặc A5/1)
@@ -20,11 +20,10 @@ quy tắc quay (t = z2^z7^z8 = 0) thì Z đúng là 001001100 (TD-002). Demo lu�
 giá trị tính theo quy tắc và ghi chú rõ chỗ slide in sai; lỗi này không ảnh hưởng
 bit s_i vì s_i chỉ dùng z8 (cả hai giá trị đều có z8 = 0).
 
-Lưu ý về A5/1 [TD-005]: một khung GSM chỉ mã được 114 bít. Với văn bản dài, lõi A51
-chia thành nhiều khung liên tiếp (số khung = frame + k). Đây là quy ước tạm của nhóm,
-KHÔNG phải chuẩn GSM; báo cáo cần ghi chú rõ điều này.
-Hướng: Downlink = 114 bít đầu = Trạm phát (BTS) -> Máy di động (MS);
-       Uplink   = 114 bít sau = Máy di động (MS) -> Trạm phát (BTS).
+Lưu ý về A5/1 [TD-005]: một khung GSM chỉ mã được 114 bít mỗi hướng. Với văn bản dài,
+crypt_bytes chia thành các đoạn 57 byte; mỗi đoạn dùng 2 khung (downlink + uplink).
+Đây là quy ước của nhóm, KHÔNG phải chuẩn GSM; báo cáo cần ghi chú rõ điều này.
+Menu 4 vẫn hiển thị riêng dòng khoá downlink (114 bít đầu) và uplink (114 bít sau).
 """
 
 from __future__ import annotations
@@ -51,8 +50,7 @@ SLIDE_CIPHERTEXT = "011"     # C theo slide trang 50
 A51_FRAME_COUNT_BITS = 22    # độ dài số khung (bít)
 A51_KEY_EXAMPLE = "1223456789ABCDEF"
 A51_FRAME_EXAMPLE = "0x134"
-# Mặc định giống lõi A51 (encrypt_bytes dùng Downlink) để CLI, file_crypto (GĐ3) và test cùng một quy ước
-A51_USE_UPLINK = False
+
 # Test vector Briceno [S2] cho khoá/khung ví dụ ở trên (docs/a51_test_vector.md)
 A51_EXPECTED_DOWNLINK = "534EAA582FE8151AB6E1855A728C00"
 A51_EXPECTED_UPLINK = "24FD35A35D5FB6526D32F906DF1AC0"
@@ -319,17 +317,23 @@ def a51_encrypt_text(text: str, key_hex: str, frame: int, use_uplink: bool = A51
     """Văn bản -> UTF-8 -> A51.encrypt_bytes -> hex in hoa."""
     return A51(key_hex, frame).encrypt_bytes(text.encode("utf-8"), use_uplink).hex().upper()
 
-def a51_decrypt_hex(hex_text: str, key_hex: str, frame: int, use_uplink: bool = A51_USE_UPLINK) -> str:
-    """Hex -> bytes -> A51.decrypt_bytes -> văn bản UTF-8."""
+def a51_encrypt_text(text: str, key_hex: str, frame: int) -> str:
+    """Văn bản -> UTF-8 -> crypt_bytes (cùng quy ước tab A5/1 Text và mã hóa file) -> hex."""
+    from src.file_crypto import crypt_bytes
+    return crypt_bytes(text.encode("utf-8"), key_hex, frame).hex().upper()
+
+def a51_decrypt_hex(hex_text: str, key_hex: str, frame: int) -> str:
+    """Hex -> bytes -> crypt_bytes -> văn bản UTF-8."""
+    from src.file_crypto import crypt_bytes
     try:
         data = bytes.fromhex(hex_text.strip().replace(" ", ""))
     except ValueError:
         raise ValueError("Bản mã phải là chuỗi hex hợp lệ (số ký tự chẵn, chỉ 0-9 và A-F).") from None
-    plain = A51(key_hex, frame).decrypt_bytes(data, use_uplink)
+    plain = crypt_bytes(data, key_hex, frame)
     try:
         return plain.decode("utf-8")
     except UnicodeDecodeError:
-        raise ValueError("Kết quả không phải UTF-8 hợp lệ: có thể sai khoá, sai số khung hoặc sai chiều.") from None
+        raise ValueError("Kết quả không phải UTF-8 hợp lệ: có thể sai khoá hoặc sai số khung.") from None
 
 # ---------------------------------------------------------------------------
 # A5/1 — menu
@@ -343,7 +347,7 @@ def ask_a51_params(input_fn, output_fn=print) -> tuple[str, int]:
 
 def handle_a51_choice(choice: str, input_fn=input, output_fn=print) -> None:
     """Xử lý một lựa chọn trong menu A5/1."""
-    direction = "Uplink (MS -> BTS, 114 bit sau)" if A51_USE_UPLINK else "Downlink (BTS -> MS, 114 bit đầu)"
+    
     if choice == "1":
         key, frame = ask_a51_params(input_fn, output_fn)
         text = input_fn("Nhập bản rõ: ")
@@ -351,7 +355,7 @@ def handle_a51_choice(choice: str, input_fn=input, output_fn=print) -> None:
             output_fn("Chưa nhập bản rõ.")
             return
         output_fn(f"Bản mã (hex) : {a51_encrypt_text(text, key, frame)}")
-        output_fn(f"Dùng luồng    : {direction}; khoá={key}, khung={frame}")
+        output_fn(f"Quy ước       : mỗi đoạn 57 byte dùng 2 khung (downlink + uplink); khoá={key}, khung={frame}")
         output_fn("Hãy ghi nhớ khoá và số khung: cần đúng cả hai để giải mã.")
     elif choice == "2":
         key, frame = ask_a51_params(input_fn, output_fn)
