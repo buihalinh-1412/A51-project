@@ -7,10 +7,13 @@ import os
 import tkinter as tk
 from tkinter import ttk
 
+# Chỉ dùng hàm giả khi module CHƯA TỒN TẠI; lỗi import thật phải báo ra (xem tab_file.py).
 try:
     from src.attack_two_time_pad import crib_drag, simulate_scenario
     USING_STUBS = False
-except ImportError:  # code thật chưa có -> dùng hàm giả để làm giao diện
+except ModuleNotFoundError as _e:
+    if _e.name not in ("src", "src.attack_two_time_pad"):
+        raise
     from gui._contract_stubs import crib_drag, simulate_scenario
     USING_STUBS = True
 
@@ -20,6 +23,12 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SAMPLE_P1 = os.path.join(ROOT_DIR, "examples", "p1.txt")
 SAMPLE_P2 = os.path.join(ROOT_DIR, "examples", "p2.txt")
 
+# Khi bỏ tick "Dùng lại số khung", số khung của P2 = số khung P1 + DIFF_FRAME_STEP.
+# Lưu ý: mỗi đoạn 57 byte dùng 2 khung (F và F+1), nên tin ngắn P1 dùng khung F, F+1;
+# P2 với F+1 dùng F+1, F+2 -> vẫn chung khung F+1 (lệch vị trí 228 bit nên C1 xor C2
+# vẫn ra rác). Muốn hai tin KHÔNG chung khung nào thì đặt = 2.
+DIFF_FRAME_STEP = 1
+
 
 class AttackTab(ttk.Frame):
     """Giao diện mô phỏng dùng lại số khung và dò crib."""
@@ -27,6 +36,7 @@ class AttackTab(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         self.result = None  # kết quả simulate_scenario gần nhất
+        self._snapshot = None  # đầu vào lúc chạy mô phỏng, để phát hiện dữ liệu đã bị sửa
         self._build()
 
     def _build(self):
@@ -79,11 +89,20 @@ class AttackTab(ttk.Frame):
     def _get(widget):
         return widget.get("1.0", "end-1c")
 
+    def _inputs(self):
+        """Đầu vào hiện tại (để so với lúc chạy mô phỏng)."""
+        return (self._get(self.p1), self._get(self.p2), self.key_var.get().strip(),
+                self.frame_var.get().strip(), self.reuse_var.get())
+
     def _set_xor(self, s):
         self.xor_text.configure(state="normal")
         self.xor_text.delete("1.0", "end")
         self.xor_text.insert("1.0", s)
         self.xor_text.configure(state="disabled")
+
+    def _clear_table(self):
+        for row in self.table.get_children():
+            self.table.delete(row)
 
     def _load_samples(self):
         try:
@@ -106,23 +125,29 @@ class AttackTab(ttk.Frame):
             if not p1 or not p2:
                 raise ValueError("P1 và P2 không được để trống")
             f1 = parse_frame(self.frame_var.get())
-            f2 = f1 if self.reuse_var.get() else f1 + 1
+            f2 = f1 if self.reuse_var.get() else f1 + DIFF_FRAME_STEP
             self.result = simulate_scenario(p1, p2, self.key_var.get().strip(), f1, f2)
         except Exception as e:
             self.result = None
+            self._snapshot = None
             self.status_var.set(f"Lỗi: {type(e).__name__}: {e}")
             return
+        self._snapshot = self._inputs()
         self._set_xor(self.result["c1_xor_c2"].hex())
+        same = self.result.get("c1_xor_c2") == self.result.get("p1_xor_p2")
+        check = f" | C1 ⊕ C2 {'=' if same else '≠'} P1 ⊕ P2"
         if self.result["reused"]:
-            self.status_var.set("Hai dòng khóa TRÙNG nhau")
+            self.status_var.set("Hai dòng khóa TRÙNG nhau" + check)
         else:
-            self.status_var.set("Hai dòng khóa KHÁC nhau")
-        for row in self.table.get_children():
-            self.table.delete(row)
+            self.status_var.set("Hai dòng khóa KHÁC nhau" + check)
+        self._clear_table()
 
     def _drag(self):
         if self.result is None:
             self.status_var.set("Hãy bấm 'Chạy mô phỏng' trước")
+            return
+        if self._inputs() != self._snapshot:
+            self.status_var.set("P1, P2, khóa hoặc số khung đã đổi: hãy bấm 'Chạy mô phỏng' lại trước khi dò crib")
             return
         crib = self.crib_var.get().encode("utf-8")
         if not crib:
@@ -133,8 +158,7 @@ class AttackTab(ttk.Frame):
         except Exception as e:
             self.status_var.set(f"Lỗi: {type(e).__name__}: {e}")
             return
-        for row in self.table.get_children():
-            self.table.delete(row)
+        self._clear_table()
         for r in rows:
             self.table.insert("", "end", values=(r["offset"], r["text"], f"{r['score']:.2f}"))
         self.status_var.set(f"Đã dò crib, hiện {len(rows)} kết quả cao điểm nhất")
@@ -145,3 +169,5 @@ if __name__ == "__main__":
     root.title("Tab Tấn công")
     AttackTab(root).pack(fill="both", expand=True)
     root.mainloop()
+
+
