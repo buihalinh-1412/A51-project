@@ -8,15 +8,21 @@ import os
 import queue
 import threading
 import tkinter as tk
-from tkinter import filedialog, ttk
+from tkinter import filedialog, messagebox, ttk
 
+# Chỉ dùng hàm giả khi module src.file_crypto CHƯA TỒN TẠI.
+# Nếu file_crypto có nhưng lỗi import bên trong (vd a51.py hỏng) thì phải báo lỗi thật,
+# không được âm thầm chuyển sang hàm giả (sẽ "mã hóa" giả mà người dùng không biết).
 try:
     from src.file_crypto import decrypt_file, encrypt_file
     USING_STUBS = False
-except ImportError:  # code thật chưa có -> dùng hàm giả để làm giao diện
+except ModuleNotFoundError as _e:
+    if _e.name not in ("src", "src.file_crypto"):
+        raise
     from gui._contract_stubs import decrypt_file, encrypt_file
     USING_STUBS = True
 
+STUB_MSG = "CHÚ Ý: đang dùng hàm GIẢ (chưa có src/file_crypto.py)"
 PREVIEW_BYTES = 1024
 MAX_PREVIEW_PNG = 20 * 1024 * 1024  # tránh nạp ảnh quá lớn vào bộ nhớ
 
@@ -75,9 +81,7 @@ class FileTab(ttk.Frame):
         self.bar = ttk.Progressbar(self, mode="determinate", maximum=100)
         self.bar.grid(row=4, column=0, columnspan=3, sticky="ew", **pad)
 
-        self.msg_var = tk.StringVar(value="")
-        if USING_STUBS:
-            self.msg_var.set("CHÚ Ý: đang dùng hàm GIẢ (chưa có src/file_crypto.py)")
+        self.msg_var = tk.StringVar(value=STUB_MSG if USING_STUBS else "")
         ttk.Label(self, textvariable=self.msg_var, wraplength=560).grid(
             row=5, column=0, columnspan=3, sticky="w", **pad)
 
@@ -99,7 +103,7 @@ class FileTab(ttk.Frame):
         """Đặt file đang làm việc (cũng dùng khi chạy thử không qua hộp thoại)."""
         self.path = p
         self.path_var.set(p)
-        self.msg_var.set("")
+        self.msg_var.set(STUB_MSG if USING_STUBS else "")
         self.bar["value"] = 0
         self._preview(p)
 
@@ -121,9 +125,9 @@ class FileTab(ttk.Frame):
                 self._set_preview_text("(file đã mã hóa, không xem trước)")
                 return
             try:
-                # cắt ở ký tự cuối có thể bị đứt giữa chừng khi đọc đúng 1KB
                 text = head.decode("utf-8", errors="strict")
             except UnicodeDecodeError as e:
+                # cắt ở ký tự cuối có thể bị đứt giữa chừng khi đọc đúng 1KB
                 if e.start >= len(head) - 3 and len(head) == PREVIEW_BYTES:
                     text = head[:e.start].decode("utf-8")
                 else:
@@ -152,6 +156,13 @@ class FileTab(ttk.Frame):
         if not self.path:
             self.msg_var.set("Lỗi: chưa chọn file")
             return
+        if mode == "dec" and not self.path.lower().endswith(".enc"):
+            # decrypt_file đọc 4 byte đầu làm số khung; file lạ sẽ ra rác mà không báo lỗi
+            if not messagebox.askyesno(
+                    "Giải mã",
+                    "File này không có đuôi .enc (không phải file do chương trình mã hóa?).\n"
+                    "Vẫn giải mã?"):
+                return
         key = self.key_var.get().strip()
         try:
             frame = parse_frame(self.frame_var.get()) if mode == "enc" else 0
@@ -218,3 +229,5 @@ if __name__ == "__main__":
     root.title("Tab File")
     FileTab(root).pack(fill="both", expand=True)
     root.mainloop()
+
+
