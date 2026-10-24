@@ -223,7 +223,7 @@ class A51:
             keystream.append(self._output_bit())
         return keystream[:HALF], keystream[HALF:]
 
-    # -- mã hoá / giải mã chuỗi bít (tối đa 114 bít, một khung) ---------
+           # -- mã hoá / giải mã chuỗi bít (tối đa 114 bít, một khung) ---------
     def encrypt_bits(self, plaintext_bits, use_uplink: bool = False):
         """C = P xor S trên một khung. Mặc định dùng keystream downlink."""
         down, up = self.generate_keystream()
