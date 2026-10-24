@@ -34,6 +34,8 @@ def _is_letter(byte: int) -> bool:
 
 
 def _is_readable(byte: int) -> bool:
+    """True nếu byte là ký tự đọc được (chữ, số, dấu cách, dấu câu cơ bản)."""
+    return _is_letter(byte) or 0x30 <= byte <= 0x39 or byte in _PUNCTUATION
     """True nếu byte là ký tự đọc được (chữ, số, dấu cách, dấu câu cơ bản, \\n \\r \\t)."""
     return (_is_letter(byte) or 0x30 <= byte <= 0x39
             or byte in _PUNCTUATION or byte in _WHITESPACE)

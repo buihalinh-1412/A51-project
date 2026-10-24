@@ -5,6 +5,9 @@ Cơ chế: chia dữ liệu thành đoạn 57 byte. Đoạn thứ i dùng hai kh
 start_frame + 2i và start_frame + 2i + 1 (mỗi khung 228 bit = 114 downlink
 + 114 uplink, hai khung = 456 bit = 57 byte), rồi XOR với đoạn dữ liệu.
 Mã hóa và giải mã dùng chung hàm crypt_bytes.
+Cấu trúc file mã hóa: 4 byte đầu là start_frame (big-endian) + dữ liệu mã hóa.
+Khóa hex được A51 tự kiểm tra và đổi sang bit (quy ước Briceno); file này
+không tự đổi khóa nên không thể lệch với A51.
 
 Cấu trúc file mã hóa: 4 byte đầu là start_frame (big-endian) + dữ liệu mã hóa.
 Khóa hex được A51 tự kiểm tra và đổi sang bit (quy ước Briceno); file này
@@ -112,4 +115,5 @@ def decrypt_file(in_path, out_path, key_hex, progress=None):
         encrypted = f_in.read()
 
     decrypted = crypt_bytes(encrypted, key_hex, start_frame)
+    _write_chunks(out_path, b"", decrypted, progress)
     _write_chunks(out_path, b"", decrypted, progress)
