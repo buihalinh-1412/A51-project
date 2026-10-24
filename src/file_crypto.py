@@ -1,5 +1,6 @@
 """
 file_crypto.py: Mã hóa và giải mã file bằng A5/1.
+
 Cơ chế: chia dữ liệu thành đoạn 57 byte. Đoạn thứ i dùng hai khung
 start_frame + 2i và start_frame + 2i + 1 (mỗi khung 228 bit = 114 downlink
 + 114 uplink, hai khung = 456 bit = 57 byte), rồi XOR với đoạn dữ liệu.
@@ -7,6 +8,11 @@ Mã hóa và giải mã dùng chung hàm crypt_bytes.
 Cấu trúc file mã hóa: 4 byte đầu là start_frame (big-endian) + dữ liệu mã hóa.
 Khóa hex được A51 tự kiểm tra và đổi sang bit (quy ước Briceno); file này
 không tự đổi khóa nên không thể lệch với A51.
+
+Cấu trúc file mã hóa: 4 byte đầu là start_frame (big-endian) + dữ liệu mã hóa.
+Khóa hex được A51 tự kiểm tra và đổi sang bit (quy ước Briceno); file này
+không tự đổi khóa nên không thể lệch với A51.
+
 File này KHÔNG dùng print().
 """
 
@@ -35,6 +41,7 @@ def _bits_to_bytes(bits: list) -> bytes:
 
 def crypt_bytes(data: bytes, key_hex: str, start_frame: int = 0) -> bytes:
     """XOR dữ liệu với dòng khóa A5/1 theo từng đoạn 57 byte (2 khung mỗi đoạn).
+
     Tham số:
         data: dữ liệu cần mã hóa hoặc giải mã.
         key_hex: khóa 16 ký tự hex (64 bit), ví dụ "1223456789ABCDEF".
@@ -73,6 +80,7 @@ def _write_chunks(out_path: str, header: bytes, data: bytes, progress) -> None:
 
 def encrypt_file(in_path, out_path, key_hex, start_frame=0, progress=None):
     """Mã hóa file: ghi 4 byte start_frame (big-endian) rồi dữ liệu đã mã hóa.
+
     progress(da_xong, tong): hàm gọi lại sau mỗi đoạn, có thể để None.
     """
     if in_path == out_path:
@@ -107,4 +115,5 @@ def decrypt_file(in_path, out_path, key_hex, progress=None):
         encrypted = f_in.read()
 
     decrypted = crypt_bytes(encrypted, key_hex, start_frame)
+    _write_chunks(out_path, b"", decrypted, progress)
     _write_chunks(out_path, b"", decrypted, progress)

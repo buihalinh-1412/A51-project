@@ -16,6 +16,7 @@ def test_reused_frame_exposes_plaintext_xor():
     """Cùng frame phải làm lộ quan hệ C1 XOR C2 = P1 XOR P2."""
     result = simulate_scenario(P1, P2, KEY, FRAME, FRAME)
 
+    result = simulate_scenario(P1, P2, KEY, FRAME, FRAME)
     assert result["reused"] is True
     assert result["c1_xor_c2"] == result["p1_xor_p2"]
 
@@ -24,6 +25,7 @@ def test_different_frame_does_not_expose_plaintext_xor():
     """Đổi frame phải tạo dòng khóa khác và phá quan hệ XOR."""
     result = simulate_scenario(P1, P2, KEY, FRAME, FRAME + 1)
 
+    result = simulate_scenario(P1, P2, KEY, FRAME, FRAME + 1)
     assert result["reused"] is False
     assert result["c1_xor_c2"] != result["p1_xor_p2"]
 
@@ -69,5 +71,17 @@ def test_crib_drag_correct_crib_reveals_p2_and_scores_higher():
         top=10,
     )
 
+    result = simulate_scenario(P1, P2, KEY, FRAME, FRAME)
+    assert recover_with_known_plaintext(result["c1"], P1, result["c2"]) == P2
+
+
+def test_crib_drag_correct_crib_reveals_p2_and_scores_higher():
+    result = simulate_scenario(P1, P2, KEY, FRAME, FRAME)
+    correct_results = crib_drag(result["c1"], result["c2"], b"attack", top=10)
+    assert correct_results
+    best_correct = correct_results[0]
+    assert best_correct["offset"] == 0
+    assert P2[:6].decode() in best_correct["text"]
+    wrong_results = crib_drag(result["c1"], result["c2"], b"\xff" * 6, top=10)
     assert wrong_results
     assert best_correct["score"] > wrong_results[0]["score"]
