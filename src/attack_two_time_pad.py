@@ -19,6 +19,8 @@ from src.file_crypto import crypt_bytes
 
 # Các ký tự được coi là "đọc được": chữ cái, chữ số, dấu cách, dấu câu cơ bản.
 _PUNCTUATION = set(b".,;:!?'\"()-/")
+# Xuống dòng, về đầu dòng, tab cũng là ký tự đọc được (file mẫu có thể kết thúc bằng xuống dòng).
+_WHITESPACE = set(b"\n\r\t")
 
 
 def _xor_bytes(a: bytes, b: bytes) -> bytes:
@@ -32,8 +34,9 @@ def _is_letter(byte: int) -> bool:
 
 
 def _is_readable(byte: int) -> bool:
-    """True nếu byte là ký tự đọc được (chữ, số, dấu cách, dấu câu cơ bản)."""
-    return _is_letter(byte) or 0x30 <= byte <= 0x39 or byte in _PUNCTUATION
+    """True nếu byte là ký tự đọc được (chữ, số, dấu cách, dấu câu cơ bản, \\n \\r \\t)."""
+    return (_is_letter(byte) or 0x30 <= byte <= 0x39
+            or byte in _PUNCTUATION or byte in _WHITESPACE)
 
 
 def simulate_scenario(p1: bytes, p2: bytes, key_hex: str,
