@@ -316,10 +316,6 @@ def parse_frame(text: str) -> int:
         raise ValueError("Số khung phải nằm trong khoảng 0 đến 4194303 (22 bit).")
     return value
 
-def a51_encrypt_text(text: str, key_hex: str, frame: int, use_uplink: bool = A51_USE_UPLINK) -> str:
-    """Văn bản -> UTF-8 -> A51.encrypt_bytes -> hex in hoa."""
-    return A51(key_hex, frame).encrypt_bytes(text.encode("utf-8"), use_uplink).hex().upper()
-
 def a51_encrypt_text(text: str, key_hex: str, frame: int) -> str:
     """Văn bản -> UTF-8 -> crypt_bytes (cùng quy ước tab A5/1 Text và mã hóa file) -> hex."""
     from src.file_crypto import crypt_bytes
