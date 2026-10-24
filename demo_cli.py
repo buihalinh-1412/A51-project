@@ -64,6 +64,9 @@ MAIN_MENU = """
 ==========================================
  1. TinyA5/1: mô phỏng từng bước (Trace Log)
  2. A5/1 đầy đủ: mã hóa / giải mã văn bản
+ 3. Mã hóa / giải mã file (A5/1)
+ 4. Tấn công Two-Time Pad (dùng lại số khung)
+ 5. Đo tốc độ A5/1
  0. Thoát
 ==========================================
 """
@@ -396,6 +399,88 @@ def a51_menu(input_fn=input, output_fn=print) -> None:
         except (ValueError, TypeError) as error:
             output_fn(f"Lỗi: {error}")
 
+
+# ---------------------------------------------------------------------------
+# Giai đoạn 3: file, tấn công Two-Time Pad, đo tốc độ
+# Các hàm này chỉ nhập/xuất; phần tính toán nằm trong src/file_crypto.py,
+# src/attack_two_time_pad.py và src/benchmark.py (nạp khi cần để thiếu file
+# nào thì chỉ báo "chưa có" chứ không làm sập menu).
+# ---------------------------------------------------------------------------
+
+P1_PATH = "examples/p1.txt"
+P2_PATH = "examples/p2.txt"
+ATTACK_KEY = A51_KEY_EXAMPLE
+ATTACK_FRAME = 0x134
+DEFAULT_CRIB = "meeting"
+
+
+def file_menu(input_fn=input, output_fn=print) -> None:
+    """Mục 3: mã hóa hoặc giải mã một file thật bằng encrypt_file / decrypt_file."""
+    try:
+        from src.file_crypto import decrypt_file, encrypt_file
+    except ImportError:
+        output_fn("Chưa tìm thấy src/file_crypto.py (có thể chưa được merge).")
+        return
+    mode = input_fn("Chọn (1 = mã hóa, 2 = giải mã): ").strip()
+    if mode not in ("1", "2"):
+        output_fn("Lựa chọn không hợp lệ, hãy nhập 1 hoặc 2.")
+        return
+    path = input_fn("Đường dẫn file: ").strip().strip('"')
+    key_text = input_fn(f"Khóa 16 ký tự hex [Enter = {A51_KEY_EXAMPLE}]: ").strip() or A51_KEY_EXAMPLE
+    try:
+        key = parse_key_hex(key_text)[2:]
+        if mode == "1":
+            frame = parse_frame(input_fn("Số khung bắt đầu [Enter = 0]: ").strip() or "0")
+            out_path = path + ".enc"
+            encrypt_file(path, out_path, key, frame)
+        else:
+            out_path = path + ".dec"
+            decrypt_file(path, out_path, key)
+    except (OSError, ValueError) as error:
+        output_fn(f"Lỗi: {error}")
+        return
+    output_fn(f"Xong. File kết quả: {out_path}")
+
+
+def attack_demo(output_fn=print) -> None:
+    """Mục 4: demo Two-Time Pad với examples/p1.txt và p2.txt."""
+    try:
+        from src.attack_two_time_pad import crib_drag, simulate_scenario
+    except ImportError:
+        output_fn("Chưa tìm thấy src/attack_two_time_pad.py (có thể chưa được merge).")
+        return
+    try:
+        with open(P1_PATH, "rb") as f1, open(P2_PATH, "rb") as f2:
+            p1, p2 = f1.read(), f2.read()
+    except OSError as error:
+        output_fn(f"Lỗi: không đọc được file mẫu ({error}).")
+        return
+    output_fn(f"P1 = {p1.decode('utf-8', errors='replace')}")
+    output_fn(f"P2 = {p2.decode('utf-8', errors='replace')}")
+    for title, frame2 in (("Dùng lại số khung (frame2 = frame1)", ATTACK_FRAME),
+                          ("Đổi số khung (frame2 = frame1 + 1)", ATTACK_FRAME + 1)):
+        result = simulate_scenario(p1, p2, ATTACK_KEY, ATTACK_FRAME, frame2)
+        output_fn(f"\n--- {title} ---")
+        output_fn(f"reused = {result['reused']}")
+        output_fn(f"C1 xor C2 == P1 xor P2 ? {result['c1_xor_c2'] == result['p1_xor_p2']}")
+        hits = crib_drag(result["c1"], result["c2"], DEFAULT_CRIB.encode("ascii"), top=3)
+        output_fn(f"Dò crib '{DEFAULT_CRIB}' trong P1, 3 kết quả tốt nhất:")
+        for hit in hits:
+            output_fn(f"  offset {hit['offset']:>3}  điểm {hit['score']:.2f}  đoạn P2: {hit['text']!r}")
+    output_fn("\nKết luận: dùng lại số khung thì lộ chữ của P2; đổi số khung thì ra rác.")
+
+
+def benchmark_demo(output_fn=print) -> None:
+    """Mục 5: in bảng kết quả run_benchmark."""
+    try:
+        from src.benchmark import run_benchmark
+    except ImportError:
+        output_fn("Chưa tìm thấy src/benchmark.py (có thể chưa được merge).")
+        return
+    output_fn(f"{'Kích thước (byte)':>18} {'Thời gian (s)':>14} {'KiB/s':>10}")
+    for row in run_benchmark():
+        output_fn(f"{row['size']:>18} {row['seconds']:>14.4f} {row['kib_per_s']:>10.1f}")
+
 # ---------------------------------------------------------------------------
 # Chương trình chính
 # ---------------------------------------------------------------------------
@@ -421,8 +506,14 @@ def main(argv: list[str] | None = None) -> int:
                 cipher = tiny_menu(cipher)
             elif choice == "2":
                 a51_menu()
+            elif choice == "3":
+                file_menu()
+            elif choice == "4":
+                attack_demo()
+            elif choice == "5":
+                benchmark_demo()
             else:
-                print("Lựa chọn không hợp lệ, hãy nhập 0, 1 hoặc 2.")
+                print("Lựa chọn không hợp lệ, hãy nhập số từ 0 đến 5.")
     except (EOFError, KeyboardInterrupt):
         print()
         return 0
