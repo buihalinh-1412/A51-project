@@ -1,36 +1,28 @@
-# A5/1 Project
+# Hệ mã dòng A5/1 và TinyA5/1
 
-Project môn An toàn và bảo mật thông tin.
+Đồ án môn **An toàn và bảo mật thông tin** — cài đặt hệ mã dòng A5/1 và phiên bản thu nhỏ TinyA5/1 bằng Python thuần, không dùng thư viện mật mã có sẵn cho phần lõi.
 
-## Members
-- Bùi Hà Linh
-- Lại Hoàng Thế Vũ
-- Hoàng Yến Nhi
-- Nguyễn Thị Nhật Linh
-- Trần Đại Lộc
+## Thành viên nhóm 5
 
-# A5/1 và TinyA5/1
+| Họ và tên | MSSV |
+|---|---|
+| Bùi Hà Linh (nhóm trưởng) | 11240066 |
+| Lại Hoàng Thế Vũ | 11245824 |
+| Hoàng Yến Nhi | 11242041 |
+| Trần Đại Lộc | 11240736 |
+| Nguyễn Thị Nhật Linh | 11245415 |
 
-Đồ án môn An toàn và bảo mật thông tin: cài đặt hệ mã dòng TinyA5/1 và A5/1 bằng Python thuần, không dùng thư viện mật mã có sẵn cho phần lõi.
-
-## Yêu cầu
+## Yêu cầu môi trường
 
 - Python 3.10 trở lên
 - Tkinter (có sẵn trong bộ cài Python chính thức; trên Linux có thể cần `sudo apt install python3-tk`)
-- pytest (xem `requirements.txt`)
+- pytest (khai báo trong `requirements.txt`)
 
 ## Cài đặt
 
-1. Clone repository và vào thư mục dự án:
-
 ```bash
-git clone <URL-repository>
+git clone https://github.com/buihalinh-1412/A51-project.git
 cd A51-project
-```
-
-2. Cài thư viện:
-
-```bash
 pip install -r requirements.txt
 ```
 
@@ -38,45 +30,28 @@ pip install -r requirements.txt
 
 Chạy các lệnh sau ở thư mục gốc của dự án.
 
-**Giao diện đồ họa (GUI):**
+| Lệnh | Chức năng |
+|---|---|
+| `python -m gui.app` | Mở giao diện đồ họa (4 tab) |
+| `python demo_cli.py` | Mở giao diện dòng lệnh dạng menu |
+| `python -m pytest tests/ -v` | Chạy toàn bộ bộ kiểm thử (kết quả mong đợi: 51 passed) |
+| `python tests/run_verification.py` | Đối chiếu test vector GSM (kết quả mong đợi: PASS) |
+| `python src/benchmark.py` | Đo tốc độ và ghi `docs/benchmark.csv` |
 
-```bash
-python -m gui.app
-```
-
-**Giao diện dòng lệnh (CLI):**
-
-```bash
-python demo_cli.py
-```
-
-**Kiểm thử:**
-
-```bash
-python -m pytest tests/ -v
-```
-
-**Đo tốc độ:**
-
-```bash
-python -m src.benchmark
-```
-
-Nếu gặp lỗi `No module named 'src'`, chạy lại lệnh trên ở thư mục gốc, hoặc đặt biến môi trường `PYTHONPATH`:
-- PowerShell: `$env:PYTHONPATH="."`
-- Linux/macOS: `export PYTHONPATH=.`
+> Nếu gặp lỗi `No module named 'src'`, đặt biến môi trường trước khi chạy:
+> - PowerShell: `$env:PYTHONPATH="."`
+> - Linux/macOS: `export PYTHONPATH=.`
 
 ## Cấu trúc thư mục
 
 ```
 A51-project/
-├── src/                   # Mã nguồn lõi (a51, tiny_a51, file_crypto, benchmark...)
-├── gui/                   # Mã nguồn giao diện Tkinter
-├── tests/                 # Bộ kiểm thử tự động (pytest)
-├── examples/              # Tệp mẫu phục vụ demo & tấn công
-├── docs/                  # Báo cáo, tài liệu đặc tả & bằng chứng kiểm thử
-├── demo_cli.py            # Chương trình chạy CLI
-├── requirements.txt       # Danh sách thư viện phụ thuộc
-└── README.md              # Tài liệu hướng dẫn sử dụng
+├── src/              # Mã nguồn lõi (a51, tiny_a51, file_crypto, benchmark...)
+├── gui/              # Giao diện đồ họa Tkinter (4 tab)
+├── tests/            # Bộ kiểm thử tự động (pytest)
+├── examples/         # File văn bản mẫu phục vụ demo tấn công
+├── docs/             # Tài liệu đặc tả, sơ đồ và bằng chứng kiểm thử
+├── demo_cli.py       # Giao diện dòng lệnh
+├── requirements.txt  # Thư viện phụ thuộc
+└── README.md
 ```
-
